@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, MessageCircle, Mail, Phone, Clock, ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/help-support")({ component: HelpSupportPage });
+export const Route = createFileRoute("/help-support")({
+  beforeLoad: requireAuth,
+  component: HelpSupportPage,
+});
 
 const faqs = [
   {

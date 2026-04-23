@@ -2,8 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/tv")({ component: TvPage });
+export const Route = createFileRoute("/tv")({
+  beforeLoad: requireAuth,
+  component: TvPage,
+});
 
 const providers = [
   {

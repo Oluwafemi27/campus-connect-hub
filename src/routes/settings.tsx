@@ -2,8 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Moon, Globe, Shield, HelpCircle, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/settings")({ component: SettingsPage });
+export const Route = createFileRoute("/settings")({
+  beforeLoad: requireAuth,
+  component: SettingsPage,
+});
 
 function SettingsPage() {
   const navigate = useNavigate();

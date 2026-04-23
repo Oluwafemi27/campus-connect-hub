@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { MapPin, Wifi } from "lucide-react";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/map")({ component: MapPage });
+export const Route = createFileRoute("/map")({
+  beforeLoad: requireAuth,
+  component: MapPage,
+});
 
 function MapPage() {
   return (

@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, CreditCard, Building2, Smartphone, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/add-payment-method")({ component: AddPaymentMethodPage });
+export const Route = createFileRoute("/add-payment-method")({
+  beforeLoad: requireAuth,
+  component: AddPaymentMethodPage,
+});
 
 type PaymentMethodType = "card" | "bank" | "ussd";
 

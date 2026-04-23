@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { CreditCard, Smartphone, Zap, DollarSign, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/topup")({ component: TopUpPage });
+export const Route = createFileRoute("/topup")({
+  beforeLoad: requireAuth,
+  component: TopUpPage,
+});
 
 const topupMethods = [
   { id: "card", label: "Debit/Credit Card", icon: CreditCard, desc: "Instant funding" },

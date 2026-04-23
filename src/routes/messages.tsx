@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { MailOpen, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/messages")({ component: MessagesPage });
+export const Route = createFileRoute("/messages")({
+  beforeLoad: requireAuth,
+  component: MessagesPage,
+});
 
 function MessagesPage() {
   const [text, setText] = useState("");

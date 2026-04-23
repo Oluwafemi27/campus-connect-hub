@@ -2,8 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { CreditCard, Plus, ArrowDownLeft } from "lucide-react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/payments")({ component: PaymentsPage });
+export const Route = createFileRoute("/payments")({
+  beforeLoad: requireAuth,
+  component: PaymentsPage,
+});
 
 function PaymentsPage() {
   const navigate = useNavigate();
