@@ -38,7 +38,7 @@ export const Route = createRootRoute({
       { property: "og:description", content: "Buy data, airtime, TV subscriptions and connect to your campus router — all in one futuristic student app." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@CampusConnect" },
     ],
     links: [
       {

@@ -37,6 +37,36 @@ const faqs = [
     question: "What payment methods do you accept?",
     answer: "We accept Debit/Credit Cards, Bank Transfers via USSD, and Direct Bank Transfers. All transactions are processed securely.",
   },
+  {
+    id: 7,
+    question: "How do I buy airtime?",
+    answer: "Go to the Airtime section, select your network operator (MTN, Airtel, Glo, or 9mobile), enter your phone number and desired amount. Confirm and pay through your preferred method.",
+  },
+  {
+    id: 8,
+    question: "Can I share my account with family members?",
+    answer: "We recommend using individual accounts for each user for security reasons. However, you can transfer funds to family members through our app.",
+  },
+  {
+    id: 9,
+    question: "What happens if my internet disconnects during a transaction?",
+    answer: "Your transaction will be automatically queued and processed when your connection is restored. You can check the status in your transaction history.",
+  },
+  {
+    id: 10,
+    question: "Are there any transaction limits?",
+    answer: "Transaction limits depend on your account verification level. Unverified accounts have daily limits of ₦50,000. Complete verification to increase limits to ₦500,000 daily.",
+  },
+  {
+    id: 11,
+    question: "How do I contact customer support directly?",
+    answer: "You can reach our support team via email at support@campusconnect.com or call +234 800 123 4567. We respond to all inquiries within 24 hours.",
+  },
+  {
+    id: 12,
+    question: "Is there a minimum amount for transactions?",
+    answer: "The minimum transaction amount is ₦100. However, some payment methods may have different minimums. Check your payment method details for specifics.",
+  },
 ];
 
 function HelpSupportPage() {

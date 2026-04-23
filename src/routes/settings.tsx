@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Moon, Globe, Shield, HelpCircle, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
@@ -6,6 +6,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
 function SettingsPage() {
+  const navigate = useNavigate();
+
   return (
     <>
       <TopBar title="SETTINGS" showBack />
@@ -25,7 +27,7 @@ function SettingsPage() {
       </Section>
 
       <Section title="ABOUT">
-        <Item icon={HelpCircle} label="Help center" />
+        <Item icon={HelpCircle} label="Help center" onClick={() => navigate({ to: "/messages" })} />
         <Item icon={Info} label="App version" trailing={<span className="text-xs text-muted-foreground">1.0.0</span>} />
       </Section>
 
@@ -49,9 +51,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Item({ icon: Icon, label, trailing }: { icon: typeof Moon; label: string; trailing?: React.ReactNode }) {
+function Item({ icon: Icon, label, trailing, onClick }: { icon: typeof Moon; label: string; trailing?: React.ReactNode; onClick?: () => void }) {
   return (
-    <button className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
+    <button onClick={onClick} className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
       <div className="flex items-center gap-3"><Icon className="h-4 w-4 text-primary" /><span>{label}</span></div>
       {trailing ?? <ChevronRight className="h-4 w-4 text-muted-foreground" />}
     </button>
