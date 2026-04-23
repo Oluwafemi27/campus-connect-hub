@@ -1,11 +1,14 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Receipt, Megaphone, Settings as Cog, ArrowLeft, Shield } from "lucide-react";
+import { LayoutDashboard, Users, Receipt, Megaphone, Settings as Cog, ArrowLeft, Shield, BarChart3, Sparkles, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
 const nav = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/admin/analytics", icon: BarChart3, label: "Analytics" },
+  { to: "/admin/features", icon: Sparkles, label: "Features" },
+  { to: "/admin/messages", icon: MessageSquare, label: "Messages" },
   { to: "/admin/users", icon: Users, label: "Users" },
   { to: "/admin/transactions", icon: Receipt, label: "Transactions" },
   { to: "/admin/broadcasts", icon: Megaphone, label: "Broadcasts" },
