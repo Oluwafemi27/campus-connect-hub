@@ -33,10 +33,7 @@ function LoginPage() {
       </div>
 
       <div className="mb-8 flex flex-col items-center text-center animate-fade-up">
-        <div className="relative mb-4 h-20 w-20">
-          <div className="absolute inset-0 animate-orbit rounded-full border-2 border-primary/40" />
-          <div className="absolute inset-2 animate-pulse-glow rounded-full bg-gradient-to-br from-primary to-accent" />
-        </div>
+        <img src="/src/assets/logo.png" alt="Campus Connect" className="mb-4 h-20 w-20 object-contain" />
         <h1 className="text-3xl font-bold gradient-text">Welcome Back</h1>
         <p className="mt-2 text-sm text-muted-foreground">Sign in to your Campus Connect account</p>
       </div>

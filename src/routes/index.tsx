@@ -58,12 +58,12 @@ function HomePage() {
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {[
-            { t: "Tech Symposium", s: "Oct 15-17", grad: "from-primary/40 to-accent/30" },
-            { t: "Campus Offer", s: "50% off Mobile Data", grad: "from-accent/40 to-neon/30" },
-            { t: "New Router Zones", s: "Block C live now", grad: "from-neon/40 to-primary/30" },
+            { t: "Tech Symposium", s: "Oct 15-17", img: "/src/assets/tech-symposium.jpg" },
+            { t: "Campus Offer", s: "50% off Mobile Data", img: "/src/assets/campus-offer.jpg" },
+            { t: "New Router Zones", s: "Block C live now", img: "/src/assets/router-zones.jpg" },
           ].map((c, i) => (
-            <div key={i} className="glass tile-press min-w-[180px] rounded-2xl p-4">
-              <div className={`mb-3 h-20 rounded-xl bg-gradient-to-br ${c.grad}`} />
+            <div key={i} className="glass tile-press min-w-[180px] rounded-2xl p-4 overflow-hidden flex flex-col">
+              <img src={c.img} alt={c.t} className="mb-3 h-20 w-full rounded-xl object-cover" />
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold">{c.t}</p>
               <p className="text-xs text-muted-foreground">{c.s}</p>
