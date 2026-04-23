@@ -40,16 +40,16 @@ function ProfilePage() {
       </Section>
 
       <Section title="ACCOUNT & SECURITY">
-        <button className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
+        <Link to="/change-password" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Change Password</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
-        <button className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
+        </Link>
+        <Link to="/security-questions" className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Security Questions</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
+        </Link>
       </Section>
 
       <Section title="PAYMENT METHODS">
-        <Link to="/payments" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
+        <Link to="/add-payment-method" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm hover:bg-muted/30 transition-colors">
           <span>Link New Card / Account</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
         <div className="glass-strong mt-2 rounded-xl bg-gradient-to-br from-gold/30 to-amber-700/20 p-4">
@@ -59,9 +59,9 @@ function ProfilePage() {
       </Section>
 
       <Section title="HELP & SUPPORT">
-        <button className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
+        <Link to="/help-support" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Help & Support</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </button>
+        </Link>
         <button
           onClick={() => { toast.success("Logged out"); navigate({ to: "/login" }); }}
           className="tile-press glass mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-destructive/20 px-4 py-3 text-sm font-semibold text-destructive"

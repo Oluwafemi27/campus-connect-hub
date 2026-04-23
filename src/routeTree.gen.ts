@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TvRouteImport } from './routes/tv'
+import { Route as TopupRouteImport } from './routes/topup'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SecurityQuestionsRouteImport } from './routes/security-questions'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PaymentsRouteImport } from './routes/payments'
 import { Route as NotificationsRouteImport } from './routes/notifications'
@@ -19,21 +21,30 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HelpSupportRouteImport } from './routes/help-support'
 import { Route as DevicesRouteImport } from './routes/devices'
 import { Route as DataRouteImport } from './routes/data'
 import { Route as ConnectRouterRouteImport } from './routes/connect-router'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AirtimeRouteImport } from './routes/airtime'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AddPaymentMethodRouteImport } from './routes/add-payment-method'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminBroadcastsRouteImport } from './routes/admin.broadcasts'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 
 const TvRoute = TvRouteImport.update({
   id: '/tv',
   path: '/tv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopupRoute = TopupRouteImport.update({
+  id: '/topup',
+  path: '/topup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -44,6 +55,11 @@ const SignupRoute = SignupRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurityQuestionsRoute = SecurityQuestionsRouteImport.update({
+  id: '/security-questions',
+  path: '/security-questions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -81,6 +97,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpSupportRoute = HelpSupportRouteImport.update({
+  id: '/help-support',
+  path: '/help-support',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DevicesRoute = DevicesRouteImport.update({
   id: '/devices',
   path: '/devices',
@@ -96,6 +117,11 @@ const ConnectRouterRoute = ConnectRouterRouteImport.update({
   path: '/connect-router',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AirtimeRoute = AirtimeRouteImport.update({
   id: '/airtime',
   path: '/airtime',
@@ -104,6 +130,11 @@ const AirtimeRoute = AirtimeRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddPaymentMethodRoute = AddPaymentMethodRouteImport.update({
+  id: '/add-payment-method',
+  path: '/add-payment-method',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -136,14 +167,22 @@ const AdminBroadcastsRoute = AdminBroadcastsRouteImport.update({
   path: '/broadcasts',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add-payment-method': typeof AddPaymentMethodRoute
   '/admin': typeof AdminRouteWithChildren
   '/airtime': typeof AirtimeRoute
+  '/change-password': typeof ChangePasswordRoute
   '/connect-router': typeof ConnectRouterRoute
   '/data': typeof DataRoute
   '/devices': typeof DevicesRoute
+  '/help-support': typeof HelpSupportRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
@@ -151,9 +190,12 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/profile': typeof ProfileRoute
+  '/security-questions': typeof SecurityQuestionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/topup': typeof TopupRoute
   '/tv': typeof TvRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
@@ -162,10 +204,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add-payment-method': typeof AddPaymentMethodRoute
   '/airtime': typeof AirtimeRoute
+  '/change-password': typeof ChangePasswordRoute
   '/connect-router': typeof ConnectRouterRoute
   '/data': typeof DataRoute
   '/devices': typeof DevicesRoute
+  '/help-support': typeof HelpSupportRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
@@ -173,9 +218,12 @@ export interface FileRoutesByTo {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/profile': typeof ProfileRoute
+  '/security-questions': typeof SecurityQuestionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/topup': typeof TopupRoute
   '/tv': typeof TvRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
@@ -185,11 +233,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add-payment-method': typeof AddPaymentMethodRoute
   '/admin': typeof AdminRouteWithChildren
   '/airtime': typeof AirtimeRoute
+  '/change-password': typeof ChangePasswordRoute
   '/connect-router': typeof ConnectRouterRoute
   '/data': typeof DataRoute
   '/devices': typeof DevicesRoute
+  '/help-support': typeof HelpSupportRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/map': typeof MapRoute
@@ -197,9 +248,12 @@ export interface FileRoutesById {
   '/notifications': typeof NotificationsRoute
   '/payments': typeof PaymentsRoute
   '/profile': typeof ProfileRoute
+  '/security-questions': typeof SecurityQuestionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/topup': typeof TopupRoute
   '/tv': typeof TvRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
@@ -210,11 +264,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/add-payment-method'
     | '/admin'
     | '/airtime'
+    | '/change-password'
     | '/connect-router'
     | '/data'
     | '/devices'
+    | '/help-support'
     | '/history'
     | '/login'
     | '/map'
@@ -222,9 +279,12 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/profile'
+    | '/security-questions'
     | '/settings'
     | '/signup'
+    | '/topup'
     | '/tv'
+    | '/admin/analytics'
     | '/admin/broadcasts'
     | '/admin/settings'
     | '/admin/transactions'
@@ -233,10 +293,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/add-payment-method'
     | '/airtime'
+    | '/change-password'
     | '/connect-router'
     | '/data'
     | '/devices'
+    | '/help-support'
     | '/history'
     | '/login'
     | '/map'
@@ -244,9 +307,12 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/profile'
+    | '/security-questions'
     | '/settings'
     | '/signup'
+    | '/topup'
     | '/tv'
+    | '/admin/analytics'
     | '/admin/broadcasts'
     | '/admin/settings'
     | '/admin/transactions'
@@ -255,11 +321,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/add-payment-method'
     | '/admin'
     | '/airtime'
+    | '/change-password'
     | '/connect-router'
     | '/data'
     | '/devices'
+    | '/help-support'
     | '/history'
     | '/login'
     | '/map'
@@ -267,9 +336,12 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/payments'
     | '/profile'
+    | '/security-questions'
     | '/settings'
     | '/signup'
+    | '/topup'
     | '/tv'
+    | '/admin/analytics'
     | '/admin/broadcasts'
     | '/admin/settings'
     | '/admin/transactions'
@@ -279,11 +351,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddPaymentMethodRoute: typeof AddPaymentMethodRoute
   AdminRoute: typeof AdminRouteWithChildren
   AirtimeRoute: typeof AirtimeRoute
+  ChangePasswordRoute: typeof ChangePasswordRoute
   ConnectRouterRoute: typeof ConnectRouterRoute
   DataRoute: typeof DataRoute
   DevicesRoute: typeof DevicesRoute
+  HelpSupportRoute: typeof HelpSupportRoute
   HistoryRoute: typeof HistoryRoute
   LoginRoute: typeof LoginRoute
   MapRoute: typeof MapRoute
@@ -291,8 +366,10 @@ export interface RootRouteChildren {
   NotificationsRoute: typeof NotificationsRoute
   PaymentsRoute: typeof PaymentsRoute
   ProfileRoute: typeof ProfileRoute
+  SecurityQuestionsRoute: typeof SecurityQuestionsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
+  TopupRoute: typeof TopupRoute
   TvRoute: typeof TvRoute
 }
 
@@ -303,6 +380,13 @@ declare module '@tanstack/react-router' {
       path: '/tv'
       fullPath: '/tv'
       preLoaderRoute: typeof TvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topup': {
+      id: '/topup'
+      path: '/topup'
+      fullPath: '/topup'
+      preLoaderRoute: typeof TopupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -317,6 +401,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security-questions': {
+      id: '/security-questions'
+      path: '/security-questions'
+      fullPath: '/security-questions'
+      preLoaderRoute: typeof SecurityQuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -368,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help-support': {
+      id: '/help-support'
+      path: '/help-support'
+      fullPath: '/help-support'
+      preLoaderRoute: typeof HelpSupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/devices': {
       id: '/devices'
       path: '/devices'
@@ -389,6 +487,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectRouterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/airtime': {
       id: '/airtime'
       path: '/airtime'
@@ -401,6 +506,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add-payment-method': {
+      id: '/add-payment-method'
+      path: '/add-payment-method'
+      fullPath: '/add-payment-method'
+      preLoaderRoute: typeof AddPaymentMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -445,10 +557,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBroadcastsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBroadcastsRoute: typeof AdminBroadcastsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
@@ -457,6 +577,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBroadcastsRoute: AdminBroadcastsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
@@ -468,11 +589,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddPaymentMethodRoute: AddPaymentMethodRoute,
   AdminRoute: AdminRouteWithChildren,
   AirtimeRoute: AirtimeRoute,
+  ChangePasswordRoute: ChangePasswordRoute,
   ConnectRouterRoute: ConnectRouterRoute,
   DataRoute: DataRoute,
   DevicesRoute: DevicesRoute,
+  HelpSupportRoute: HelpSupportRoute,
   HistoryRoute: HistoryRoute,
   LoginRoute: LoginRoute,
   MapRoute: MapRoute,
@@ -480,8 +604,10 @@ const rootRouteChildren: RootRouteChildren = {
   NotificationsRoute: NotificationsRoute,
   PaymentsRoute: PaymentsRoute,
   ProfileRoute: ProfileRoute,
+  SecurityQuestionsRoute: SecurityQuestionsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
+  TopupRoute: TopupRoute,
   TvRoute: TvRoute,
 }
 export const routeTree = rootRouteImport
