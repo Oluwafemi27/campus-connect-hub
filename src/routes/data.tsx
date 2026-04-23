@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
-import { Contact, BarChart3, Calendar, Tag } from "lucide-react";
+import { BarChart3, Calendar, Contact, Tag } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/data")({ component: DataPage });
@@ -17,7 +17,6 @@ const plans = [
 function DataPage() {
   const [op, setOp] = useState("mtn");
   const [phone, setPhone] = useState("");
-  const [recurring, setRecurring] = useState(false);
   const [picked, setPicked] = useState<number | null>(null);
 
   return (
@@ -50,13 +49,6 @@ function DataPage() {
       <div className="glass flex items-center gap-2 rounded-xl px-3 py-2.5">
         <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="080..." className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
         <button className="tile-press flex h-9 w-9 items-center justify-center rounded-lg bg-primary/20"><Contact className="h-4 w-4 text-primary" /></button>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <span className="text-xs tracking-widest text-muted-foreground">RECURRING PURCHASE?</span>
-        <button onClick={() => setRecurring(!recurring)} className={`relative h-6 w-11 rounded-full transition-colors ${recurring ? "bg-primary" : "bg-muted"}`}>
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${recurring ? "translate-x-5" : "translate-x-0.5"}`} />
-        </button>
       </div>
 
       <button

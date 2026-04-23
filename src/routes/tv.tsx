@@ -37,7 +37,6 @@ function TvPage() {
   const [provider, setProvider] = useState("dstv");
   const [card, setCard] = useState("");
   const [amount, setAmount] = useState<number | null>(null);
-  const [recurring, setRecurring] = useState(false);
 
   return (
     <>
@@ -72,13 +71,6 @@ function TvPage() {
             ₦{a.toLocaleString()}
           </button>
         ))}
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <span className="text-xs tracking-widest text-muted-foreground">RECURRING SUBSCRIPTION?</span>
-        <button onClick={() => setRecurring(!recurring)} className={`relative h-6 w-11 rounded-full transition-colors ${recurring ? "bg-primary" : "bg-muted"}`}>
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${recurring ? "translate-x-5" : "translate-x-0.5"}`} />
-        </button>
       </div>
 
       <button

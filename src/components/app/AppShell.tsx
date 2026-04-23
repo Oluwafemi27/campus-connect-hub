@@ -1,18 +1,20 @@
 import { Outlet, Link, useLocation } from "@tanstack/react-router";
-import { Home, Smartphone, CreditCard, MapPin, User } from "lucide-react";
+import { Home, Smartphone, CreditCard, MapPin, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/devices", icon: Smartphone, label: "Devices" },
-  { to: "/payments", icon: CreditCard, label: "Payments" },
+  { to: "/payments", icon: CreditCard, label: "Pay" },
   { to: "/map", icon: MapPin, label: "Map" },
+  { to: "/admin", icon: Shield, label: "Admin" },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
 export function AppShell() {
   const location = useLocation();
-  const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname);
+  const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname)
+    || location.pathname.startsWith("/admin");
 
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col">

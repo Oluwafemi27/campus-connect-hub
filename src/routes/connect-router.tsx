@@ -1,14 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Lock, Eye, EyeOff, ArrowRight, Wifi, ArrowLeft } from "lucide-react";
+import { Lock, ArrowRight, Wifi, ArrowLeft, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { AtomicParticles } from "@/components/app/AtomicParticles";
 
 export const Route = createFileRoute("/connect-router")({ component: ConnectPage });
 
 function ConnectPage() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
 
@@ -25,11 +25,10 @@ function ConnectPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-6 py-8">
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute top-0 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl" />
-        <div className="absolute bottom-10 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-neon/20 blur-3xl" />
-      </div>
+    <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-6 py-8">
+      {/* 3D atomic particle field */}
+      <AtomicParticles className="pointer-events-none fixed inset-0 -z-10 h-screen w-full" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/40 via-background/10 to-background/70" />
 
       <Link to="/" className="tile-press glass mb-6 flex h-9 w-9 items-center justify-center rounded-full self-start">
         <ArrowLeft className="h-4 w-4" />
@@ -48,23 +47,18 @@ function ConnectPage() {
         <div className="glass mt-5 flex items-center gap-3 rounded-xl px-4 py-3">
           <Lock className="h-4 w-4 text-primary" />
           <input
-            type={show ? "text" : "password"}
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
+            autoComplete="current-password"
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
         </div>
 
-        <div className="mt-4 flex items-center justify-between text-sm">
-          <span className="font-medium">Show Password</span>
-          <button
-            type="button"
-            onClick={() => setShow(!show)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${show ? "bg-primary" : "bg-muted"}`}
-          >
-            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${show ? "translate-x-5" : "translate-x-0.5"}`} />
-          </button>
+        <div className="mt-3 flex items-center gap-2 rounded-lg bg-neon/10 px-3 py-2 text-[11px] text-neon">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          End-to-end encrypted. Your password is never stored.
         </div>
 
         <div className="mt-8 flex flex-col items-center">
