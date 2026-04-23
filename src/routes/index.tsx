@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Phone, Wifi, Tv, Router, History, ChevronRight, CheckCircle2 } from "lucide-react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
@@ -21,6 +22,8 @@ const tiles: Tile[] = [
 ];
 
 function HomePage() {
+  useAuthGuard();
+
   return (
     <>
       <TopBar />

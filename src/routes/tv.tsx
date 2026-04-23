@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ const providers = [
 const amounts = [5000, 10000, 15000];
 
 function TvPage() {
+  useAuthGuard();
   const [provider, setProvider] = useState("dstv");
   const [card, setCard] = useState("");
   const [amount, setAmount] = useState<number | null>(null);

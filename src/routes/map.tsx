@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { MapPin, Wifi } from "lucide-react";
 
 export const Route = createFileRoute("/map")({ component: MapPage });
 
 function MapPage() {
+  useAuthGuard();
+
   return (
     <>
       <TopBar title="CAMPUS MAP" />

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Users, Wallet, Wifi, Activity, TrendingUp, AlertCircle } from "lucide-react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
 
@@ -11,6 +12,8 @@ const stats = [
 ];
 
 function AdminDashboard() {
+  useAuthGuard();
+
   return (
     <div className="space-y-5 animate-fade-up">
       <div>

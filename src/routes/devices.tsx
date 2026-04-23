@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Router, Laptop, Smartphone, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/devices")({ component: DevicesPage });
 
 function DevicesPage() {
+  useAuthGuard();
+
   return (
     <>
       <TopBar title="CONNECTED DEVICES" />

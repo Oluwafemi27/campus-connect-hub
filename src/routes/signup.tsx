@@ -22,14 +22,20 @@ function SignupPage() {
       return;
     }
     setLoading(true);
-    const { error } = await signUp(form.email, form.password);
-    setLoading(false);
-    if (error) {
-      toast.error(error.message || "Failed to create account");
-      return;
+    try {
+      const { error } = await signUp(form.email, form.password);
+      if (error) {
+        toast.error(error.message || "Failed to create account");
+        return;
+      }
+      toast.success("Account created!");
+      navigate({ to: "/" });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred";
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
     }
-    toast.success("Account created!");
-    navigate({ to: "/" });
   };
 
   const fields = [

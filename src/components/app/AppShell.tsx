@@ -25,7 +25,7 @@ export function AppShell() {
         <div className="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-neon/15 blur-3xl" />
       </div>
 
-      <main key={location.pathname} className="animate-fade-up flex-1 px-5 pt-6 pb-28">
+      <main className="animate-fade-up flex-1 px-5 pt-6 pb-28">
         <Outlet />
       </main>
 

@@ -2,11 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, Eye, EyeOff, CheckCircle2, Lock } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/change-password")({ component: ChangePasswordPage });
 
 function ChangePasswordPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Megaphone, Send, Trash2, RotateCcw, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export const Route = createFileRoute("/admin/broadcasts")({ component: AdminBroadcasts });
 
@@ -15,6 +16,7 @@ interface Broadcast {
 }
 
 function AdminBroadcasts() {
+  useAuthGuard();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [audience, setAudience] = useState("all");

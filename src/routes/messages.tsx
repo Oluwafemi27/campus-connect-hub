@@ -2,11 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { MailOpen, Send } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/messages")({ component: MessagesPage });
 
 function MessagesPage() {
+  useAuthGuard();
   const [text, setText] = useState("");
 
   return (
