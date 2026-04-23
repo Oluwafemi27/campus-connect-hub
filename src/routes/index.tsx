@@ -1,26 +1,89 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Phone, Wifi, Tv, Router, Droplet, History, ChevronRight, CheckCircle2 } from "lucide-react";
+import { TopBar, WalletCard } from "@/components/app/TopBar";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ component: HomePage });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+const tiles = [
+  { to: "/airtime", icon: Phone, label: "Recharge Airtime", badge: "NEW", grad: "from-primary/30 to-accent/20" },
+  { to: "/data", icon: Wifi, label: "Buy Mobile Data", badge: null, grad: "from-accent/30 to-primary/20" },
+  { to: "/tv", icon: Tv, label: "TV Subscription", badge: "NEW", grad: "from-neon/25 to-primary/20" },
+  { to: "/connect-router", icon: Router, label: "Connect to Campus Router", badge: "✓", grad: "from-primary/30 to-neon/20", check: true },
+  { to: "/utilities", icon: Droplet, label: "Pay Utility Bills", badge: null, grad: "from-accent/25 to-neon/20" },
+  { to: "/history", icon: History, label: "Transaction History", badge: "POPULAR", grad: "from-gold/25 to-accent/20" },
+] as const;
+
+function HomePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+    <>
+      <TopBar />
+      <WalletCard />
 
-function Index() {
-  return <PlaceholderIndex />;
+      <h1 className="mb-4 text-2xl font-bold">
+        Welcome back, <span className="gradient-text-gold">Student!</span>
+      </h1>
+
+      <div className="grid grid-cols-3 gap-3">
+        {tiles.map(({ to, icon: Icon, label, badge, grad, check }, i) => (
+          <Link
+            key={to}
+            to={to}
+            className="tile-press glass relative flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl p-2 text-center animate-fade-up"
+            style={{ animationDelay: `${i * 0.05}s` }}
+          >
+            <div className={`absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br ${grad} opacity-60`} />
+            {badge && (
+              <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gradient-to-r from-accent to-primary px-2 py-0.5 text-[8px] font-bold text-primary-foreground">
+                {badge}
+              </span>
+            )}
+            {check && <CheckCircle2 className="absolute top-2 right-2 h-3.5 w-3.5 text-neon" />}
+            <Icon className="h-7 w-7 text-primary" />
+            <span className="text-[10px] font-semibold leading-tight">{label}</span>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-7">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-bold tracking-wider">FEATURE SLIDESHOW</h2>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {[
+            { t: "Tech Symposium", s: "Oct 15-17", grad: "from-primary/40 to-accent/30" },
+            { t: "Campus Offer", s: "50% off Mobile Data", grad: "from-accent/40 to-neon/30" },
+            { t: "New Router Zones", s: "Block C live now", grad: "from-neon/40 to-primary/30" },
+          ].map((c, i) => (
+            <div key={i} className="glass tile-press min-w-[180px] rounded-2xl p-4">
+              <div className={`mb-3 h-20 rounded-xl bg-gradient-to-br ${c.grad}`} />
+              <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
+              <p className="text-sm font-bold">{c.t}</p>
+              <p className="text-xs text-muted-foreground">{c.s}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <h2 className="mb-3 text-sm font-bold tracking-wider">RESOURCES & ALERTS</h2>
+        <div className="glass space-y-3 rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-neon opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-neon" />
+            </span>
+            <div>
+              <p className="text-xs font-semibold">Router Status</p>
+              <p className="text-[10px] text-muted-foreground">Online (Good)</p>
+            </div>
+          </div>
+          <div className="border-t border-border pt-3">
+            <p className="text-xs font-semibold">Campus Announcements</p>
+            <p className="text-[10px] text-muted-foreground">No new announcements</p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
