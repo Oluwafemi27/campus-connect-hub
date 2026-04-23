@@ -1,10 +1,30 @@
 import { cn } from "@/lib/utils";
 
 const operators = [
-  { id: "airtel", label: "Airtel", color: "bg-gradient-to-br from-red-500 to-red-700", emoji: "📡" },
-  { id: "mtn", label: "MTN", color: "bg-gradient-to-br from-yellow-400 to-yellow-600 text-black", emoji: "🟡" },
-  { id: "glo", label: "Glo", color: "bg-gradient-to-br from-green-500 to-green-700", emoji: "🟢" },
-  { id: "9mobile", label: "9mobile", color: "bg-gradient-to-br from-emerald-500 to-teal-700", emoji: "9️⃣" },
+  {
+    id: "mtn",
+    label: "MTN",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/New-mtn-logo.png/320px-New-mtn-logo.png",
+    bg: "bg-yellow-400",
+  },
+  {
+    id: "airtel",
+    label: "Airtel",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Bharti_Airtel_Limited_logo.svg/320px-Bharti_Airtel_Limited_logo.svg.png",
+    bg: "bg-white",
+  },
+  {
+    id: "glo",
+    label: "Glo",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Globacom_logo.png/320px-Globacom_logo.png",
+    bg: "bg-white",
+  },
+  {
+    id: "9mobile",
+    label: "9mobile",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/9mobile_logo.png/320px-9mobile_logo.png",
+    bg: "bg-white",
+  },
 ];
 
 export function OperatorPicker({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
@@ -14,18 +34,16 @@ export function OperatorPicker({ selected, onSelect }: { selected: string; onSel
         <button
           key={op.id}
           onClick={() => onSelect(op.id)}
-          className={cn(
-            "tile-press flex flex-col items-center gap-1.5",
-          )}
+          className="tile-press flex flex-col items-center gap-1.5"
         >
           <div
             className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-bold text-white transition-all",
-              op.color,
-              selected === op.id ? "scale-110 ring-2 ring-primary glow-primary" : "opacity-80",
+              "flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl p-2 transition-all",
+              op.bg,
+              selected === op.id ? "scale-110 ring-2 ring-primary glow-primary" : "opacity-90",
             )}
           >
-            {op.emoji}
+            <img src={op.logo} alt={`${op.label} logo`} className="h-full w-full object-contain" loading="lazy" />
           </div>
           <span className="text-[10px] font-semibold">{op.label}</span>
         </button>

@@ -2,13 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Edit2, LogOut } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const [bio, setBio] = useState(true);
 
   return (
     <>
@@ -36,7 +34,6 @@ function ProfilePage() {
           ["Name", "—"],
           ["Email", "—"],
           ["Phone Number", "—"],
-          ["Campus ID", "—"],
         ].map(([k, v]) => (
           <Row key={k} label={k} value={v} />
         ))}
@@ -46,12 +43,6 @@ function ProfilePage() {
         <button className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Change Password</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
-        <div className="glass mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-sm">
-          <span>Biometrics</span>
-          <button onClick={() => setBio(!bio)} className={`relative h-6 w-11 rounded-full ${bio ? "bg-neon" : "bg-muted"}`}>
-            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${bio ? "translate-x-5" : "translate-x-0.5"}`} />
-          </button>
-        </div>
         <button className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Security Questions</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
         </button>
