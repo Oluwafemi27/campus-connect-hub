@@ -34,6 +34,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminBroadcastsRouteImport } from './routes/admin.broadcasts'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 
@@ -162,6 +164,16 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMessagesRoute = AdminMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBroadcastsRoute = AdminBroadcastsRouteImport.update({
   id: '/broadcasts',
   path: '/broadcasts',
@@ -197,6 +209,8 @@ export interface FileRoutesByFullPath {
   '/tv': typeof TvRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
+  '/admin/features': typeof AdminFeaturesRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -225,6 +239,8 @@ export interface FileRoutesByTo {
   '/tv': typeof TvRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
+  '/admin/features': typeof AdminFeaturesRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -255,6 +271,8 @@ export interface FileRoutesById {
   '/tv': typeof TvRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/broadcasts': typeof AdminBroadcastsRoute
+  '/admin/features': typeof AdminFeaturesRoute
+  '/admin/messages': typeof AdminMessagesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
@@ -286,6 +304,8 @@ export interface FileRouteTypes {
     | '/tv'
     | '/admin/analytics'
     | '/admin/broadcasts'
+    | '/admin/features'
+    | '/admin/messages'
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
@@ -314,6 +334,8 @@ export interface FileRouteTypes {
     | '/tv'
     | '/admin/analytics'
     | '/admin/broadcasts'
+    | '/admin/features'
+    | '/admin/messages'
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
@@ -343,6 +365,8 @@ export interface FileRouteTypes {
     | '/tv'
     | '/admin/analytics'
     | '/admin/broadcasts'
+    | '/admin/features'
+    | '/admin/messages'
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
@@ -550,6 +574,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/features': {
+      id: '/admin/features'
+      path: '/features'
+      fullPath: '/admin/features'
+      preLoaderRoute: typeof AdminFeaturesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/broadcasts': {
       id: '/admin/broadcasts'
       path: '/broadcasts'
@@ -570,6 +608,8 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminBroadcastsRoute: typeof AdminBroadcastsRoute
+  AdminFeaturesRoute: typeof AdminFeaturesRoute
+  AdminMessagesRoute: typeof AdminMessagesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTransactionsRoute: typeof AdminTransactionsRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -579,6 +619,8 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminBroadcastsRoute: AdminBroadcastsRoute,
+  AdminFeaturesRoute: AdminFeaturesRoute,
+  AdminMessagesRoute: AdminMessagesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTransactionsRoute: AdminTransactionsRoute,
   AdminUsersRoute: AdminUsersRoute,
