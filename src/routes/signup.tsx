@@ -2,28 +2,34 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { User, Mail, Lock, Phone, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
 function SignupPage() {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) {
       toast.error("Please fill required fields");
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      toast.success("Account created!");
-      navigate({ to: "/" });
-    }, 900);
+    const { error } = await signUp(form.email, form.password);
+    setLoading(false);
+    if (error) {
+      toast.error(error.message || "Failed to create account");
+      return;
+    }
+    toast.success("Account created!");
+    navigate({ to: "/" });
   };
 
   const fields = [
