@@ -22,11 +22,7 @@ const gradientOptions = [
 ];
 
 function AdminFeatures() {
-  const [features, setFeatures] = useState<Feature[]>([
-    { id: "1", title: "Tech Symposium", subtitle: "Oct 15-17", gradient: "from-primary/40 to-accent/30" },
-    { id: "2", title: "Campus Offer", subtitle: "50% off Mobile Data", gradient: "from-accent/40 to-neon/30" },
-    { id: "3", title: "New Router Zones", subtitle: "Block C live now", gradient: "from-neon/40 to-primary/30" },
-  ]);
+  const [features, setFeatures] = useState<Feature[]>([]);
 
   const [isAddingFeature, setIsAddingFeature] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);

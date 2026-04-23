@@ -27,48 +27,7 @@ interface Reply {
 }
 
 function AdminMessages() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      userId: "user123",
-      userName: "Chioma O.",
-      userEmail: "chioma@university.edu",
-      avatar: "👩‍🎓",
-      message: "I'm having trouble connecting to the router. The connection keeps dropping every few minutes.",
-      sentAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      status: "pending",
-      replies: [],
-    },
-    {
-      id: "2",
-      userId: "user456",
-      userName: "Tunde A.",
-      userEmail: "tunde@university.edu",
-      avatar: "👨‍🎓",
-      message: "When will the data top-up feature be available? I'm eager to try it!",
-      sentAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-      status: "replied",
-      replies: [
-        {
-          id: "reply1",
-          text: "Hi Tunde! The data top-up feature is now live. You can access it from the Payments section. Thank you for your patience!",
-          sentAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
-          isAdmin: true,
-        },
-      ],
-    },
-    {
-      id: "3",
-      userId: "user789",
-      userName: "Amara U.",
-      userEmail: "amara@university.edu",
-      avatar: "👩‍🎓",
-      message: "Can I request a feature to download my transaction history as PDF?",
-      sentAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
-      status: "pending",
-      replies: [],
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
