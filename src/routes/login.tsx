@@ -21,14 +21,20 @@ function LoginPage() {
       return;
     }
     setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
-    if (error) {
-      toast.error(error.message || "Failed to sign in");
-      return;
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast.error(error.message || "Failed to sign in");
+        return;
+      }
+      toast.success("Welcome back!");
+      navigate({ to: "/" });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred";
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
     }
-    toast.success("Welcome back!");
-    navigate({ to: "/" });
   };
 
   return (

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Edit2, LogOut } from "lucide-react";
 import { toast } from "sonner";
@@ -17,10 +18,11 @@ function ProfilePage() {
   const { user, loading, signOut } = useAuth();
 
   // Redirect to login if not authenticated and not loading
-  if (!loading && !user) {
-    navigate({ to: "/login" });
-    return null;
-  }
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate({ to: "/login" });
+    }
+  }, [user, loading, navigate]);
 
   const handleLogout = async () => {
     const { error } = await signOut();
