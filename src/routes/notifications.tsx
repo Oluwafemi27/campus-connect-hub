@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { Bell, BellOff } from "lucide-react";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/notifications")({ component: NotificationsPage });
+export const Route = createFileRoute("/notifications")({
+  beforeLoad: requireAuth,
+  component: NotificationsPage,
+});
 
 function NotificationsPage() {
   return (

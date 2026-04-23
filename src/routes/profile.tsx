@@ -2,8 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Edit2, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/profile")({ component: ProfilePage });
+export const Route = createFileRoute("/profile")({
+  beforeLoad: requireAuth,
+  component: ProfilePage,
+});
 
 function ProfilePage() {
   const navigate = useNavigate();

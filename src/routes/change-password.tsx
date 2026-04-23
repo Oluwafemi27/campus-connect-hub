@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, Eye, EyeOff, CheckCircle2, Lock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/change-password")({ component: ChangePasswordPage });
+export const Route = createFileRoute("/change-password")({
+  beforeLoad: requireAuth,
+  component: ChangePasswordPage,
+});
 
 function ChangePasswordPage() {
   const navigate = useNavigate();

@@ -4,8 +4,12 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { Contact } from "lucide-react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/airtime")({ component: AirtimePage });
+export const Route = createFileRoute("/airtime")({
+  beforeLoad: requireAuth,
+  component: AirtimePage,
+});
 
 const amounts = [100, 200, 500, 1000, 2000, 5000];
 

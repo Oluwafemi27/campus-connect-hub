@@ -1,18 +1,20 @@
 import { Outlet, Link, useLocation } from "@tanstack/react-router";
 import { Home, Smartphone, CreditCard, MapPin, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 const tabs = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/devices", icon: Smartphone, label: "Devices" },
   { to: "/payments", icon: CreditCard, label: "Pay" },
   { to: "/map", icon: MapPin, label: "Map" },
-  { to: "/admin", icon: Shield, label: "Admin" },
+  { to: "/admin", icon: Shield, label: "Admin", adminOnly: true },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
 export function AppShell() {
   const location = useLocation();
+  const isAdmin = useIsAdmin();
   const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname)
     || location.pathname.startsWith("/admin");
 
@@ -32,25 +34,27 @@ export function AppShell() {
       {!hideNav && (
         <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[440px] -translate-x-1/2 px-3 pb-3">
           <div className="flex items-center justify-around rounded-2xl border border-border bg-background/90 px-2 py-2 shadow-card backdrop-blur-2xl">
-            {tabs.map(({ to, icon: Icon, label }) => {
-              const active = location.pathname === to;
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  className={cn(
-                    "tile-press relative flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-xs",
-                    active ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {active && (
-                    <span className="absolute inset-0 -z-10 rounded-xl bg-primary/15 glow-primary" />
-                  )}
-                  <Icon className={cn("h-5 w-5 transition-transform", active && "scale-110")} />
-                  <span className="text-[10px] font-medium">{label}</span>
-                </Link>
-              );
-            })}
+            {tabs
+              .filter(tab => !('adminOnly' in tab) || isAdmin)
+              .map(({ to, icon: Icon, label }) => {
+                const active = location.pathname === to;
+                return (
+                  <Link
+                    key={to}
+                    to={to}
+                    className={cn(
+                      "tile-press relative flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-xs",
+                      active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {active && (
+                      <span className="absolute inset-0 -z-10 rounded-xl bg-primary/15 glow-primary" />
+                    )}
+                    <Icon className={cn("h-5 w-5 transition-transform", active && "scale-110")} />
+                    <span className="text-[10px] font-medium">{label}</span>
+                  </Link>
+                );
+              })}
           </div>
         </nav>
       )}

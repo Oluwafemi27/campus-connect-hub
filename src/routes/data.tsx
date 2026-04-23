@@ -4,8 +4,12 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { BarChart3, Calendar, Contact, Tag } from "lucide-react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/data")({ component: DataPage });
+export const Route = createFileRoute("/data")({
+  beforeLoad: requireAuth,
+  component: DataPage,
+});
 
 const plans = [
   { icon: BarChart3, label: "DAILY: 1GB (24 Hrs)", price: 350, badge: null },

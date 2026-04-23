@@ -1,8 +1,12 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Users, Receipt, Megaphone, Settings as Cog, ArrowLeft, Shield, BarChart3, Sparkles, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { requireAdmin } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/admin")({ component: AdminLayout });
+export const Route = createFileRoute("/admin")({
+  beforeLoad: requireAdmin,
+  component: AdminLayout,
+});
 
 const nav = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard" },

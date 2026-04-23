@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { Router, Laptop, Smartphone, Plus } from "lucide-react";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/devices")({ component: DevicesPage });
+export const Route = createFileRoute("/devices")({
+  beforeLoad: requireAuth,
+  component: DevicesPage,
+});
 
 function DevicesPage() {
   return (

@@ -3,8 +3,12 @@ import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, Shield, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { requireAuth } from "@/lib/routeProtection";
 
-export const Route = createFileRoute("/security-questions")({ component: SecurityQuestionsPage });
+export const Route = createFileRoute("/security-questions")({
+  beforeLoad: requireAuth,
+  component: SecurityQuestionsPage,
+});
 
 const availableQuestions = [
   "What is your mother's maiden name?",
