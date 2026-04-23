@@ -9,8 +9,80 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UtilitiesRouteImport } from './routes/utilities'
+import { Route as TvRouteImport } from './routes/tv'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PaymentsRouteImport } from './routes/payments'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as DevicesRouteImport } from './routes/devices'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as ConnectRouterRouteImport } from './routes/connect-router'
+import { Route as AirtimeRouteImport } from './routes/airtime'
 import { Route as IndexRouteImport } from './routes/index'
 
+const UtilitiesRoute = UtilitiesRouteImport.update({
+  id: '/utilities',
+  path: '/utilities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TvRoute = TvRouteImport.update({
+  id: '/tv',
+  path: '/tv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentsRoute = PaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevicesRoute = DevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectRouterRoute = ConnectRouterRouteImport.update({
+  id: '/connect-router',
+  path: '/connect-router',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AirtimeRoute = AirtimeRouteImport.update({
+  id: '/airtime',
+  path: '/airtime',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +91,200 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/airtime': typeof AirtimeRoute
+  '/connect-router': typeof ConnectRouterRoute
+  '/data': typeof DataRoute
+  '/devices': typeof DevicesRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/map': typeof MapRoute
+  '/payments': typeof PaymentsRoute
+  '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
+  '/tv': typeof TvRoute
+  '/utilities': typeof UtilitiesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/airtime': typeof AirtimeRoute
+  '/connect-router': typeof ConnectRouterRoute
+  '/data': typeof DataRoute
+  '/devices': typeof DevicesRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/map': typeof MapRoute
+  '/payments': typeof PaymentsRoute
+  '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
+  '/tv': typeof TvRoute
+  '/utilities': typeof UtilitiesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/airtime': typeof AirtimeRoute
+  '/connect-router': typeof ConnectRouterRoute
+  '/data': typeof DataRoute
+  '/devices': typeof DevicesRoute
+  '/history': typeof HistoryRoute
+  '/login': typeof LoginRoute
+  '/map': typeof MapRoute
+  '/payments': typeof PaymentsRoute
+  '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
+  '/tv': typeof TvRoute
+  '/utilities': typeof UtilitiesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/airtime'
+    | '/connect-router'
+    | '/data'
+    | '/devices'
+    | '/history'
+    | '/login'
+    | '/map'
+    | '/payments'
+    | '/profile'
+    | '/signup'
+    | '/tv'
+    | '/utilities'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/airtime'
+    | '/connect-router'
+    | '/data'
+    | '/devices'
+    | '/history'
+    | '/login'
+    | '/map'
+    | '/payments'
+    | '/profile'
+    | '/signup'
+    | '/tv'
+    | '/utilities'
+  id:
+    | '__root__'
+    | '/'
+    | '/airtime'
+    | '/connect-router'
+    | '/data'
+    | '/devices'
+    | '/history'
+    | '/login'
+    | '/map'
+    | '/payments'
+    | '/profile'
+    | '/signup'
+    | '/tv'
+    | '/utilities'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AirtimeRoute: typeof AirtimeRoute
+  ConnectRouterRoute: typeof ConnectRouterRoute
+  DataRoute: typeof DataRoute
+  DevicesRoute: typeof DevicesRoute
+  HistoryRoute: typeof HistoryRoute
+  LoginRoute: typeof LoginRoute
+  MapRoute: typeof MapRoute
+  PaymentsRoute: typeof PaymentsRoute
+  ProfileRoute: typeof ProfileRoute
+  SignupRoute: typeof SignupRoute
+  TvRoute: typeof TvRoute
+  UtilitiesRoute: typeof UtilitiesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/utilities': {
+      id: '/utilities'
+      path: '/utilities'
+      fullPath: '/utilities'
+      preLoaderRoute: typeof UtilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tv': {
+      id: '/tv'
+      path: '/tv'
+      fullPath: '/tv'
+      preLoaderRoute: typeof TvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payments': {
+      id: '/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof PaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/devices': {
+      id: '/devices'
+      path: '/devices'
+      fullPath: '/devices'
+      preLoaderRoute: typeof DevicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connect-router': {
+      id: '/connect-router'
+      path: '/connect-router'
+      fullPath: '/connect-router'
+      preLoaderRoute: typeof ConnectRouterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/airtime': {
+      id: '/airtime'
+      path: '/airtime'
+      fullPath: '/airtime'
+      preLoaderRoute: typeof AirtimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +297,18 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AirtimeRoute: AirtimeRoute,
+  ConnectRouterRoute: ConnectRouterRoute,
+  DataRoute: DataRoute,
+  DevicesRoute: DevicesRoute,
+  HistoryRoute: HistoryRoute,
+  LoginRoute: LoginRoute,
+  MapRoute: MapRoute,
+  PaymentsRoute: PaymentsRoute,
+  ProfileRoute: ProfileRoute,
+  SignupRoute: SignupRoute,
+  TvRoute: TvRoute,
+  UtilitiesRoute: UtilitiesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
