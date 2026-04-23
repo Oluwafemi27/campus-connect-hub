@@ -16,13 +16,13 @@ const operators = [
   {
     id: "glo",
     label: "Glo",
-    logo: "https://cdn.brandfetch.io/gloworld.com/w/512",
+    logo: "https://upload.wikimedia.org/wikipedia/en/1/10/Globacom_2012_logo.png",
     bg: "bg-white",
   },
   {
     id: "9mobile",
     label: "9mobile",
-    logo: "https://cdn.brandfetch.io/9mobile.com.ng/w/512",
+    logo: "https://upload.wikimedia.org/wikipedia/en/9/90/9Mobile_2017_logo.png",
     bg: "bg-white",
   },
 ];
