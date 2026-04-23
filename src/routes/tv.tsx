@@ -9,25 +9,25 @@ const providers = [
   {
     id: "dstv",
     label: "DStv",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/DStv_logo.svg/320px-DStv_logo.svg.png",
+    logo: "https://cdn.brandfetch.io/dstv.com/w/512",
     bg: "bg-white",
   },
   {
     id: "gotv",
     label: "GOtv",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/GOtv_logo.svg/320px-GOtv_logo.svg.png",
+    logo: "https://cdn.brandfetch.io/gotvafrica.com/w/512",
     bg: "bg-white",
   },
   {
     id: "startimes",
     label: "StarTimes",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/StarTimes_logo.png/320px-StarTimes_logo.png",
+    logo: "https://cdn.brandfetch.io/startimestv.com/w/512",
     bg: "bg-white",
   },
   {
     id: "showmax",
     label: "Showmax",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Showmax_logo.svg/320px-Showmax_logo.svg.png",
+    logo: "https://cdn.brandfetch.io/showmax.com/w/512",
     bg: "bg-black",
   },
 ];
