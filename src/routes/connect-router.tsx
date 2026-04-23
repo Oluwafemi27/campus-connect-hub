@@ -8,7 +8,7 @@ export const Route = createFileRoute("/connect-router")({ component: ConnectPage
 function ConnectPage() {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
 
