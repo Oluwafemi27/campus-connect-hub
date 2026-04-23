@@ -29,7 +29,7 @@ export function AppShell() {
 
       {!hideNav && (
         <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[440px] -translate-x-1/2 px-3 pb-3">
-          <div className="flex items-center justify-around rounded-2xl border border-white/15 bg-background/85 px-2 py-2 shadow-[0_-8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
+          <div className="flex items-center justify-around rounded-2xl border border-border bg-background/90 px-2 py-2 shadow-card backdrop-blur-2xl">
             {tabs.map(({ to, icon: Icon, label }) => {
               const active = location.pathname === to;
               return (
