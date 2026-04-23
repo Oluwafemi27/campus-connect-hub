@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, Wifi, Tv, Router, Droplet, History, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Phone, Wifi, Tv, Router, History, ChevronRight, CheckCircle2 } from "lucide-react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
 type Tile = {
-  to: "/airtime" | "/data" | "/tv" | "/connect-router" | "/utilities" | "/history";
+  to: "/airtime" | "/data" | "/tv" | "/connect-router" | "/history";
   icon: typeof Phone;
   label: string;
   badge: string | null;
@@ -17,7 +17,6 @@ const tiles: Tile[] = [
   { to: "/data", icon: Wifi, label: "Buy Mobile Data", badge: null, grad: "from-accent/30 to-primary/20" },
   { to: "/tv", icon: Tv, label: "TV Subscription", badge: "NEW", grad: "from-neon/25 to-primary/20" },
   { to: "/connect-router", icon: Router, label: "Connect to Campus Router", badge: null, grad: "from-primary/30 to-neon/20", check: true },
-  { to: "/utilities", icon: Droplet, label: "Pay Utility Bills", badge: null, grad: "from-accent/25 to-neon/20" },
   { to: "/history", icon: History, label: "Transaction History", badge: "POPULAR", grad: "from-gold/25 to-accent/20" },
 ];
 

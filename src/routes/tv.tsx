@@ -6,10 +6,30 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/tv")({ component: TvPage });
 
 const providers = [
-  { id: "dstv", label: "DStv", grad: "from-blue-500 to-blue-800" },
-  { id: "gotv", label: "GOtv", grad: "from-emerald-500 to-green-700" },
-  { id: "startimes", label: "StarTimes", grad: "from-orange-400 to-orange-700" },
-  { id: "showmax", label: "Showmax", grad: "from-pink-500 to-purple-700" },
+  {
+    id: "dstv",
+    label: "DStv",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/DStv_logo.svg/320px-DStv_logo.svg.png",
+    bg: "bg-white",
+  },
+  {
+    id: "gotv",
+    label: "GOtv",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/GOtv_logo.svg/320px-GOtv_logo.svg.png",
+    bg: "bg-white",
+  },
+  {
+    id: "startimes",
+    label: "StarTimes",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/StarTimes_logo.png/320px-StarTimes_logo.png",
+    bg: "bg-white",
+  },
+  {
+    id: "showmax",
+    label: "Showmax",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Showmax_logo.svg/320px-Showmax_logo.svg.png",
+    bg: "bg-black",
+  },
 ];
 const amounts = [5000, 10000, 15000];
 
@@ -33,8 +53,8 @@ function TvPage() {
             onClick={() => setProvider(p.id)}
             className={`tile-press glass flex h-24 flex-col items-center justify-center rounded-2xl ${provider === p.id ? "ring-2 ring-primary glow-primary" : ""}`}
           >
-            <div className={`flex h-10 w-16 items-center justify-center rounded-lg bg-gradient-to-br ${p.grad} text-sm font-black text-white`}>
-              {p.label.slice(0, 4).toUpperCase()}
+            <div className={`flex h-12 w-20 items-center justify-center overflow-hidden rounded-lg p-1.5 ${p.bg}`}>
+              <img src={p.logo} alt={`${p.label} logo`} className="h-full w-full object-contain" loading="lazy" />
             </div>
             <span className="mt-2 text-xs font-semibold">{p.label}</span>
           </button>
