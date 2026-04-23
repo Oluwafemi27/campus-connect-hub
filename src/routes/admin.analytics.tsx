@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TrendingUp } from "lucide-react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 export const Route = createFileRoute("/admin/analytics")({ component: AdminAnalytics });
 
-
 function AdminAnalytics() {
+  useAuthGuard();
   return (
     <div className="space-y-4 animate-fade-up">
       <h1 className="text-2xl font-bold">Analytics & Insights</h1>

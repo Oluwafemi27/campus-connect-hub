@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { CreditCard, Plus, ArrowDownLeft } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/payments")({ component: PaymentsPage });
 
 function PaymentsPage() {
+  useAuthGuard();
   const navigate = useNavigate();
 
   return (

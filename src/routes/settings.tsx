@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { ChevronRight, Moon, Globe, Shield, HelpCircle, Trash2, Info } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
 function SettingsPage() {
+  useAuthGuard();
   const navigate = useNavigate();
 
   return (

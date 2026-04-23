@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, MessageCircle, Mail, Phone, Clock, ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/help-support")({ component: HelpSupportPage });
@@ -70,6 +71,7 @@ const faqs = [
 ];
 
 function HelpSupportPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");

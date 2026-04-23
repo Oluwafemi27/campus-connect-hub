@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { History as HistoryIcon } from "lucide-react";
 
 export const Route = createFileRoute("/history")({ component: HistoryPage });
 
 function HistoryPage() {
+  useAuthGuard();
+
   return (
     <>
       <TopBar title="HISTORY" />

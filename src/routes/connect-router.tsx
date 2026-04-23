@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Lock, ArrowRight, Wifi, ArrowLeft, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AtomicParticles } from "@/components/app/AtomicParticles";
@@ -7,6 +8,7 @@ import { AtomicParticles } from "@/components/app/AtomicParticles";
 export const Route = createFileRoute("/connect-router")({ component: ConnectPage });
 
 function ConnectPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [connecting, setConnecting] = useState(false);

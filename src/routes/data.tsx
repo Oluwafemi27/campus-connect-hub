@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { BarChart3, Calendar, Contact, Tag } from "lucide-react";
@@ -15,6 +16,7 @@ const plans = [
 ];
 
 function DataPage() {
+  useAuthGuard();
   const [op, setOp] = useState("mtn");
   const [phone, setPhone] = useState("");
   const [picked, setPicked] = useState<number | null>(null);

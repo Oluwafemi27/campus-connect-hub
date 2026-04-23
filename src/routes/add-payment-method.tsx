@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, CreditCard, Building2, Smartphone, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/add-payment-method")({ component: AddPaymentMethodPage });
@@ -37,6 +38,7 @@ const paymentMethods: PaymentMethod[] = [
 ];
 
 function AddPaymentMethodPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType | null>(null);
   const [step, setStep] = useState<"select" | "form" | "verify">("select");

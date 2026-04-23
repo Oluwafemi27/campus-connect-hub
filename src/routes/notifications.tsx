@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Bell, BellOff } from "lucide-react";
 
 export const Route = createFileRoute("/notifications")({ component: NotificationsPage });
 
 function NotificationsPage() {
+  useAuthGuard();
+
   return (
     <>
       <TopBar title="NOTIFICATIONS" showBack />

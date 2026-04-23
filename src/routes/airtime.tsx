@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { Contact } from "lucide-react";
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/airtime")({ component: AirtimePage });
 const amounts = [100, 200, 500, 1000, 2000, 5000];
 
 function AirtimePage() {
+  useAuthGuard();
   const [op, setOp] = useState("mtn");
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState<number | null>(null);

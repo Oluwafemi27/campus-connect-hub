@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ArrowLeft, Shield, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/security-questions")({ component: SecurityQuestionsPage });
@@ -20,6 +21,7 @@ const availableQuestions = [
 ];
 
 function SecurityQuestionsPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([
     { id: 1, question: "", answer: "" },

@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { CreditCard, Smartphone, Zap, DollarSign, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/topup")({ component: TopUpPage });
@@ -15,6 +16,7 @@ const topupMethods = [
 const quickAmounts = [500, 1000, 2000, 5000, 10000, 20000];
 
 function TopUpPage() {
+  useAuthGuard();
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState("");
