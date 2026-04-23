@@ -4,25 +4,25 @@ const operators = [
   {
     id: "mtn",
     label: "MTN",
-    logo: "https://logos-world.net/wp-content/uploads/2020/09/MTN-Logo.png",
+    logo: "https://cdn.brandfetch.io/mtn.com/w/512",
     bg: "bg-yellow-400",
   },
   {
     id: "airtel",
     label: "Airtel",
-    logo: "https://logos-world.net/wp-content/uploads/2020/09/Airtel-Logo.png",
+    logo: "https://cdn.brandfetch.io/airtel.in/w/512",
     bg: "bg-white",
   },
   {
     id: "glo",
     label: "Glo",
-    logo: "https://seeklogo.com/images/G/globacom-glo-logo-9C8E1A2D7B-seeklogo.com.png",
+    logo: "https://cdn.brandfetch.io/gloworld.com/w/512",
     bg: "bg-white",
   },
   {
     id: "9mobile",
     label: "9mobile",
-    logo: "https://seeklogo.com/images/1/9mobile-logo-7E0F1B7B3E-seeklogo.com.png",
+    logo: "https://cdn.brandfetch.io/9mobile.com.ng/w/512",
     bg: "bg-white",
   },
 ];
