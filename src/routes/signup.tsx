@@ -51,7 +51,7 @@ function SignupPage() {
           <p className="mt-2 text-sm text-muted-foreground">Create your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {error && (
             <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">
               {error}
@@ -64,10 +64,12 @@ function SignupPage() {
             </label>
             <Input
               id="name"
+              name="name"
               type="text"
               placeholder="John Student"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="name"
             />
           </div>
 
@@ -77,10 +79,12 @@ function SignupPage() {
             </label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
             />
           </div>
 
@@ -90,10 +94,12 @@ function SignupPage() {
             </label>
             <Input
               id="phone"
+              name="phone"
               type="tel"
               placeholder="+234 800 0000 000"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
             />
           </div>
 
@@ -103,10 +109,12 @@ function SignupPage() {
             </label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
             />
           </div>
 
@@ -116,10 +124,12 @@ function SignupPage() {
             </label>
             <Input
               id="confirmPassword"
+              name="confirmPassword"
               type="password"
               placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
             />
           </div>
 
