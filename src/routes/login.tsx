@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import logoImg from "@/assets/logo.png";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -38,61 +39,68 @@ function LoginPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-6 py-10">
+    <div className="login-container mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-4 py-8 sm:px-6 sm:py-10">
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-20 left-0 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
       </div>
 
-      <div className="mb-8 flex flex-col items-center text-center animate-fade-up">
-        <img src="/src/assets/logo.png" alt="Campus Connect" className="mb-4 h-20 w-20 object-contain" />
-        <h1 className="text-3xl font-bold gradient-text">Welcome Back</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Sign in to your Campus Connect account</p>
+      <div className="login-header mb-8 flex flex-col items-center text-center animate-fade-up">
+        <img src={logoImg} alt="Campus Connect" className="mb-4 h-16 w-16 object-contain sm:h-20 sm:w-20" />
+        <h1 className="text-2xl font-bold gradient-text sm:text-3xl">Welcome Back</h1>
+        <p className="mt-2 text-xs text-muted-foreground sm:text-sm">Sign in to your Campus Connect account</p>
       </div>
 
-      <form onSubmit={onSubmit} className="glass-strong space-y-4 rounded-3xl p-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-        <div className="space-y-2">
+      <form onSubmit={onSubmit} className="login-form glass-strong space-y-3 rounded-3xl p-4 animate-fade-up sm:space-y-4 sm:p-6" style={{ animationDelay: "0.1s" }}>
+        <div className="email-field space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground">EMAIL</label>
-          <div className="glass flex items-center gap-3 rounded-xl px-4 py-3">
-            <Mail className="h-4 w-4 text-primary" />
+          <div className="email-input-wrapper glass flex items-center gap-3 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+            <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alex@campus.edu"
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="email-input flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              disabled={loading}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="password-field space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground">PASSWORD</label>
-          <div className="glass flex items-center gap-3 rounded-xl px-4 py-3">
-            <Lock className="h-4 w-4 text-primary" />
+          <div className="password-input-wrapper glass flex items-center gap-3 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+            <Lock className="h-4 w-4 flex-shrink-0 text-primary" />
             <input
               type={show ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="password-input flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              disabled={loading}
             />
-            <button type="button" onClick={() => setShow(!show)} className="text-muted-foreground hover:text-foreground">
+            <button
+              type="button"
+              onClick={() => setShow(!show)}
+              className="toggle-password flex-shrink-0 text-muted-foreground hover:text-foreground"
+              disabled={loading}
+            >
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-xs">
-          <label className="flex items-center gap-2 text-muted-foreground">
-            <input type="checkbox" className="accent-primary" /> Remember me
+        <div className="remember-section flex items-center justify-between text-xs">
+          <label className="remember-checkbox flex items-center gap-2 text-muted-foreground">
+            <input type="checkbox" className="accent-primary" disabled={loading} /> Remember me
           </label>
-          <button type="button" className="text-primary hover:underline">Forgot password?</button>
+          <button type="button" className="forgot-password text-primary hover:underline" disabled={loading}>Forgot password?</button>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="tile-press group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-accent px-6 py-3.5 font-semibold text-primary-foreground glow-primary disabled:opacity-60"
+          className="submit-btn tile-press group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-accent px-6 py-3 font-semibold text-primary-foreground glow-primary disabled:opacity-60 sm:py-3.5"
         >
           <span className="absolute inset-0 animate-shimmer" />
           {loading ? "Signing in..." : "Sign In"}
@@ -100,7 +108,7 @@ function LoginPage() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="login-link mt-6 text-center text-xs text-muted-foreground sm:text-sm">
         New here?{" "}
         <Link to="/signup" className="font-semibold text-primary hover:underline">Create an account</Link>
       </p>

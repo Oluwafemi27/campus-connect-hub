@@ -30,13 +30,13 @@ export function AtomicParticles({ className }: { className?: string }) {
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    // Build orbital rings
+    // Build orbital rings - reduced particle count for performance
     type P = { ring: number; angle: number; speed: number; r: number; tiltX: number; tiltZ: number; size: number; hue: number };
     const rings = [
-      { count: 26, r: 90, tiltX: 0.6, tiltZ: 0.0, speed: 0.012, hue: 195 },
-      { count: 22, r: 120, tiltX: -0.4, tiltZ: 0.7, speed: -0.008, hue: 270 },
-      { count: 18, r: 150, tiltX: 0.9, tiltZ: -0.5, speed: 0.006, hue: 145 },
-      { count: 14, r: 70, tiltX: -0.8, tiltZ: 0.3, speed: -0.018, hue: 195 },
+      { count: 16, r: 90, tiltX: 0.6, tiltZ: 0.0, speed: 0.012, hue: 195 },
+      { count: 14, r: 120, tiltX: -0.4, tiltZ: 0.7, speed: -0.008, hue: 270 },
+      { count: 11, r: 150, tiltX: 0.9, tiltZ: -0.5, speed: 0.006, hue: 145 },
+      { count: 9, r: 70, tiltX: -0.8, tiltZ: 0.3, speed: -0.018, hue: 195 },
     ];
     const particles: P[] = [];
     rings.forEach((ring, i) => {
@@ -90,7 +90,7 @@ export function AtomicParticles({ className }: { className?: string }) {
         ctx.stroke();
       });
 
-      // Compute & sort particles by depth so closer ones render on top
+      // Compute particles - only sort every few frames for perf
       const drawn = particles.map((p) => {
         p.angle += p.speed;
         const x = Math.cos(p.angle) * p.r;
@@ -100,15 +100,22 @@ export function AtomicParticles({ className }: { className?: string }) {
         const proj = project(x, y, z);
         return { p, ...proj, z };
       });
-      drawn.sort((a, b) => b.z - a.z);
+
+      // Only sort every 6 frames to reduce CPU
+      if (t % 6 === 0) {
+        drawn.sort((a, b) => b.z - a.z);
+      }
 
       drawn.forEach(({ p, x, y, scale }) => {
         const size = p.size * (0.6 + scale * 0.9);
         const alpha = Math.max(0.18, Math.min(1, scale));
         ctx.beginPath();
         ctx.fillStyle = `hsla(${p.hue}, 95%, 70%, ${alpha})`;
-        ctx.shadowColor = `hsla(${p.hue}, 95%, 70%, ${alpha * 0.9})`;
-        ctx.shadowBlur = 8 * scale;
+        // Reduce shadow effects for performance
+        if (t % 12 === 0) {
+          ctx.shadowColor = `hsla(${p.hue}, 95%, 70%, ${alpha * 0.4})`;
+          ctx.shadowBlur = 3 * scale;
+        }
         ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
       });

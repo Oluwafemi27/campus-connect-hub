@@ -9,13 +9,20 @@ export function useSupabaseAuth() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check active sessions and sets the user
+    let isMounted = true
+
+    // Check active sessions without blocking UI
     supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!isMounted) return
       if (error) {
         setError(error.message)
       }
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
+    }).catch((err) => {
+      if (!isMounted) return
+      setError('Failed to load session')
       setLoading(false)
     })
 
@@ -23,12 +30,16 @@ export function useSupabaseAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    return () => subscription?.unsubscribe()
+    return () => {
+      isMounted = false
+      subscription?.unsubscribe()
+    }
   }, [])
 
   const signUp = async (email: string, password: string) => {

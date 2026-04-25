@@ -3,6 +3,7 @@ import { useState } from "react";
 import { User, Mail, Lock, Phone, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import logoImg from "@/assets/logo.png";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
@@ -46,30 +47,31 @@ function SignupPage() {
   ];
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-6 py-10">
+    <div className="signup-container mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-4 py-8 sm:px-6 sm:py-10">
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
         <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-neon/20 blur-3xl" />
       </div>
 
-      <div className="mb-6 flex flex-col items-center text-center animate-fade-up">
-        <img src="/src/assets/logo.png" alt="Campus Connect" className="mb-4 h-20 w-20 object-contain" />
-        <h1 className="text-3xl font-bold gradient-text">Join Campus Connect</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Create your student account in seconds</p>
+      <div className="signup-header mb-6 flex flex-col items-center text-center animate-fade-up">
+        <img src={logoImg} alt="Campus Connect" className="mb-4 h-16 w-16 object-contain sm:h-20 sm:w-20" />
+        <h1 className="text-2xl font-bold gradient-text sm:text-3xl">Join Campus Connect</h1>
+        <p className="mt-2 text-xs text-muted-foreground sm:text-sm">Create your student account in seconds</p>
       </div>
 
-      <form onSubmit={onSubmit} className="glass-strong space-y-3 rounded-3xl p-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+      <form onSubmit={onSubmit} className="signup-form glass-strong space-y-2 rounded-3xl p-4 animate-fade-up sm:space-y-3 sm:p-6" style={{ animationDelay: "0.1s" }}>
         {fields.map(({ k, icon: Icon, label, type, ph }) => (
-          <div key={k} className="space-y-1.5">
+          <div key={k} className="form-field space-y-1">
             <label className="text-[10px] font-medium tracking-widest text-muted-foreground">{label}</label>
-            <div className="glass flex items-center gap-3 rounded-xl px-4 py-3">
-              <Icon className="h-4 w-4 text-primary" />
+            <div className="form-input-wrapper glass flex items-center gap-3 rounded-xl px-3 py-2.5 sm:px-4 sm:py-3">
+              <Icon className="h-4 w-4 flex-shrink-0 text-primary" />
               <input
                 type={type}
                 value={form[k]}
                 onChange={set(k)}
                 placeholder={ph}
-                className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                className="form-input flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                disabled={loading}
               />
             </div>
           </div>
@@ -78,7 +80,7 @@ function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="tile-press group relative mt-2 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-accent to-primary px-6 py-3.5 font-semibold text-primary-foreground glow-accent disabled:opacity-60"
+          className="submit-btn tile-press group relative mt-2 flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-accent to-primary px-6 py-3 font-semibold text-primary-foreground glow-accent disabled:opacity-60 sm:py-3.5"
         >
           <span className="absolute inset-0 animate-shimmer" />
           {loading ? "Creating..." : "Create Account"}
@@ -86,7 +88,7 @@ function SignupPage() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="signup-link mt-6 text-center text-xs text-muted-foreground sm:text-sm">
         Already a member?{" "}
         <Link to="/login" className="font-semibold text-primary hover:underline">Sign in</Link>
       </p>
