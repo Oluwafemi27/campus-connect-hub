@@ -39,7 +39,7 @@ function LoginPage() {
           <p className="mt-2 text-sm text-muted-foreground">Sign in to your account</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {error && (
             <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">
               {error}
@@ -52,6 +52,7 @@ function LoginPage() {
             </label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="you@example.com"
               value={email}
@@ -65,10 +66,12 @@ function LoginPage() {
             </label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
           </div>
 

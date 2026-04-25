@@ -52,6 +52,7 @@ function ConnectPage() {
         onSubmit={onConnect}
         className="glass-strong mt-8 rounded-3xl p-6 animate-fade-up"
         style={{ animationDelay: "0.1s" }}
+        noValidate
       >
         <h2 className="text-center text-xl font-bold text-primary">Secure Authentication</h2>
         <p className="mt-2 text-center text-xs text-muted-foreground">
@@ -62,6 +63,7 @@ function ConnectPage() {
           <Lock className="h-4 w-4 text-primary" />
           <input
             type="password"
+            name="router-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"

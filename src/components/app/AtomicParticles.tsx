@@ -19,9 +19,11 @@ export function AtomicParticles({ className }: { className?: string }) {
       h = 0,
       cx = 0,
       cy = 0;
+    let isActive = true;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const resize = () => {
+      if (!isActive || !canvas.isConnected) return;
       const rect = canvas.getBoundingClientRect();
       w = rect.width;
       h = rect.height;
@@ -147,6 +149,7 @@ export function AtomicParticles({ className }: { className?: string }) {
     raf = requestAnimationFrame(draw);
 
     return () => {
+      isActive = false;
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
