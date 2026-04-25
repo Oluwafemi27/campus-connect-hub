@@ -11,7 +11,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'vendor': ['react', 'react-dom', '@tanstack/react-router'],
-          'supabase': ['@supabase/supabase-js'],
           'ui': ['lucide-react', 'sonner', '@radix-ui/react-dialog'],
         }
       }
