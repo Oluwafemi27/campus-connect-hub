@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Phone, Wifi, Tv, Router, History, ChevronRight, CheckCircle2 } from "lucide-react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
@@ -17,15 +17,60 @@ type Tile = {
   check?: boolean;
 };
 const tiles: Tile[] = [
-  { to: "/airtime", icon: Phone, label: "Recharge Airtime", badge: "NEW", grad: "from-primary/30 to-accent/20" },
-  { to: "/data", icon: Wifi, label: "Buy Mobile Data", badge: null, grad: "from-accent/30 to-primary/20" },
-  { to: "/tv", icon: Tv, label: "TV Subscription", badge: "NEW", grad: "from-neon/25 to-primary/20" },
-  { to: "/connect-router", icon: Router, label: "Connect to Campus Router", badge: null, grad: "from-primary/30 to-neon/20", check: true },
-  { to: "/history", icon: History, label: "Transaction History", badge: "POPULAR", grad: "from-gold/25 to-accent/20" },
+  {
+    to: "/airtime",
+    icon: Phone,
+    label: "Recharge Airtime",
+    badge: "NEW",
+    grad: "from-primary/30 to-accent/20",
+  },
+  {
+    to: "/data",
+    icon: Wifi,
+    label: "Buy Mobile Data",
+    badge: null,
+    grad: "from-accent/30 to-primary/20",
+  },
+  {
+    to: "/tv",
+    icon: Tv,
+    label: "TV Subscription",
+    badge: "NEW",
+    grad: "from-neon/25 to-primary/20",
+  },
+  {
+    to: "/connect-router",
+    icon: Router,
+    label: "Connect to Campus Router",
+    badge: null,
+    grad: "from-primary/30 to-neon/20",
+    check: true,
+  },
+  {
+    to: "/history",
+    icon: History,
+    label: "Transaction History",
+    badge: "POPULAR",
+    grad: "from-gold/25 to-accent/20",
+  },
 ];
 
 function HomePage() {
-  useAuthGuard();
+  const { isAuthenticated, isLoading } = useAuthGuard();
+  const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    navigate({ to: "/login", replace: true });
+    return null;
+  }
 
   return (
     <>
@@ -44,7 +89,9 @@ function HomePage() {
             className="tile-press glass relative flex aspect-square flex-col items-center justify-center gap-2 rounded-2xl p-2 text-center animate-fade-up"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
-            <div className={`absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br ${grad} opacity-60`} />
+            <div
+              className={`absolute inset-0 -z-10 rounded-2xl bg-gradient-to-br ${grad} opacity-60`}
+            />
             {badge && (
               <span className="absolute -top-1.5 -right-1.5 rounded-full bg-gradient-to-r from-accent to-primary px-2 py-0.5 text-[8px] font-bold text-primary-foreground">
                 {badge}
@@ -68,8 +115,16 @@ function HomePage() {
             { t: "Campus Offer", s: "50% off Mobile Data", img: campusOfferImg },
             { t: "New Router Zones", s: "Block C live now", img: routerZonesImg },
           ].map((c, i) => (
-            <div key={i} className="carousel-card glass tile-press min-w-[180px] rounded-2xl p-4 overflow-hidden flex flex-col">
-              <img src={c.img} alt={c.t} className="carousel-image mb-3 h-20 w-full rounded-xl object-cover" loading="lazy" />
+            <div
+              key={i}
+              className="carousel-card glass tile-press min-w-[180px] rounded-2xl p-4 overflow-hidden flex flex-col"
+            >
+              <img
+                src={c.img}
+                alt={c.t}
+                className="carousel-image mb-3 h-20 w-full rounded-xl object-cover"
+                loading="lazy"
+              />
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold">{c.t}</p>
               <p className="text-xs text-muted-foreground">{c.s}</p>

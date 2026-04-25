@@ -11,62 +11,74 @@ const faqs = [
   {
     id: 1,
     question: "How do I top up my wallet?",
-    answer: "Go to the Payments section and tap 'Top Up Wallet'. Choose your preferred payment method (Card, Bank Transfer, or USSD) and enter your desired amount.",
+    answer:
+      "Go to the Payments section and tap 'Top Up Wallet'. Choose your preferred payment method (Card, Bank Transfer, or USSD) and enter your desired amount.",
   },
   {
     id: 2,
     question: "Why is my transaction pending?",
-    answer: "Transactions are usually completed within minutes. Bank transfers via USSD may take 5-10 minutes. Check your transaction history for status updates.",
+    answer:
+      "Transactions are usually completed within minutes. Bank transfers via USSD may take 5-10 minutes. Check your transaction history for status updates.",
   },
   {
     id: 3,
     question: "How do I report a problem?",
-    answer: "Use the 'Report Issue' form below to describe your problem in detail. Our support team will review and respond within 24 hours.",
+    answer:
+      "Use the 'Report Issue' form below to describe your problem in detail. Our support team will review and respond within 24 hours.",
   },
   {
     id: 4,
     question: "Can I cancel a transaction?",
-    answer: "Completed transactions cannot be cancelled. If you believe there was an error, contact our support team with your transaction ID.",
+    answer:
+      "Completed transactions cannot be cancelled. If you believe there was an error, contact our support team with your transaction ID.",
   },
   {
     id: 5,
     question: "How secure is my data?",
-    answer: "We use industry-standard encryption (SSL/TLS) to protect your data. Your financial information is never stored in plain text.",
+    answer:
+      "We use industry-standard encryption (SSL/TLS) to protect your data. Your financial information is never stored in plain text.",
   },
   {
     id: 6,
     question: "What payment methods do you accept?",
-    answer: "We accept Debit/Credit Cards, Bank Transfers via USSD, and Direct Bank Transfers. All transactions are processed securely.",
+    answer:
+      "We accept Debit/Credit Cards, Bank Transfers via USSD, and Direct Bank Transfers. All transactions are processed securely.",
   },
   {
     id: 7,
     question: "How do I buy airtime?",
-    answer: "Go to the Airtime section, select your network operator (MTN, Airtel, Glo, or 9mobile), enter your phone number and desired amount. Confirm and pay through your preferred method.",
+    answer:
+      "Go to the Airtime section, select your network operator (MTN, Airtel, Glo, or 9mobile), enter your phone number and desired amount. Confirm and pay through your preferred method.",
   },
   {
     id: 8,
     question: "Can I share my account with family members?",
-    answer: "We recommend using individual accounts for each user for security reasons. However, you can transfer funds to family members through our app.",
+    answer:
+      "We recommend using individual accounts for each user for security reasons. However, you can transfer funds to family members through our app.",
   },
   {
     id: 9,
     question: "What happens if my internet disconnects during a transaction?",
-    answer: "Your transaction will be automatically queued and processed when your connection is restored. You can check the status in your transaction history.",
+    answer:
+      "Your transaction will be automatically queued and processed when your connection is restored. You can check the status in your transaction history.",
   },
   {
     id: 10,
     question: "Are there any transaction limits?",
-    answer: "Transaction limits depend on your account verification level. Unverified accounts have daily limits of ₦50,000. Complete verification to increase limits to ₦500,000 daily.",
+    answer:
+      "Transaction limits depend on your account verification level. Unverified accounts have daily limits of ₦50,000. Complete verification to increase limits to ₦500,000 daily.",
   },
   {
     id: 11,
     question: "How do I contact customer support directly?",
-    answer: "You can reach our support team via email at support@campusconnect.com or call +234 800 123 4567. We respond to all inquiries within 24 hours.",
+    answer:
+      "You can reach our support team via email at support@campusconnect.com or call +234 800 123 4567. We respond to all inquiries within 24 hours.",
   },
   {
     id: 12,
     question: "Is there a minimum amount for transactions?",
-    answer: "The minimum transaction amount is ₦100. However, some payment methods may have different minimums. Check your payment method details for specifics.",
+    answer:
+      "The minimum transaction amount is ₦100. However, some payment methods may have different minimums. Check your payment method details for specifics.",
   },
 ];
 
@@ -79,9 +91,10 @@ function HelpSupportPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const filteredFaqs = faqs.filter(faq =>
-    faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFaqs = faqs.filter(
+    (faq) =>
+      faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const handleSubmitIssue = () => {
@@ -107,9 +120,9 @@ function HelpSupportPage() {
   return (
     <>
       <TopBar title="HELP & SUPPORT" />
-      
-      <button 
-        onClick={() => navigate({ to: "/profile" })} 
+
+      <button
+        onClick={() => navigate({ to: "/profile" })}
         className="tile-press mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -119,10 +132,15 @@ function HelpSupportPage() {
       <div className="space-y-6">
         {/* Quick Contact */}
         <div className="grid grid-cols-2 gap-3">
-          <a href="mailto:support@campusconnect.com" className="tile-press glass rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-muted/30">
+          <a
+            href="mailto:support@campusconnect.com"
+            className="tile-press glass rounded-2xl p-4 flex flex-col items-center gap-2 hover:bg-muted/30"
+          >
             <Mail className="h-5 w-5 text-primary" />
             <p className="text-xs font-semibold text-center">Email Support</p>
-            <p className="text-xs text-muted-foreground text-center truncate">support@campusconnect.com</p>
+            <p className="text-xs text-muted-foreground text-center truncate">
+              support@campusconnect.com
+            </p>
           </a>
           <div className="glass rounded-2xl p-4 flex flex-col items-center gap-2">
             <Phone className="h-5 w-5 text-accent" />
@@ -143,7 +161,9 @@ function HelpSupportPage() {
 
         {/* Report Issue Form */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">REPORT AN ISSUE</h2>
+          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">
+            REPORT AN ISSUE
+          </h2>
           <div className="space-y-2">
             <input
               type="email"
@@ -171,8 +191,10 @@ function HelpSupportPage() {
 
         {/* FAQs */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">FREQUENTLY ASKED QUESTIONS</h2>
-          
+          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">
+            FREQUENTLY ASKED QUESTIONS
+          </h2>
+
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -197,7 +219,9 @@ function HelpSupportPage() {
                       <div className="flex-1">
                         <p className="font-semibold text-sm">{faq.question}</p>
                         {expandedFaq === faq.id && (
-                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{faq.answer}</p>
+                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                            {faq.answer}
+                          </p>
                         )}
                       </div>
                       <ChevronDown
@@ -221,9 +245,24 @@ function HelpSupportPage() {
         <div className="glass rounded-2xl p-4 space-y-2">
           <p className="text-xs font-semibold text-muted-foreground">OTHER RESOURCES</p>
           <div className="space-y-1.5 text-xs text-muted-foreground">
-            <p>📋 <a href="#" className="text-primary hover:underline">View Terms of Service</a></p>
-            <p>🔒 <a href="#" className="text-primary hover:underline">Privacy Policy</a></p>
-            <p>❓ <a href="#" className="text-primary hover:underline">Community Forum</a></p>
+            <p>
+              📋{" "}
+              <a href="#" className="text-primary hover:underline">
+                View Terms of Service
+              </a>
+            </p>
+            <p>
+              🔒{" "}
+              <a href="#" className="text-primary hover:underline">
+                Privacy Policy
+              </a>
+            </p>
+            <p>
+              ❓{" "}
+              <a href="#" className="text-primary hover:underline">
+                Community Forum
+              </a>
+            </p>
           </div>
         </div>
       </div>

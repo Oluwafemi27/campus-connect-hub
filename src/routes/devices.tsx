@@ -11,11 +11,18 @@ function DevicesPage() {
   return (
     <>
       <TopBar title="CONNECTED DEVICES" />
-      <h1 className="mb-4 text-2xl font-bold">Your <span className="gradient-text">Devices</span></h1>
+      <h1 className="mb-4 text-2xl font-bold">
+        Your <span className="gradient-text">Devices</span>
+      </h1>
 
       <div className="space-y-3">
         {[
-          { icon: Router, label: "Campus Router", status: "Not connected", action: { to: "/connect-router", label: "Connect" } },
+          {
+            icon: Router,
+            label: "Campus Router",
+            status: "Not connected",
+            action: { to: "/connect-router", label: "Connect" },
+          },
           { icon: Laptop, label: "Laptop / Router", status: "Add this device" },
           { icon: Smartphone, label: "Mobile Device", status: "This device" },
         ].map((d, i) => (
@@ -30,11 +37,16 @@ function DevicesPage() {
               </div>
             </div>
             {d.action ? (
-              <Link to={d.action.to} className="tile-press rounded-lg bg-primary/20 px-3 py-1.5 text-xs font-bold text-primary">
+              <Link
+                to={d.action.to}
+                className="tile-press rounded-lg bg-primary/20 px-3 py-1.5 text-xs font-bold text-primary"
+              >
                 {d.action.label}
               </Link>
             ) : (
-              <button className="tile-press flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-accent"><Plus className="h-4 w-4" /></button>
+              <button className="tile-press flex h-8 w-8 items-center justify-center rounded-full bg-accent/20 text-accent">
+                <Plus className="h-4 w-4" />
+              </button>
             )}
           </div>
         ))}

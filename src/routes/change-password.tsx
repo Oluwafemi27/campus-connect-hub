@@ -33,7 +33,7 @@ function ChangePasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -64,7 +64,9 @@ function ChangePasswordPage() {
 
   const Requirement = ({ met, label }: { met: boolean; label: string }) => (
     <div className="flex items-center gap-2 text-xs">
-      <div className={`flex h-4 w-4 items-center justify-center rounded-full ${met ? "bg-primary/30" : "bg-muted/30"}`}>
+      <div
+        className={`flex h-4 w-4 items-center justify-center rounded-full ${met ? "bg-primary/30" : "bg-muted/30"}`}
+      >
         {met && <CheckCircle2 className="h-3 w-3 text-primary" />}
       </div>
       <span className={met ? "text-foreground font-medium" : "text-muted-foreground"}>{label}</span>
@@ -108,9 +110,9 @@ function ChangePasswordPage() {
   return (
     <>
       <TopBar title="CHANGE PASSWORD" />
-      
-      <button 
-        onClick={() => navigate({ to: "/profile" })} 
+
+      <button
+        onClick={() => navigate({ to: "/profile" })}
         className="tile-press mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -120,7 +122,10 @@ function ChangePasswordPage() {
       <div className="space-y-6">
         <div className="glass rounded-2xl p-4 space-y-1">
           <p className="text-xs text-muted-foreground">SECURITY TIP</p>
-          <p className="text-sm">Use a unique password you don't use on other websites. Include uppercase, lowercase, numbers, and symbols.</p>
+          <p className="text-sm">
+            Use a unique password you don't use on other websites. Include uppercase, lowercase,
+            numbers, and symbols.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -176,7 +181,9 @@ function ChangePasswordPage() {
 
           <button
             type="submit"
-            disabled={!currentPassword || !allRequirementsMet || newPassword !== confirmPassword || loading}
+            disabled={
+              !currentPassword || !allRequirementsMet || newPassword !== confirmPassword || loading
+            }
             className="tile-press w-full rounded-xl bg-gradient-to-r from-primary to-accent py-3 font-bold text-primary-foreground glow-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg"
           >
             {loading ? "Updating..." : "Update Password"}

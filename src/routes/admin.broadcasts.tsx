@@ -63,12 +63,14 @@ function AdminBroadcasts() {
   };
 
   const deleteBroadcast = (id: string) => {
-    setBroadcasts(broadcasts.filter(b => b.id !== id));
+    setBroadcasts(broadcasts.filter((b) => b.id !== id));
     toast.success("Broadcast deleted");
   };
 
   const resendBroadcast = (broadcast: Broadcast) => {
-    toast.success(`Re-sending broadcast to ${broadcast.recipientCount.toLocaleString()} recipients`);
+    toast.success(
+      `Re-sending broadcast to ${broadcast.recipientCount.toLocaleString()} recipients`,
+    );
   };
 
   const formatDate = (date: Date) => {
@@ -97,11 +99,22 @@ function AdminBroadcasts() {
       <div className="glass space-y-3 rounded-2xl p-4">
         <div>
           <p className="mb-1.5 text-[10px] tracking-widest text-muted-foreground">TITLE</p>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Important update for users" className="w-full rounded-xl bg-muted/30 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary" />
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Important update for users"
+            className="w-full rounded-xl bg-muted/30 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
         <div>
           <p className="mb-1.5 text-[10px] tracking-widest text-muted-foreground">MESSAGE</p>
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={4} placeholder="Write a clear, concise update for your users…" className="w-full resize-none rounded-xl bg-muted/30 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary" />
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={4}
+            placeholder="Write a clear, concise update for your users…"
+            className="w-full resize-none rounded-xl bg-muted/30 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
         <div>
           <p className="mb-1.5 text-[10px] tracking-widest text-muted-foreground">AUDIENCE</p>
@@ -111,18 +124,29 @@ function AdminBroadcasts() {
               { id: "active", label: "Active" },
               { id: "router", label: "Router" },
             ].map((a) => (
-              <button key={a.id} onClick={() => setAudience(a.id)} className={`tile-press flex-1 rounded-xl py-2 text-xs font-semibold transition-colors ${audience === a.id ? "bg-primary text-primary-foreground glow-primary" : "glass text-muted-foreground hover:bg-muted/30"}`}>{a.label}</button>
+              <button
+                key={a.id}
+                onClick={() => setAudience(a.id)}
+                className={`tile-press flex-1 rounded-xl py-2 text-xs font-semibold transition-colors ${audience === a.id ? "bg-primary text-primary-foreground glow-primary" : "glass text-muted-foreground hover:bg-muted/30"}`}
+              >
+                {a.label}
+              </button>
             ))}
           </div>
         </div>
-        <button onClick={send} className="tile-press flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent py-3 text-sm font-bold text-primary-foreground glow-primary hover:shadow-lg transition-all">
+        <button
+          onClick={send}
+          className="tile-press flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent py-3 text-sm font-bold text-primary-foreground glow-primary hover:shadow-lg transition-all"
+        >
           <Send className="h-4 w-4" /> Send Broadcast
         </button>
       </div>
 
       {/* Broadcasts History */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold tracking-widest text-muted-foreground">BROADCAST HISTORY</h2>
+        <h2 className="text-sm font-bold tracking-widest text-muted-foreground">
+          BROADCAST HISTORY
+        </h2>
 
         {broadcasts.length > 0 ? (
           <div className="space-y-2">
@@ -131,13 +155,17 @@ function AdminBroadcasts() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm line-clamp-2">{broadcast.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{broadcast.body}</p>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {broadcast.body}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-muted/20 pt-2">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="bg-muted/20 px-2 py-1 rounded">{getAudienceLabel(broadcast.audience)}</span>
+                    <span className="bg-muted/20 px-2 py-1 rounded">
+                      {getAudienceLabel(broadcast.audience)}
+                    </span>
                     <span>{broadcast.recipientCount.toLocaleString()} recipients</span>
                     <span>{formatDate(broadcast.sentAt)}</span>
                   </div>
@@ -179,19 +207,31 @@ function AdminBroadcasts() {
 
       {/* Broadcast Details Modal */}
       {selectedBroadcast && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedBroadcast(null)}>
-          <div className="glass rounded-2xl p-6 max-w-md w-full space-y-4 animate-fade-up" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedBroadcast(null)}
+        >
+          <div
+            className="glass rounded-2xl p-6 max-w-md w-full space-y-4 animate-fade-up"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-bold">{selectedBroadcast.title}</h3>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedBroadcast.body}</p>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {selectedBroadcast.body}
+            </p>
 
             <div className="space-y-2 text-sm border-t border-muted/20 pt-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Audience:</span>
-                <span className="font-semibold">{getAudienceLabel(selectedBroadcast.audience)}</span>
+                <span className="font-semibold">
+                  {getAudienceLabel(selectedBroadcast.audience)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Recipients:</span>
-                <span className="font-semibold">{selectedBroadcast.recipientCount.toLocaleString()}</span>
+                <span className="font-semibold">
+                  {selectedBroadcast.recipientCount.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sent:</span>

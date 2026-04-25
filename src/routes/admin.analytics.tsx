@@ -14,7 +14,9 @@ function AdminAnalytics() {
         <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto" />
         <div>
           <p className="text-lg font-semibold">No Analytics Data Yet</p>
-          <p className="text-sm text-muted-foreground mt-2">Analytics and insights will appear here as users interact with the app</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Analytics and insights will appear here as users interact with the app
+          </p>
         </div>
       </div>
     </div>

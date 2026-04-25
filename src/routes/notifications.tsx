@@ -12,7 +12,9 @@ function NotificationsPage() {
     <>
       <TopBar title="NOTIFICATIONS" showBack />
       <div className="mb-5">
-        <h1 className="text-2xl font-bold">Your <span className="gradient-text">Alerts</span></h1>
+        <h1 className="text-2xl font-bold">
+          Your <span className="gradient-text">Alerts</span>
+        </h1>
         <p className="text-xs text-muted-foreground">Stay updated on campus activity</p>
       </div>
 
@@ -21,13 +23,18 @@ function NotificationsPage() {
           <BellOff className="h-7 w-7 text-primary" />
         </div>
         <p className="text-sm font-bold">No notifications yet</p>
-        <p className="mt-1 text-xs text-muted-foreground">We'll let you know when something arrives.</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          We'll let you know when something arrives.
+        </p>
       </div>
 
       <h2 className="mt-6 mb-3 text-xs tracking-widest text-muted-foreground">PREFERENCES</h2>
       <div className="space-y-2">
         {["Transactions", "Router status", "Promotions", "Campus announcements"].map((p) => (
-          <div key={p} className="glass flex items-center justify-between rounded-xl px-4 py-3 text-sm">
+          <div
+            key={p}
+            className="glass flex items-center justify-between rounded-xl px-4 py-3 text-sm"
+          >
             <div className="flex items-center gap-3">
               <Bell className="h-4 w-4 text-primary" />
               <span>{p}</span>

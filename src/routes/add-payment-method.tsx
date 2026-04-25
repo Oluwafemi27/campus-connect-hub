@@ -84,7 +84,9 @@ function AddPaymentMethodPage() {
         <div className="space-y-4 animate-fade-up">
           <div className="glass rounded-2xl p-4 space-y-1">
             <p className="text-xs text-muted-foreground font-semibold">SELECT PAYMENT METHOD</p>
-            <p className="text-sm">Choose how you'd like to add funds to your Campus Connect Wallet</p>
+            <p className="text-sm">
+              Choose how you'd like to add funds to your Campus Connect Wallet
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -111,7 +113,9 @@ function AddPaymentMethodPage() {
           </div>
 
           <div className="glass rounded-2xl p-4 space-y-2">
-            <p className="text-xs text-muted-foreground font-semibold">WHY LINK A PAYMENT METHOD?</p>
+            <p className="text-xs text-muted-foreground font-semibold">
+              WHY LINK A PAYMENT METHOD?
+            </p>
             <ul className="space-y-1.5 text-xs text-muted-foreground">
               <li className="flex gap-2">
                 <span>✓</span> <span>Easy wallet top-ups anytime</span>
@@ -244,7 +248,10 @@ function AddPaymentMethodPage() {
 
           <div className="glass rounded-2xl p-4 space-y-1">
             <p className="text-xs text-muted-foreground font-semibold">PROCESSING TIME</p>
-            <p className="text-xs">Most transfers are confirmed within 5-10 minutes. You'll receive a notification once your transfer is confirmed.</p>
+            <p className="text-xs">
+              Most transfers are confirmed within 5-10 minutes. You'll receive a notification once
+              your transfer is confirmed.
+            </p>
           </div>
         </div>
       )}
@@ -271,7 +278,9 @@ function AddPaymentMethodPage() {
               placeholder="₦5,000"
               className="w-full rounded-xl bg-muted/30 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-xs text-muted-foreground mt-1">Leave empty to set amount during USSD prompt</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Leave empty to set amount during USSD prompt
+            </p>
           </div>
 
           <button
@@ -303,7 +312,9 @@ function AddPaymentMethodPage() {
             </div>
           </div>
           <h2 className="text-xl font-bold">Payment Method Added</h2>
-          <p className="text-sm text-muted-foreground">Your payment method has been successfully linked to your account.</p>
+          <p className="text-sm text-muted-foreground">
+            Your payment method has been successfully linked to your account.
+          </p>
           <p className="text-xs text-muted-foreground">Redirecting to payments...</p>
         </div>
       )}

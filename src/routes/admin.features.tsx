@@ -26,7 +26,11 @@ function AdminFeatures() {
 
   const [isAddingFeature, setIsAddingFeature] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ title: "", subtitle: "", gradient: "from-primary/40 to-accent/30" });
+  const [formData, setFormData] = useState({
+    title: "",
+    subtitle: "",
+    gradient: "from-primary/40 to-accent/30",
+  });
 
   const handleAddClick = () => {
     setIsAddingFeature(true);
@@ -51,7 +55,7 @@ function AdminFeatures() {
     }
 
     if (editingId) {
-      setFeatures(features.map(f => f.id === editingId ? { ...f, ...formData } : f));
+      setFeatures(features.map((f) => (f.id === editingId ? { ...f, ...formData } : f)));
       toast.success("Feature updated successfully");
     } else {
       const newFeature: Feature = {
@@ -68,7 +72,7 @@ function AdminFeatures() {
   };
 
   const handleDelete = (id: string) => {
-    setFeatures(features.filter(f => f.id !== id));
+    setFeatures(features.filter((f) => f.id !== id));
     toast.success("Feature deleted");
   };
 
@@ -153,7 +157,9 @@ function AdminFeatures() {
               <div className={`mb-3 h-20 rounded-xl bg-gradient-to-br ${formData.gradient}`} />
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold line-clamp-2">{formData.title || "Feature Title"}</p>
-              <p className="text-xs text-muted-foreground line-clamp-1">{formData.subtitle || "Subtitle"}</p>
+              <p className="text-xs text-muted-foreground line-clamp-1">
+                {formData.subtitle || "Subtitle"}
+              </p>
             </div>
           </div>
 
@@ -187,7 +193,9 @@ function AdminFeatures() {
             {features.map((feature) => (
               <div key={feature.id} className="glass rounded-xl p-4">
                 <div className="flex items-start gap-4">
-                  <div className={`h-16 w-20 shrink-0 rounded-lg bg-gradient-to-br ${feature.gradient}`} />
+                  <div
+                    className={`h-16 w-20 shrink-0 rounded-lg bg-gradient-to-br ${feature.gradient}`}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs tracking-widest text-muted-foreground">CAMPUS</p>
                     <p className="font-semibold text-sm line-clamp-1">{feature.title}</p>

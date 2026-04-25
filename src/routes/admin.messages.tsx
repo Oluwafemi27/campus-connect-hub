@@ -33,7 +33,7 @@ function AdminMessages() {
   const [replyText, setReplyText] = useState("");
   const [showReplyForm, setShowReplyForm] = useState(false);
 
-  const selectedMessage = messages.find(m => m.id === selectedMessageId);
+  const selectedMessage = messages.find((m) => m.id === selectedMessageId);
 
   const handleReply = () => {
     if (!replyText.trim()) {
@@ -50,11 +50,13 @@ function AdminMessages() {
       isAdmin: true,
     };
 
-    setMessages(messages.map(m => 
-      m.id === selectedMessage.id 
-        ? { ...m, replies: [...m.replies, newReply], status: "replied" as const }
-        : m
-    ));
+    setMessages(
+      messages.map((m) =>
+        m.id === selectedMessage.id
+          ? { ...m, replies: [...m.replies, newReply], status: "replied" as const }
+          : m,
+      ),
+    );
 
     toast.success("Reply sent!");
     setReplyText("");
@@ -62,15 +64,15 @@ function AdminMessages() {
   };
 
   const handleDeleteMessage = (id: string) => {
-    setMessages(messages.filter(m => m.id !== id));
+    setMessages(messages.filter((m) => m.id !== id));
     if (selectedMessageId === id) {
       setSelectedMessageId(null);
     }
     toast.success("Message deleted");
   };
 
-  const pendingCount = messages.filter(m => m.status === "pending").length;
-  const repliedCount = messages.filter(m => m.status === "replied").length;
+  const pendingCount = messages.filter((m) => m.status === "pending").length;
+  const repliedCount = messages.filter((m) => m.status === "replied").length;
 
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -81,7 +83,7 @@ function AdminMessages() {
     if (diffHours < 1) return "Just now";
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
-    
+
     return date.toLocaleDateString();
   };
 
@@ -104,8 +106,10 @@ function AdminMessages() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Messages List */}
         <div className="lg:col-span-1 space-y-2">
-          <h2 className="text-sm font-bold tracking-widest text-muted-foreground mb-3">ALL MESSAGES ({messages.length})</h2>
-          
+          <h2 className="text-sm font-bold tracking-widest text-muted-foreground mb-3">
+            ALL MESSAGES ({messages.length})
+          </h2>
+
           {messages.length > 0 ? (
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {messages.map((msg) => (
@@ -156,7 +160,9 @@ function AdminMessages() {
                   <div>
                     <p className="font-bold text-sm">{selectedMessage.userName}</p>
                     <p className="text-xs text-muted-foreground">{selectedMessage.userEmail}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{formatTime(selectedMessage.sentAt)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatTime(selectedMessage.sentAt)}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -177,7 +183,9 @@ function AdminMessages() {
                   <span className="text-lg">{selectedMessage.avatar}</span>
                   <div className="bg-muted/30 rounded-xl p-3 max-w-xs">
                     <p className="text-sm">{selectedMessage.message}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{formatTime(selectedMessage.sentAt)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatTime(selectedMessage.sentAt)}
+                    </p>
                   </div>
                 </div>
 
@@ -190,7 +198,9 @@ function AdminMessages() {
                         <Check className="h-3 w-3 text-primary" />
                       </div>
                       <p className="text-sm">{reply.text}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{formatTime(reply.sentAt)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatTime(reply.sentAt)}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -237,8 +247,12 @@ function AdminMessages() {
           ) : (
             <div className="glass rounded-2xl p-6 h-full flex items-center justify-center text-center">
               <div>
-                <p className="text-sm font-semibold text-muted-foreground">Select a message to view details</p>
-                <p className="text-xs text-muted-foreground mt-1">Messages from users will appear in the list</p>
+                <p className="text-sm font-semibold text-muted-foreground">
+                  Select a message to view details
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Messages from users will appear in the list
+                </p>
               </div>
             </div>
           )}
