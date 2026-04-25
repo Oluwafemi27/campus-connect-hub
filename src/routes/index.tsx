@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Phone, Wifi, Tv, Router, History, ChevronRight, CheckCircle2 } from "lucide-react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import techSymposiumImg from "@/assets/tech-symposium.jpg";
+import campusOfferImg from "@/assets/campus-offer.jpg";
+import routerZonesImg from "@/assets/router-zones.jpg";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
@@ -61,12 +64,12 @@ function HomePage() {
         </div>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {[
-            { t: "Tech Symposium", s: "Oct 15-17", img: "/src/assets/tech-symposium.jpg" },
-            { t: "Campus Offer", s: "50% off Mobile Data", img: "/src/assets/campus-offer.jpg" },
-            { t: "New Router Zones", s: "Block C live now", img: "/src/assets/router-zones.jpg" },
+            { t: "Tech Symposium", s: "Oct 15-17", img: techSymposiumImg },
+            { t: "Campus Offer", s: "50% off Mobile Data", img: campusOfferImg },
+            { t: "New Router Zones", s: "Block C live now", img: routerZonesImg },
           ].map((c, i) => (
-            <div key={i} className="glass tile-press min-w-[180px] rounded-2xl p-4 overflow-hidden flex flex-col">
-              <img src={c.img} alt={c.t} className="mb-3 h-20 w-full rounded-xl object-cover" />
+            <div key={i} className="carousel-card glass tile-press min-w-[180px] rounded-2xl p-4 overflow-hidden flex flex-col">
+              <img src={c.img} alt={c.t} className="carousel-image mb-3 h-20 w-full rounded-xl object-cover" loading="lazy" />
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold">{c.t}</p>
               <p className="text-xs text-muted-foreground">{c.s}</p>
