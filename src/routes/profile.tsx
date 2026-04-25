@@ -1,32 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
-import { ChevronRight, Edit2, LogOut } from "lucide-react";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { ChevronRight, Edit2 } from "lucide-react";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
-  beforeLoad: async ({ context }) => {
-    // This will be called before the route loads
-    // We'll check auth in the component instead since we need useAuth hook
-  },
 });
 
 function ProfilePage() {
-  useAuthGuard();
-  const { user, signOut } = useAuth();
-
-  const handleLogout = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast.error("Failed to logout");
-      return;
-    }
-    toast.success("Logged out");
-    navigate({ to: "/login" });
-  };
-
   return (
     <>
       <TopBar title="PROFILE" />
@@ -81,12 +61,6 @@ function ProfilePage() {
         <Link to="/help-support" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
           <span>Help & Support</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
-        <button
-          onClick={handleLogout}
-          className="tile-press glass mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-destructive/20 px-4 py-3 text-sm font-semibold text-destructive"
-        >
-          <LogOut className="h-4 w-4" /> LOGOUT
-        </button>
       </Section>
     </>
   );
