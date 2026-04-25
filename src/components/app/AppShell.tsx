@@ -51,14 +51,19 @@ export function AppShell() {
   const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname)
     || location.pathname.startsWith("/admin");
 
+  // Only show ambient orbs on authenticated pages for better performance
+  const showAmbient = !hideNav && !location.pathname.startsWith("/admin");
+
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col">
-      {/* ambient orbs */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-32 -left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
-        <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-accent/25 blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-neon/15 blur-3xl" />
-      </div>
+      {/* ambient orbs - only on auth pages */}
+      {showAmbient && (
+        <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden will-change-auto">
+          <div className="absolute -top-32 -left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
+          <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-accent/25 blur-3xl" />
+          <div className="absolute bottom-0 left-1/4 h-72 w-72 rounded-full bg-neon/15 blur-3xl" />
+        </div>
+      )}
 
       <main className="animate-fade-up flex-1 px-5 pt-6 pb-28">
         <Outlet />
