@@ -17,7 +17,10 @@ function AirtimePage() {
   const [amount, setAmount] = useState<number | null>(null);
 
   const proceed = () => {
-    if (!phone || !amount) { toast.error("Enter phone & pick amount"); return; }
+    if (!phone || !amount) {
+      toast.error("Enter phone & pick amount");
+      return;
+    }
     toast.success(`₦${amount} airtime queued for ${phone}`);
   };
 
@@ -25,8 +28,12 @@ function AirtimePage() {
     <>
       <TopBar />
       <WalletCard />
-      <h1 className="mb-3 text-xl font-bold">Welcome back, <span className="gradient-text-gold">Student!</span></h1>
-      <p className="mb-3 text-xs tracking-widest text-muted-foreground">SELECT OPERATOR TO BUY AIRTIME</p>
+      <h1 className="mb-3 text-xl font-bold">
+        Welcome back, <span className="gradient-text-gold">Student!</span>
+      </h1>
+      <p className="mb-3 text-xs tracking-widest text-muted-foreground">
+        SELECT OPERATOR TO BUY AIRTIME
+      </p>
       <OperatorPicker selected={op} onSelect={setOp} />
 
       <p className="mt-6 mb-2 text-xs tracking-widest text-muted-foreground">ENTER PHONE NUMBER</p>

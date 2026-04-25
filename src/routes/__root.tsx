@@ -33,10 +33,18 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Campus Connect — Data, Airtime, TV & Router" },
-      { name: "description", content: "Buy data, airtime, TV subscriptions and connect to your campus router in one futuristic student app." },
+      {
+        name: "description",
+        content:
+          "Buy data, airtime, TV subscriptions and connect to your campus router in one futuristic student app.",
+      },
       { name: "author", content: "Campus Connect" },
       { property: "og:title", content: "Campus Connect — Data, Airtime, TV & Router" },
-      { property: "og:description", content: "Buy data, airtime, TV subscriptions and connect to your campus router — all in one futuristic student app." },
+      {
+        property: "og:description",
+        content:
+          "Buy data, airtime, TV subscriptions and connect to your campus router — all in one futuristic student app.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@CampusConnect" },

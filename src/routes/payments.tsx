@@ -28,7 +28,9 @@ function PaymentsPage() {
         onClick={() => navigate({ to: "/add-payment-method" })}
         className="tile-press glass flex w-full items-center gap-3 rounded-2xl p-4 hover:bg-muted/30 transition-colors"
       >
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><Plus className="h-5 w-5 text-primary" /></div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20">
+          <Plus className="h-5 w-5 text-primary" />
+        </div>
         <span className="text-sm font-semibold">Link new card or account</span>
       </button>
 

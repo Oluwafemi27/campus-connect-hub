@@ -10,20 +10,20 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['react', 'react-dom', '@tanstack/react-router'],
-          'ui': ['lucide-react', 'sonner', '@radix-ui/react-dialog'],
-        }
-      }
+          vendor: ["react", "react-dom", "@tanstack/react-router"],
+          ui: ["lucide-react", "sonner", "@radix-ui/react-dialog"],
+        },
+      },
     },
     cssCodeSplit: true,
-    minify: 'terser',
+    minify: "terser",
     terserOptions: {
       compress: {
         drop_console: true,
-      }
-    }
+      },
+    },
   },
   server: {
     preTransformRequests: true,
-  }
+  },
 });

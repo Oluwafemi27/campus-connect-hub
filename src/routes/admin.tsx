@@ -1,5 +1,16 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Users, Receipt, Megaphone, Settings as Cog, ArrowLeft, Shield, BarChart3, Sparkles, MessageSquare } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Receipt,
+  Megaphone,
+  Settings as Cog,
+  ArrowLeft,
+  Shield,
+  BarChart3,
+  Sparkles,
+  MessageSquare,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
@@ -25,7 +36,10 @@ function AdminLayout() {
       </div>
 
       <div className="mb-5 flex items-center justify-between">
-        <Link to="/" className="tile-press glass flex h-9 w-9 items-center justify-center rounded-full">
+        <Link
+          to="/"
+          className="tile-press glass flex h-9 w-9 items-center justify-center rounded-full"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div className="flex items-center gap-2">
@@ -44,7 +58,9 @@ function AdminLayout() {
               to={to}
               className={cn(
                 "tile-press flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-colors",
-                active ? "bg-primary text-primary-foreground glow-primary" : "text-muted-foreground hover:text-foreground",
+                active
+                  ? "bg-primary text-primary-foreground glow-primary"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <Icon className="h-3.5 w-3.5" />

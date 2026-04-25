@@ -25,7 +25,9 @@ function AdminDashboard() {
         {stats.map((s) => (
           <div key={s.label} className="glass rounded-2xl p-4">
             <s.icon className={`mb-2 h-5 w-5 ${s.tint}`} />
-            <p className="text-[10px] tracking-widest text-muted-foreground">{s.label.toUpperCase()}</p>
+            <p className="text-[10px] tracking-widest text-muted-foreground">
+              {s.label.toUpperCase()}
+            </p>
             <p className="mt-1 text-2xl font-black">{s.value}</p>
             <p className="mt-0.5 text-[10px] text-muted-foreground">{s.hint}</p>
           </div>

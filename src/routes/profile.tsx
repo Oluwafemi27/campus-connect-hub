@@ -39,29 +39,47 @@ function ProfilePage() {
 
       <Section title="PERSONAL INFORMATION">
         {[
-          ["Name", user?.name || "—"],
-          ["Email", user?.email || "—"],
-          ["Phone Number", user?.phone || "—"],
+          ["Name", user?.name || "—"] as const,
+          ["Email", user?.email || "—"] as const,
+          ["Phone Number", user?.phone || "—"] as const,
         ].map(([k, v]) => (
           <Row key={k} label={k} value={v} />
         ))}
       </Section>
 
       <Section title="ACCOUNT & SECURITY">
-        <Link to="/change-password" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
-          <span>Change Password</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
+        <Link
+          to="/change-password"
+          className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm"
+        >
+          <span>Change Password</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
-        <Link to="/security-questions" className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
-          <span>Security Questions</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
+        <Link
+          to="/security-questions"
+          className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm"
+        >
+          <span>Security Questions</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
-        <button onClick={handleLogout} className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
-          <span className="flex items-center gap-2"><LogOut className="h-4 w-4" /> Logout</span><ChevronRight className="h-4 w-4 text-red-500/50" />
+        <button
+          onClick={handleLogout}
+          className="tile-press glass mt-2 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <LogOut className="h-4 w-4" /> Logout
+          </span>
+          <ChevronRight className="h-4 w-4 text-red-500/50" />
         </button>
       </Section>
 
       <Section title="PAYMENT METHODS">
-        <Link to="/add-payment-method" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm hover:bg-muted/30 transition-colors">
-          <span>Link New Card / Account</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
+        <Link
+          to="/add-payment-method"
+          className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm hover:bg-muted/30 transition-colors"
+        >
+          <span>Link New Card / Account</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
         <div className="glass-strong mt-2 rounded-xl bg-gradient-to-br from-gold/30 to-amber-700/20 p-4">
           <p className="text-xs text-muted-foreground">Campus Connect Wallet</p>
@@ -70,8 +88,12 @@ function ProfilePage() {
       </Section>
 
       <Section title="HELP & SUPPORT">
-        <Link to="/help-support" className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm">
-          <span>Help & Support</span><ChevronRight className="h-4 w-4 text-muted-foreground" />
+        <Link
+          to="/help-support"
+          className="tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm"
+        >
+          <span>Help & Support</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
       </Section>
     </>

@@ -27,7 +27,13 @@ const operators = [
   },
 ];
 
-export function OperatorPicker({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+export function OperatorPicker({
+  selected,
+  onSelect,
+}: {
+  selected: string;
+  onSelect: (id: string) => void;
+}) {
   return (
     <div className="grid grid-cols-4 gap-3">
       {operators.map((op) => (
@@ -43,7 +49,12 @@ export function OperatorPicker({ selected, onSelect }: { selected: string; onSel
               selected === op.id ? "scale-110 ring-2 ring-primary glow-primary" : "opacity-90",
             )}
           >
-            <img src={op.logo} alt={`${op.label} logo`} className="h-full w-full object-contain" loading="lazy" />
+            <img
+              src={op.logo}
+              alt={`${op.label} logo`}
+              className="h-full w-full object-contain"
+              loading="lazy"
+            />
           </div>
           <span className="text-[10px] font-semibold">{op.label}</span>
         </button>

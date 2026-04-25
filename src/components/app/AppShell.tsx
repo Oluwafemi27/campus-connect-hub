@@ -14,8 +14,9 @@ const tabs = [
 
 const NavBar = memo(function NavBar() {
   const location = useLocation();
-  const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname)
-    || location.pathname.startsWith("/admin");
+  const hideNav =
+    ["/login", "/signup", "/connect-router"].includes(location.pathname) ||
+    location.pathname.startsWith("/admin");
 
   if (hideNav) return null;
 
@@ -48,8 +49,9 @@ const NavBar = memo(function NavBar() {
 
 export function AppShell() {
   const location = useLocation();
-  const hideNav = ["/login", "/signup", "/connect-router"].includes(location.pathname)
-    || location.pathname.startsWith("/admin");
+  const hideNav =
+    ["/login", "/signup", "/connect-router"].includes(location.pathname) ||
+    location.pathname.startsWith("/admin");
 
   // Only show ambient orbs on authenticated pages for better performance
   const showAmbient = !hideNav && !location.pathname.startsWith("/admin");

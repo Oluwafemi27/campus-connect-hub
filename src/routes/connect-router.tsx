@@ -16,7 +16,10 @@ function ConnectPage() {
 
   const onConnect = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password) { toast.error("Enter your router password"); return; }
+    if (!password) {
+      toast.error("Enter your router password");
+      return;
+    }
     setConnecting(true);
     setTimeout(() => {
       setConnecting(false);
@@ -32,15 +35,24 @@ function ConnectPage() {
       <AtomicParticles className="pointer-events-none fixed inset-0 -z-10 h-screen w-full" />
       <div className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-background/40 via-background/10 to-background/70" />
 
-      <Link to="/" className="tile-press glass mb-6 flex h-9 w-9 items-center justify-center rounded-full self-start">
+      <Link
+        to="/"
+        className="tile-press glass mb-6 flex h-9 w-9 items-center justify-center rounded-full self-start"
+      >
         <ArrowLeft className="h-4 w-4" />
       </Link>
 
       <h1 className="text-center text-3xl font-bold leading-tight gradient-text animate-fade-up">
-        Connect to Router<br />Mobile Data
+        Connect to Router
+        <br />
+        Mobile Data
       </h1>
 
-      <form onSubmit={onConnect} className="glass-strong mt-8 rounded-3xl p-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
+      <form
+        onSubmit={onConnect}
+        className="glass-strong mt-8 rounded-3xl p-6 animate-fade-up"
+        style={{ animationDelay: "0.1s" }}
+      >
         <h2 className="text-center text-xl font-bold text-primary">Secure Authentication</h2>
         <p className="mt-2 text-center text-xs text-muted-foreground">
           Enter your password to establish a quantum-encrypted link.
@@ -69,13 +81,26 @@ function ConnectPage() {
             disabled={connecting || connected}
             className="tile-press relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary via-accent to-neon glow-primary disabled:opacity-80"
           >
-            <span className={`absolute inset-0 rounded-full border-2 border-primary/40 ${connecting ? "animate-orbit" : ""}`} />
-            <span className={`absolute -inset-2 rounded-full border border-accent/40 ${connecting ? "animate-orbit" : ""}`} style={{ animationDirection: "reverse" }} />
+            <span
+              className={`absolute inset-0 rounded-full border-2 border-primary/40 ${connecting ? "animate-orbit" : ""}`}
+            />
+            <span
+              className={`absolute -inset-2 rounded-full border border-accent/40 ${connecting ? "animate-orbit" : ""}`}
+              style={{ animationDirection: "reverse" }}
+            />
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background">
-              {connected ? <Wifi className="h-6 w-6 text-neon" /> : connecting ? <Wifi className="h-6 w-6 animate-pulse text-primary" /> : <ArrowRight className="h-6 w-6 text-foreground" />}
+              {connected ? (
+                <Wifi className="h-6 w-6 text-neon" />
+              ) : connecting ? (
+                <Wifi className="h-6 w-6 animate-pulse text-primary" />
+              ) : (
+                <ArrowRight className="h-6 w-6 text-foreground" />
+              )}
             </div>
           </button>
-          <p className={`mt-4 text-2xl font-black tracking-widest ${connected ? "text-neon" : "text-muted-foreground"}`}>
+          <p
+            className={`mt-4 text-2xl font-black tracking-widest ${connected ? "text-neon" : "text-muted-foreground"}`}
+          >
             {connected ? "CONNECTED" : connecting ? "CONNECTING..." : "TAP TO LINK"}
           </p>
         </div>

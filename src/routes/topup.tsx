@@ -38,7 +38,9 @@ function TopUpPage() {
       return;
     }
 
-    toast.success(`Processing ₦${amount.toLocaleString()} via ${topupMethods.find(m => m.id === selectedMethod)?.label}`);
+    toast.success(
+      `Processing ₦${amount.toLocaleString()} via ${topupMethods.find((m) => m.id === selectedMethod)?.label}`,
+    );
     setTimeout(() => {
       navigate({ to: "/payments" });
     }, 1500);
@@ -47,9 +49,9 @@ function TopUpPage() {
   return (
     <>
       <TopBar title="TOP UP WALLET" />
-      
-      <button 
-        onClick={() => navigate({ to: "/payments" })} 
+
+      <button
+        onClick={() => navigate({ to: "/payments" })}
         className="tile-press mb-4 flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -59,7 +61,9 @@ function TopUpPage() {
       <div className="space-y-6">
         {/* Payment Method Selection */}
         <div className="space-y-3">
-          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">SELECT PAYMENT METHOD</h2>
+          <h2 className="text-sm font-bold tracking-widest text-muted-foreground">
+            SELECT PAYMENT METHOD
+          </h2>
           <div className="space-y-2">
             {topupMethods.map((method) => {
               const Icon = method.icon;
@@ -74,7 +78,9 @@ function TopUpPage() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${selectedMethod === method.id ? "bg-primary/30" : "bg-muted/30"}`}>
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${selectedMethod === method.id ? "bg-primary/30" : "bg-muted/30"}`}
+                    >
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
@@ -113,7 +119,9 @@ function TopUpPage() {
 
         {/* Custom Amount */}
         <div className="space-y-2">
-          <label className="text-sm font-bold tracking-widest text-muted-foreground">OR ENTER CUSTOM AMOUNT</label>
+          <label className="text-sm font-bold tracking-widest text-muted-foreground">
+            OR ENTER CUSTOM AMOUNT
+          </label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold">₦</span>
             <input
@@ -136,7 +144,9 @@ function TopUpPage() {
           <div className="glass-strong rounded-xl p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Amount:</span>
-              <span className="font-bold">₦{(selectedAmount || parseInt(customAmount) || 0).toLocaleString()}</span>
+              <span className="font-bold">
+                ₦{(selectedAmount || parseInt(customAmount) || 0).toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between text-sm border-t border-muted/20 pt-2">
               <span className="text-muted-foreground">Processing Fee:</span>
@@ -144,7 +154,9 @@ function TopUpPage() {
             </div>
             <div className="flex justify-between text-sm font-bold border-t border-muted/20 pt-2">
               <span>Total:</span>
-              <span className="text-primary">₦{(selectedAmount || parseInt(customAmount) || 0).toLocaleString()}</span>
+              <span className="text-primary">
+                ₦{(selectedAmount || parseInt(customAmount) || 0).toLocaleString()}
+              </span>
             </div>
           </div>
         )}

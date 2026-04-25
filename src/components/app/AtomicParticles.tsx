@@ -15,13 +15,18 @@ export function AtomicParticles({ className }: { className?: string }) {
     if (!ctx) return;
 
     let raf = 0;
-    let w = 0, h = 0, cx = 0, cy = 0;
+    let w = 0,
+      h = 0,
+      cx = 0,
+      cy = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      w = rect.width; h = rect.height;
-      cx = w / 2; cy = h / 2;
+      w = rect.width;
+      h = rect.height;
+      cx = w / 2;
+      cy = h / 2;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -31,7 +36,16 @@ export function AtomicParticles({ className }: { className?: string }) {
     ro.observe(canvas);
 
     // Build orbital rings - reduced particle count for performance
-    type P = { ring: number; angle: number; speed: number; r: number; tiltX: number; tiltZ: number; size: number; hue: number };
+    type P = {
+      ring: number;
+      angle: number;
+      speed: number;
+      r: number;
+      tiltX: number;
+      tiltZ: number;
+      size: number;
+      hue: number;
+    };
     const rings = [
       { count: 16, r: 90, tiltX: 0.6, tiltZ: 0.0, speed: 0.012, hue: 195 },
       { count: 14, r: 120, tiltX: -0.4, tiltZ: 0.7, speed: -0.008, hue: 270 },
@@ -83,7 +97,8 @@ export function AtomicParticles({ className }: { className?: string }) {
           const y = Math.sin(a) * ring.r * Math.cos(ring.tiltX);
           const z = Math.sin(a) * ring.r * Math.sin(ring.tiltX) * Math.cos(ring.tiltZ);
           const p = project(x, y, z);
-          if (a === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+          if (a === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
         }
         ctx.strokeStyle = `hsla(${ring.hue}, 90%, 65%, 0.18)`;
         ctx.lineWidth = 1;
@@ -95,8 +110,9 @@ export function AtomicParticles({ className }: { className?: string }) {
         p.angle += p.speed;
         const x = Math.cos(p.angle) * p.r;
         const y = Math.sin(p.angle) * p.r * Math.cos(p.tiltX);
-        const z = Math.sin(p.angle) * p.r * Math.sin(p.tiltX) * Math.cos(p.tiltZ)
-          + Math.cos(p.angle) * p.r * Math.sin(p.tiltZ) * 0.4;
+        const z =
+          Math.sin(p.angle) * p.r * Math.sin(p.tiltX) * Math.cos(p.tiltZ) +
+          Math.cos(p.angle) * p.r * Math.sin(p.tiltZ) * 0.4;
         const proj = project(x, y, z);
         return { p, ...proj, z };
       });
@@ -122,13 +138,18 @@ export function AtomicParticles({ className }: { className?: string }) {
       ctx.shadowBlur = 0;
 
       // Slow global rotation for 3D feel
-      rings.forEach((r) => { r.tiltZ += 0.0015; });
+      rings.forEach((r) => {
+        r.tiltZ += 0.0015;
+      });
 
       raf = requestAnimationFrame(draw);
     };
     raf = requestAnimationFrame(draw);
 
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   }, []);
 
   return <canvas ref={ref} className={className} aria-hidden="true" />;
