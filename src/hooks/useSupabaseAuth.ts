@@ -5,35 +5,30 @@ import type { User, Session } from '@supabase/supabase-js'
 export function useSupabaseAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let isMounted = true
 
-    // Check active sessions without blocking UI
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (!isMounted) return
-      if (error) {
-        setError(error.message)
-      }
+      if (error) setError(error.message)
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false)
-    }).catch((err) => {
+      setAuthLoading(false)
+    }).catch((_err) => {
       if (!isMounted) return
       setError('Failed to load session')
-      setLoading(false)
+      setAuthLoading(false)
     })
 
-    // Listen for changes on auth state (like sign in / sign out)
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!isMounted) return
       setSession(session)
       setUser(session?.user ?? null)
-      setLoading(false)
+      setAuthLoading(false)
     })
 
     return () => {
@@ -43,13 +38,10 @@ export function useSupabaseAuth() {
   }, [])
 
   const signUp = async (email: string, password: string) => {
-    setLoading(true)
+    setActionLoading(true)
     setError(null)
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
+      const { data, error } = await supabase.auth.signUp({ email, password })
       setError(error?.message ?? null)
       return { data, error }
     } catch (err) {
@@ -57,18 +49,15 @@ export function useSupabaseAuth() {
       setError(errorMsg)
       return { data: null, error: new Error(errorMsg) }
     } finally {
-      setLoading(false)
+      setActionLoading(false)
     }
   }
 
   const signIn = async (email: string, password: string) => {
-    setLoading(true)
+    setActionLoading(true)
     setError(null)
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
       setError(error?.message ?? null)
       return { data, error }
     } catch (err) {
@@ -76,12 +65,12 @@ export function useSupabaseAuth() {
       setError(errorMsg)
       return { data: null, error: new Error(errorMsg) }
     } finally {
-      setLoading(false)
+      setActionLoading(false)
     }
   }
 
   const signOut = async () => {
-    setLoading(true)
+    setActionLoading(true)
     setError(null)
     try {
       const { error } = await supabase.auth.signOut()
@@ -92,14 +81,16 @@ export function useSupabaseAuth() {
       setError(errorMsg)
       return { error: new Error(errorMsg) }
     } finally {
-      setLoading(false)
+      setActionLoading(false)
     }
   }
 
   return {
     user,
     session,
-    loading,
+    loading: authLoading || actionLoading,
+    authLoading,
+    actionLoading,
     error,
     signUp,
     signIn,

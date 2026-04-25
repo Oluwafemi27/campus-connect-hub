@@ -9,11 +9,10 @@ export const Route = createFileRoute("/login")({ component: LoginPage });
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, actionLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +20,6 @@ function LoginPage() {
       toast.error("Please fill in all fields");
       return;
     }
-    setLoading(true);
     try {
       const { error } = await signIn(email, password);
       if (error) {
@@ -33,8 +31,6 @@ function LoginPage() {
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred";
       toast.error(errorMsg);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -62,7 +58,7 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="alex@campus.edu"
               className="email-input flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-              disabled={loading}
+              disabled={actionLoading}
             />
           </div>
         </div>
@@ -77,13 +73,13 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="password-input flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-              disabled={loading}
+              disabled={actionLoading}
             />
             <button
               type="button"
               onClick={() => setShow(!show)}
               className="toggle-password flex-shrink-0 text-muted-foreground hover:text-foreground"
-              disabled={loading}
+              disabled={actionLoading}
             >
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -92,18 +88,18 @@ function LoginPage() {
 
         <div className="remember-section flex items-center justify-between text-xs">
           <label className="remember-checkbox flex items-center gap-2 text-muted-foreground">
-            <input type="checkbox" className="accent-primary" disabled={loading} /> Remember me
+            <input type="checkbox" className="accent-primary" disabled={actionLoading} /> Remember me
           </label>
-          <button type="button" className="forgot-password text-primary hover:underline" disabled={loading}>Forgot password?</button>
+          <button type="button" className="forgot-password text-primary hover:underline" disabled={actionLoading}>Forgot password?</button>
         </div>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={actionLoading}
           className="submit-btn tile-press group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-accent px-6 py-3 font-semibold text-primary-foreground glow-primary disabled:opacity-60 sm:py-3.5"
         >
           <span className="absolute inset-0 animate-shimmer" />
-          {loading ? "Signing in..." : "Sign In"}
+          {actionLoading ? "Signing in..." : "Sign In"}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </button>
       </form>
