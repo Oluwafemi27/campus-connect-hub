@@ -25,18 +25,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Mock login - replace with real API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
+      // Mock user - in production, this would be from an API
       const mockUser: User = {
         id: "1",
-        name: "John Student",
+        name: email.split("@")[0],
         email: email,
         phone: "+234 800 0000 000",
       };
 
       setUser(mockUser);
-      localStorage.setItem("auth_user", JSON.stringify(mockUser));
     } finally {
       setIsLoading(false);
     }
@@ -46,9 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string, phone?: string) => {
       setIsLoading(true);
       try {
-        // Mock signup - replace with real API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // Simulate API call delay
+        await new Promise((resolve) => setTimeout(resolve, 300));
 
+        // Mock user - in production, this would be from an API
         const newUser: User = {
           id: Date.now().toString(),
           name,
@@ -57,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         setUser(newUser);
-        localStorage.setItem("auth_user", JSON.stringify(newUser));
       } finally {
         setIsLoading(false);
       }
@@ -68,11 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Mock logout - replace with real API call
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       setUser(null);
-      localStorage.removeItem("auth_user");
     } finally {
       setIsLoading(false);
     }

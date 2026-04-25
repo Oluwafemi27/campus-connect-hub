@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, Mail, Lock, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
@@ -54,100 +53,77 @@ function SignupPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">{error}</div>
+            <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">
+              {error}
+            </div>
           )}
 
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
-              Full Name *
+              Full Name
             </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Student"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="pl-10"
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="name"
+              type="text"
+              placeholder="John Student"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              Email Address *
+              Email Address
             </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10"
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="phone" className="text-sm font-medium">
               Phone Number (Optional)
             </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+234 800 0000 000"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="pl-10"
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+234 800 0000 000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password *
+              Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10"
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="confirmPassword" className="text-sm font-medium">
-              Confirm Password *
+              Confirm Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10"
-                disabled={isLoading}
-              />
-            </div>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full">
             {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
