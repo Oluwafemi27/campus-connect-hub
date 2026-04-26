@@ -64,8 +64,7 @@ function ConnectPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             autoComplete="current-password"
-            className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-            style={{ color: "oklch(0.98 0.01 250)" }}
+            className="auth-field-input h-auto flex-1 border-0 bg-transparent p-0 text-sm shadow-none focus:bg-transparent focus:shadow-none"
           />
         </div>
 

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Phone, Wifi, Tv, Router, History, ChevronRight, CheckCircle2 } from "lucide-react";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
@@ -59,6 +60,12 @@ function HomePage() {
   const { isAuthenticated, isLoading } = useAuthGuard();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate({ to: "/login", replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -68,7 +75,6 @@ function HomePage() {
   }
 
   if (!isAuthenticated) {
-    navigate({ to: "/login", replace: true });
     return null;
   }
 
