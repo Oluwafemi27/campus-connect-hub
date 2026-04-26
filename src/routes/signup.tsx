@@ -33,7 +33,7 @@ function SignupPage() {
               id="name"
               name="name"
               type="text"
-              placeholder="John Student"
+              placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
@@ -49,7 +49,7 @@ function SignupPage() {
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -65,7 +65,7 @@ function SignupPage() {
               id="phone"
               name="phone"
               type="tel"
-              placeholder="+234 800 0000 000"
+              placeholder="Phone number (optional)"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"

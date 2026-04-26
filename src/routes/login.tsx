@@ -30,7 +30,7 @@ function LoginPage() {
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="auth-field-input"
