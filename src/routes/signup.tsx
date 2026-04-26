@@ -1,68 +1,35 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
 function SignupPage() {
-  const navigate = useNavigate();
-  const { signup, isLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all required fields");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-
-    try {
-      await signup(name, email, password, phone || undefined);
-      navigate({ to: "/", replace: true });
-    } catch (err) {
-      setError("Signup failed. Please try again.");
-    }
+    console.log("Signup attempt:", { name, email, phone, password, confirmPassword });
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-5 py-8">
-      <div className="w-full max-w-sm">
+    <div className="auth-page-shell">
+      <div className="auth-card">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold gradient-text-gold">Campus Connect</h1>
           <p className="mt-2 text-sm text-muted-foreground">Create your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          {error && (
-            <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-500">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium">
+          <div className="auth-field-group">
+            <label htmlFor="name" className="auth-field-label">
               Full Name
             </label>
-            <Input
+            <input
               id="name"
               name="name"
               type="text"
@@ -70,14 +37,15 @@ function SignupPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
+              className="auth-field-input"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+          <div className="auth-field-group">
+            <label htmlFor="email" className="auth-field-label">
               Email Address
             </label>
-            <Input
+            <input
               id="email"
               name="email"
               type="email"
@@ -85,14 +53,15 @@ function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              className="auth-field-input"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium">
+          <div className="auth-field-group">
+            <label htmlFor="phone" className="auth-field-label">
               Phone Number (Optional)
             </label>
-            <Input
+            <input
               id="phone"
               name="phone"
               type="tel"
@@ -100,14 +69,15 @@ function SignupPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"
+              className="auth-field-input"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+          <div className="auth-field-group">
+            <label htmlFor="password" className="auth-field-label">
               Password
             </label>
-            <Input
+            <input
               id="password"
               name="password"
               type="password"
@@ -115,14 +85,15 @@ function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
+              className="auth-field-input"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium">
+          <div className="auth-field-group">
+            <label htmlFor="confirmPassword" className="auth-field-label">
               Confirm Password
             </label>
-            <Input
+            <input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
@@ -130,11 +101,12 @@ function SignupPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
+              className="auth-field-input"
             />
           </div>
 
           <Button type="submit" className="w-full">
-            {isLoading ? "Creating account..." : "Create Account"}
+            Create Account
           </Button>
         </form>
 

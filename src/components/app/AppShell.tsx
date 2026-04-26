@@ -49,16 +49,21 @@ const NavBar = memo(function NavBar() {
 
 export function AppShell() {
   const location = useLocation();
-  const hideNav =
-    ["/login", "/signup", "/connect-router"].includes(location.pathname) ||
-    location.pathname.startsWith("/admin");
+  const isAuthRoute = ["/login", "/signup", "/connect-router"].includes(location.pathname);
+  const hideNav = isAuthRoute || location.pathname.startsWith("/admin");
 
-  // Only show ambient orbs on authenticated pages for better performance
+  if (isAuthRoute) {
+    return (
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col">
+        <Outlet />
+      </div>
+    );
+  }
+
   const showAmbient = !hideNav && !location.pathname.startsWith("/admin");
 
   return (
     <div className="relative mx-auto flex min-h-screen w-full max-w-[440px] flex-col">
-      {/* ambient orbs - only on auth pages */}
       {showAmbient && (
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden will-change-auto">
           <div className="absolute -top-32 -left-20 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
