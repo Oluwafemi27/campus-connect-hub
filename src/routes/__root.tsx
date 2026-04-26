@@ -62,11 +62,11 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <div className="dark">
-      <AuthProvider>
+    <AuthProvider>
+      <div className="dark">
         <AppShell />
         <Toaster position="top-center" theme="dark" />
-      </AuthProvider>
-    </div>
+      </div>
+    </AuthProvider>
   );
 }
