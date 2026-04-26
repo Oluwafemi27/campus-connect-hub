@@ -1,6 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Lock, ArrowRight, Wifi, ArrowLeft, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { AtomicParticles } from "@/components/app/AtomicParticles";
@@ -8,8 +7,6 @@ import { AtomicParticles } from "@/components/app/AtomicParticles";
 export const Route = createFileRoute("/connect-router")({ component: ConnectPage });
 
 function ConnectPage() {
-  useAuthGuard();
-  const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -25,7 +22,6 @@ function ConnectPage() {
       setConnecting(false);
       setConnected(true);
       toast.success("Connected to Campus Router");
-      setTimeout(() => navigate({ to: "/" }), 1500);
     }, 1800);
   };
 
@@ -69,6 +65,7 @@ function ConnectPage() {
             placeholder="Password"
             autoComplete="current-password"
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            style={{ color: "oklch(0.98 0.01 250)" }}
           />
         </div>
 
