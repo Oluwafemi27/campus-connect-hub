@@ -1,6 +1,5 @@
 import { Link, createRootRoute } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
 import { AppShell } from "@/components/app/AppShell";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -49,12 +48,6 @@ export const Route = createRootRoute({
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@CampusConnect" },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
   }),
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -63,7 +56,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <AuthProvider>
-      <div className="dark">
+      <div className="dark min-h-screen">
         <AppShell />
         <Toaster position="top-center" theme="dark" />
       </div>
