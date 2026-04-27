@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 
@@ -10,10 +11,30 @@ function SignupPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const { signup, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup attempt:", { name, email, phone, password, confirmPassword });
+    setError("");
+
+    if (!name || !email || !password || !confirmPassword) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await signup(name, email, password, phone || undefined);
+      navigate({ to: "/" });
+    } catch (err) {
+      setError("Signup failed. Please try again.");
+    }
   };
 
   return (
@@ -25,6 +46,12 @@ function SignupPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
           <div className="auth-field-group">
             <label htmlFor="name" className="auth-field-label">
               Full Name
@@ -38,6 +65,7 @@ function SignupPage() {
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
               className="auth-field-input"
+              disabled={isLoading}
             />
           </div>
 
@@ -54,6 +82,7 @@ function SignupPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               className="auth-field-input"
+              disabled={isLoading}
             />
           </div>
 
@@ -70,6 +99,7 @@ function SignupPage() {
               onChange={(e) => setPhone(e.target.value)}
               autoComplete="tel"
               className="auth-field-input"
+              disabled={isLoading}
             />
           </div>
 
@@ -86,6 +116,7 @@ function SignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               className="auth-field-input"
+              disabled={isLoading}
             />
           </div>
 
@@ -102,11 +133,12 @@ function SignupPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               className="auth-field-input"
+              disabled={isLoading}
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Create Account
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
 
