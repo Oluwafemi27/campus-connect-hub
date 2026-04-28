@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Users, Wallet, Wifi, Activity, TrendingUp, AlertCircle } from "lucide-react";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 import { useState, useEffect } from "react";
 import { getAdminStats } from "@/lib/admin-service";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
 
 function AdminDashboard() {
-  useAuthGuard();
+  useAdminGuard();
   const [stats, setStats] = useState({
     totalUsers: 0,
     monthlyRevenue: 0,
@@ -17,6 +18,8 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
+
     const fetchStats = async () => {
       try {
         const data = await getAdminStats();
@@ -29,6 +32,23 @@ function AdminDashboard() {
     };
 
     fetchStats();
+
+    // Subscribe to realtime user count changes
+    const subscription = supabase
+      .from("users")
+      .on("*", (payload) => {
+        // Refetch stats when users table changes
+        fetchStats();
+      })
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.log("Realtime subscription active");
+        }
+      });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const statsList = [
