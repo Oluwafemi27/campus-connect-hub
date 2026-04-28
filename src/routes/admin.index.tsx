@@ -18,8 +18,6 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | null = null;
-
     const fetchStats = async () => {
       try {
         const data = await getAdminStats();
@@ -35,11 +33,19 @@ function AdminDashboard() {
 
     // Subscribe to realtime user count changes
     const subscription = supabase
-      .from("users")
-      .on("*", (payload) => {
-        // Refetch stats when users table changes
-        fetchStats();
-      })
+      .channel("users_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "users",
+        },
+        () => {
+          // Refetch stats when users table changes
+          fetchStats();
+        }
+      )
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
           console.log("Realtime subscription active");
@@ -47,7 +53,7 @@ function AdminDashboard() {
       });
 
     return () => {
-      subscription.unsubscribe();
+      supabase.removeChannel(subscription);
     };
   }, []);
 
