@@ -37,6 +37,7 @@ function MapPage() {
     center: { lat: 6.5244, lng: 3.3792 },
     zoom: 16,
     markers: ROUTER_LOCATIONS,
+    enableRealtime: true,
   });
 
   return (

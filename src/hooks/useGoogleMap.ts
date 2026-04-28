@@ -15,12 +15,17 @@ interface MapOptions {
     title: string;
     label: string;
   }>;
+  enableRealtime?: boolean;
 }
 
 export function useGoogleMap(
   containerRef: React.RefObject<HTMLDivElement>,
   options: MapOptions
 ) {
+  const mapRef = useRef<any>(null);
+  const userMarkerRef = useRef<any>(null);
+  const watchIdRef = useRef<number | null>(null);
+
   useEffect(() => {
     // Load Google Maps API
     const loadGoogleMaps = () => {
@@ -56,6 +61,8 @@ export function useGoogleMap(
         streetViewControl: false,
       });
 
+      mapRef.current = map;
+
       // Add markers
       if (options.markers) {
         options.markers.forEach((markerData) => {
@@ -75,8 +82,46 @@ export function useGoogleMap(
           });
         });
       }
+
+      // Enable real-time user location tracking
+      if (options.enableRealtime && navigator.geolocation) {
+        watchIdRef.current = navigator.geolocation.watchPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const userLocation = { lat: latitude, lng: longitude };
+
+            if (userMarkerRef.current) {
+              userMarkerRef.current.setPosition(userLocation);
+            } else {
+              userMarkerRef.current = new window.google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: "Your Location",
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              });
+            }
+
+            // Center map on user if needed
+            map.panTo(userLocation);
+          },
+          (error) => {
+            console.warn("Geolocation error:", error.message);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
+      }
     };
 
     loadGoogleMaps();
+
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
   }, [containerRef, options]);
 }
