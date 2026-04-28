@@ -12,6 +12,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
 
 export const Route = createFileRoute("/admin")({ component: AdminLayout });
 
@@ -27,6 +28,7 @@ const nav = [
 ] as const;
 
 function AdminLayout() {
+  useAdminGuard();
   const location = useLocation();
   return (
     <div className="relative mx-auto min-h-screen w-full max-w-[440px] px-5 pt-6 pb-6">

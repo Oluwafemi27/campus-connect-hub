@@ -27,30 +27,36 @@ export interface Transaction {
 
 export async function getAdminStats(): Promise<AdminStats> {
   try {
-    // Get total users count
+    // Get total users count from users table
     const { count: totalUsers } = await supabase
-      .from("auth.users")
+      .from("users")
       .select("*", { count: "exact", head: true });
 
     // For now, we'll set defaults. These can be updated once you have transaction data
     // Get transactions from last 24 hours
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const { count: last24hTransactions } = await supabase
+    const { count: last24hTransactions, error: txError } = await supabase
       .from("transactions")
       .select("*", { count: "exact", head: true })
-      .gte("created_at", twentyFourHoursAgo)
-      .catch(() => ({ count: 0 }));
+      .gte("created_at", twentyFourHoursAgo);
+
+    if (txError && txError.code !== "PGRST116") {
+      console.error("Error fetching transactions count:", txError);
+    }
 
     // Get monthly revenue
     const monthStart = new Date();
     monthStart.setDate(1);
     const monthStartStr = monthStart.toISOString();
-    const { data: monthlyTransactions } = await supabase
+    const { data: monthlyTransactions, error: monthError } = await supabase
       .from("transactions")
       .select("amount")
       .gte("created_at", monthStartStr)
-      .eq("status", "completed")
-      .catch(() => ({ data: [] }));
+      .eq("status", "completed");
+
+    if (monthError && monthError.code !== "PGRST116") {
+      console.error("Error fetching monthly transactions:", monthError);
+    }
 
     const monthlyRevenue = (monthlyTransactions || []).reduce(
       (sum: number, t: any) => sum + (t.amount || 0),

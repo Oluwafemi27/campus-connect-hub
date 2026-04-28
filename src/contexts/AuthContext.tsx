@@ -113,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               name,
               phone,
             },
+            emailRedirectTo: `${window.location.origin}/`,
           },
         });
 
@@ -121,6 +122,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (data.user) {
+          // Create user profile in the users table
+          const { error: profileError } = await supabase
+            .from("users")
+            .insert({
+              id: data.user.id,
+              email,
+              name,
+              phone: phone || null,
+              created_at: new Date().toISOString(),
+              status: "active",
+            });
+
+          if (profileError) {
+            console.error("Error creating user profile:", profileError);
+          }
+
           setUser({
             id: data.user.id,
             name,
@@ -150,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, isLoading, login, signup, logout }}
+      value={{ user, isAuthenticated: !!user, isAdmin, isLoading, login, signup, logout }}
     >
       {children}
     </AuthContext.Provider>

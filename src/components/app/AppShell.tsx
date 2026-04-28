@@ -2,18 +2,22 @@ import { memo } from "react";
 import { Outlet, Link, useLocation } from "@tanstack/react-router";
 import { Home, Smartphone, CreditCard, MapPin, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
-const tabs = [
+const baseTabs = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/devices", icon: Smartphone, label: "Devices" },
   { to: "/payments", icon: CreditCard, label: "Pay" },
   { to: "/map", icon: MapPin, label: "Map" },
-  { to: "/admin", icon: Shield, label: "Admin" },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
+const adminTab = { to: "/admin", icon: Shield, label: "Admin" } as const;
+
 const NavBar = memo(function NavBar() {
   const location = useLocation();
+  const { isAdmin } = useAuth();
+  const tabs = isAdmin ? [...baseTabs.slice(0, 4), adminTab, baseTabs[4]] : baseTabs;
   const hideNav =
     ["/login", "/signup", "/connect-router"].includes(location.pathname) ||
     location.pathname.startsWith("/admin");
