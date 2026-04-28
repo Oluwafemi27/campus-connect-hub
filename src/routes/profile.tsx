@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { TopBar } from "@/components/app/TopBar";
 import { ChevronRight, Edit2, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
@@ -10,6 +12,25 @@ export const Route = createFileRoute("/profile")({
 function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuthGuard();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate({ to: "/login", replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const handleLogout = async () => {
     await logout();

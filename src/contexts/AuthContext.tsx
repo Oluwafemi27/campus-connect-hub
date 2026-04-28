@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface User {
   id: string;
@@ -10,6 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string, phone?: string) => Promise<void>;
@@ -20,23 +23,79 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize auth state on mount
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.user) {
+          const adminRole = data.session.user.user_metadata?.admin === true ||
+                           data.session.user.user_metadata?.role === 'admin';
+          setUser({
+            id: data.session.user.id,
+            name: data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
+            email: data.session.user.email || "",
+            phone: data.session.user.user_metadata?.phone,
+          });
+          setIsAdmin(adminRole);
+        }
+      } catch (error) {
+        console.error("Failed to initialize auth:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    // Listen to auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const adminRole = session.user.user_metadata?.admin === true ||
+                           session.user.user_metadata?.role === 'admin';
+          setUser({
+            id: session.user.id,
+            name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
+            email: session.user.email || "",
+            phone: session.user.user_metadata?.phone,
+          });
+          setIsAdmin(adminRole);
+        } else {
+          setUser(null);
+          setIsAdmin(false);
+        }
+      }
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Mock user - in production, this would be from an API
-      const mockUser: User = {
-        id: "1",
-        name: email.split("@")[0],
-        email: email,
-        phone: "+234 800 0000 000",
-      };
+      if (error) {
+        throw new Error(error.message);
+      }
 
-      setUser(mockUser);
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          name: data.user.user_metadata?.name || email.split("@")[0],
+          email: data.user.email || email,
+          phone: data.user.user_metadata?.phone,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -46,18 +105,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string, phone?: string) => {
       setIsLoading(true);
       try {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        // Mock user - in production, this would be from an API
-        const newUser: User = {
-          id: Date.now().toString(),
-          name,
+        const { data, error } = await supabase.auth.signUp({
           email,
-          phone,
-        };
+          password,
+          options: {
+            data: {
+              name,
+              phone,
+            },
+          },
+        });
 
-        setUser(newUser);
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        if (data.user) {
+          setUser({
+            id: data.user.id,
+            name,
+            email,
+            phone,
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -68,9 +138,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw new Error(error.message);
+      }
       setUser(null);
     } finally {
       setIsLoading(false);

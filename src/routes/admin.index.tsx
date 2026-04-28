@@ -1,18 +1,42 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Users, Wallet, Wifi, Activity, TrendingUp, AlertCircle } from "lucide-react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useState, useEffect } from "react";
+import { getAdminStats } from "@/lib/admin-service";
 
 export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
 
-const stats = [
-  { icon: Users, label: "Total Users", value: "—", hint: "Active accounts", tint: "text-primary" },
-  { icon: Wallet, label: "Revenue", value: "—", hint: "This month", tint: "text-gold" },
-  { icon: Wifi, label: "Routers", value: "—", hint: "Online now", tint: "text-neon" },
-  { icon: Activity, label: "Transactions", value: "—", hint: "Last 24h", tint: "text-accent" },
-];
-
 function AdminDashboard() {
   useAuthGuard();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    monthlyRevenue: 0,
+    onlineRouters: 0,
+    last24hTransactions: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getAdminStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const statsList = [
+    { icon: Users, label: "Total Users", value: stats.totalUsers, hint: "Active accounts", tint: "text-primary" },
+    { icon: Wallet, label: "Revenue", value: `₦${stats.monthlyRevenue.toLocaleString()}`, hint: "This month", tint: "text-gold" },
+    { icon: Wifi, label: "Routers", value: stats.onlineRouters, hint: "Online now", tint: "text-neon" },
+    { icon: Activity, label: "Transactions", value: stats.last24hTransactions, hint: "Last 24h", tint: "text-accent" },
+  ];
 
   return (
     <div className="space-y-5 animate-fade-up">
@@ -22,13 +46,13 @@ function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {stats.map((s) => (
+        {statsList.map((s) => (
           <div key={s.label} className="glass rounded-2xl p-4">
             <s.icon className={`mb-2 h-5 w-5 ${s.tint}`} />
             <p className="text-[10px] tracking-widest text-muted-foreground">
               {s.label.toUpperCase()}
             </p>
-            <p className="mt-1 text-2xl font-black">{s.value}</p>
+            <p className="mt-1 text-2xl font-black">{loading ? "—" : s.value}</p>
             <p className="mt-0.5 text-[10px] text-muted-foreground">{s.hint}</p>
           </div>
         ))}
