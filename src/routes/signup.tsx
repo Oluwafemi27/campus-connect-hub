@@ -29,11 +29,23 @@ function SignupPage() {
       return;
     }
 
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       await signup(name, email, password, phone || undefined);
       navigate({ to: "/" });
     } catch (err) {
-      setError("Signup failed. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Signup failed. Please try again.";
+      if (errorMessage.includes("already registered")) {
+        setError("This email is already registered. Please log in instead.");
+      } else if (errorMessage.includes("invalid email")) {
+        setError("Please enter a valid email address.");
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 

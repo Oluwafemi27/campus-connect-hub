@@ -25,7 +25,14 @@ function LoginPage() {
       await login(email, password);
       navigate({ to: "/" });
     } catch (err) {
-      setError("Login failed. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Login failed. Please try again.";
+      if (errorMessage.includes("Invalid login credentials")) {
+        setError("Invalid email or password. Please check and try again.");
+      } else if (errorMessage.includes("Email not confirmed")) {
+        setError("Please confirm your email address before logging in.");
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 
