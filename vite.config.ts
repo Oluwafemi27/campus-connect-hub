@@ -12,6 +12,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ["react", "react-dom", "@tanstack/react-router"],
           ui: ["lucide-react", "sonner", "@radix-ui/react-dialog"],
+          supabase: ["@supabase/supabase-js"],
         },
       },
     },
@@ -22,8 +23,14 @@ export default defineConfig({
         drop_console: true,
       },
     },
+    chunkSizeWarningLimit: 1000,
+    sourcemap: false,
+    target: "ES2022",
   },
   server: {
     preTransformRequests: true,
+  },
+  optimizeDeps: {
+    include: ["react", "react-dom", "@tanstack/react-router", "@supabase/supabase-js"],
   },
 });

@@ -47,7 +47,7 @@ const NavBar = memo(function NavBar() {
   );
 });
 
-export function AppShell() {
+export const AppShell = memo(function AppShell() {
   const location = useLocation();
   const isAuthRoute = ["/login", "/signup", "/connect-router"].includes(location.pathname);
   const hideNav = isAuthRoute || location.pathname.startsWith("/admin");
@@ -79,4 +79,4 @@ export function AppShell() {
       <NavBar />
     </div>
   );
-}
+});
