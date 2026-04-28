@@ -1,16 +1,32 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password });
+    setError("");
+
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await login(email, password);
+      navigate({ to: "/" });
+    } catch (err) {
+      setError("Login failed. Please try again.");
+    }
   };
 
   return (
@@ -22,6 +38,12 @@ function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          {error && (
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+
           <div className="auth-field-group">
             <label htmlFor="email" className="auth-field-label">
               Email Address
@@ -30,10 +52,11 @@ function LoginPage() {
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="auth-field-input"
+              disabled={isLoading}
               autoComplete="email"
             />
           </div>
@@ -49,13 +72,14 @@ function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
               className="auth-field-input"
+              disabled={isLoading}
+              autoComplete="current-password"
             />
           </div>
 
-          <Button type="submit" className="w-full">
-            Sign In
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
 
