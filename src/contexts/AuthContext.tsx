@@ -12,6 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string, phone?: string) => Promise<void>;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize auth state on mount
@@ -30,12 +32,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session?.user) {
+          const adminRole = data.session.user.user_metadata?.admin === true ||
+                           data.session.user.user_metadata?.role === 'admin';
           setUser({
             id: data.session.user.id,
             name: data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
             email: data.session.user.email || "",
             phone: data.session.user.user_metadata?.phone,
           });
+          setIsAdmin(adminRole);
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
@@ -50,14 +55,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
+          const adminRole = session.user.user_metadata?.admin === true ||
+                           session.user.user_metadata?.role === 'admin';
           setUser({
             id: session.user.id,
             name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
             email: session.user.email || "",
             phone: session.user.user_metadata?.phone,
           });
+          setIsAdmin(adminRole);
         } else {
           setUser(null);
+          setIsAdmin(false);
         }
       }
     );
