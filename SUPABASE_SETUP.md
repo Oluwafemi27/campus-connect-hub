@@ -154,7 +154,181 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 ```
 
-## 6. Test the Setup
+## 6. Create Broadcasts Table
+
+```sql
+CREATE TABLE IF NOT EXISTS public.broadcasts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  audience TEXT NOT NULL CHECK (audience IN ('all', 'active', 'suspended')),
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'scheduled')),
+  recipient_count INTEGER DEFAULT 0,
+  sent_at TIMESTAMP WITH TIME ZONE,
+  scheduled_at TIMESTAMP WITH TIME ZONE,
+  created_by UUID NOT NULL REFERENCES public.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_broadcasts_status ON public.broadcasts(status);
+CREATE INDEX IF NOT EXISTS idx_broadcasts_created_at ON public.broadcasts(created_at DESC);
+
+ALTER TABLE public.broadcasts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can read broadcasts"
+  ON public.broadcasts
+  FOR SELECT
+  USING (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can create broadcasts"
+  ON public.broadcasts
+  FOR INSERT
+  WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can update broadcasts"
+  ON public.broadcasts
+  FOR UPDATE
+  USING (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can delete broadcasts"
+  ON public.broadcasts
+  FOR DELETE
+  USING (auth.jwt() ->> 'role' = 'admin');
+```
+
+## 7. Create Features Table
+
+```sql
+CREATE TABLE IF NOT EXISTS public.features (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  icon TEXT,
+  image_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  display_order INTEGER DEFAULT 0,
+  created_by UUID NOT NULL REFERENCES public.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_features_active ON public.features(is_active);
+CREATE INDEX IF NOT EXISTS idx_features_order ON public.features(display_order);
+
+ALTER TABLE public.features ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read active features"
+  ON public.features
+  FOR SELECT
+  USING (is_active = true OR auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can manage features"
+  ON public.features
+  FOR ALL
+  USING (auth.jwt() ->> 'role' = 'admin');
+```
+
+## 8. Create Messages Table
+
+```sql
+CREATE TABLE IF NOT EXISTS public.support_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public.support_replies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  message_id UUID NOT NULL REFERENCES public.support_messages(id) ON DELETE CASCADE,
+  reply_by UUID NOT NULL REFERENCES public.users(id),
+  reply_text TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_support_messages_user ON public.support_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_support_messages_status ON public.support_messages(status);
+CREATE INDEX IF NOT EXISTS idx_support_messages_created ON public.support_messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_support_replies_message ON public.support_replies(message_id);
+
+ALTER TABLE public.support_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.support_replies ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read own messages and admins read all"
+  ON public.support_messages
+  FOR SELECT
+  USING (auth.uid() = user_id OR auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Users can create messages"
+  ON public.support_messages
+  FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Admins can update message status"
+  ON public.support_messages
+  FOR UPDATE
+  USING (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can read all replies"
+  ON public.support_replies
+  FOR SELECT
+  USING (auth.jwt() ->> 'role' = 'admin' OR auth.uid() IN (
+    SELECT user_id FROM public.support_messages WHERE id = message_id
+  ));
+
+CREATE POLICY "Admins can create replies"
+  ON public.support_replies
+  FOR INSERT
+  WITH CHECK (auth.jwt() ->> 'role' = 'admin');
+```
+
+## 9. Create Admin Settings Table
+
+```sql
+CREATE TABLE IF NOT EXISTS public.admin_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  setting_key TEXT NOT NULL UNIQUE,
+  setting_value TEXT NOT NULL,
+  updated_by UUID NOT NULL REFERENCES public.users(id),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_admin_settings_key ON public.admin_settings(setting_key);
+
+ALTER TABLE public.admin_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can read settings"
+  ON public.admin_settings
+  FOR SELECT
+  USING (auth.jwt() ->> 'role' = 'admin');
+
+CREATE POLICY "Admins can manage settings"
+  ON public.admin_settings
+  FOR ALL
+  USING (auth.jwt() ->> 'role' = 'admin');
+
+-- Insert default settings
+INSERT INTO public.admin_settings (setting_key, setting_value, updated_by)
+SELECT 'maintenance_mode', 'false', auth.uid()
+WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE setting_key = 'maintenance_mode')
+LIMIT 1;
+
+INSERT INTO public.admin_settings (setting_key, setting_value, updated_by)
+SELECT 'allow_signups', 'true', auth.uid()
+WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE setting_key = 'allow_signups')
+LIMIT 1;
+
+INSERT INTO public.admin_settings (setting_key, setting_value, updated_by)
+SELECT 'require_2fa', 'true', auth.uid()
+WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE setting_key = 'require_2fa')
+LIMIT 1;
+```
+
+## 10. Test the Setup
 
 After running all queries:
 
