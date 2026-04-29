@@ -130,6 +130,10 @@ function HomePage() {
                 alt={c.t}
                 className="carousel-image mb-3 h-20 w-full rounded-xl object-cover"
                 loading="lazy"
+                decoding="async"
+                width={160}
+                height={80}
+                fetchPriority={i === 0 ? "high" : "low"}
               />
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold">{c.t}</p>

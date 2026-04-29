@@ -54,6 +54,9 @@ export function OperatorPicker({
               alt={`${op.label} logo`}
               className="h-full w-full object-contain"
               loading="lazy"
+              decoding="async"
+              width={56}
+              height={56}
             />
           </div>
           <span className="text-[10px] font-semibold">{op.label}</span>
