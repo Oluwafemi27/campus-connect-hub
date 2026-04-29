@@ -12,8 +12,8 @@ const ROUTER_LOCATIONS = [
   {
     lat: 8.1547,
     lng: 3.7521,
-    title: "LAUTECH College, Ogbomosho",
-    label: "1,500LT",
+    title: "1500LT Hall - LAUTECH College, Ogbomosho",
+    label: "1500LT",
   },
 ];
 
