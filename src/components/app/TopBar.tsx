@@ -28,6 +28,9 @@ export function TopBar({
               className="absolute inset-0.5 h-8 w-8 object-contain glow-primary"
               width={32}
               height={32}
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
             />
           </div>
         )}

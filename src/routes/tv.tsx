@@ -66,6 +66,9 @@ function TvPage() {
                 alt={`${p.label} logo`}
                 className="h-full w-full object-contain"
                 loading="lazy"
+                decoding="async"
+                width={80}
+                height={48}
               />
             </div>
             <span className="mt-2 text-xs font-semibold">{p.label}</span>

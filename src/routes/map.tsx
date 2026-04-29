@@ -7,25 +7,13 @@ import { useRef } from "react";
 
 export const Route = createFileRoute("/map")({ component: MapPage });
 
-// Campus router locations (example coordinates - replace with your actual campus)
+// LAUTECH College, Ogbomosho router location
 const ROUTER_LOCATIONS = [
   {
-    lat: 6.5244,
-    lng: 3.3792,
-    title: "Library Hub",
-    label: "A",
-  },
-  {
-    lat: 6.5234,
-    lng: 3.3802,
-    title: "Block C Hostel",
-    label: "B",
-  },
-  {
-    lat: 6.5254,
-    lng: 3.3782,
-    title: "Cafeteria Wing",
-    label: "C",
+    lat: 8.1547,
+    lng: 3.7521,
+    title: "1500LT Hall - LAUTECH College, Ogbomosho",
+    label: "1500LT",
   },
 ];
 
@@ -34,9 +22,10 @@ function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useGoogleMap(mapContainerRef, {
-    center: { lat: 6.5244, lng: 3.3792 },
+    center: { lat: 8.1547, lng: 3.7521 },
     zoom: 16,
     markers: ROUTER_LOCATIONS,
+    enableRealtime: true,
   });
 
   return (

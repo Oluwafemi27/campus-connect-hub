@@ -15,17 +15,39 @@ interface MapOptions {
     title: string;
     label: string;
   }>;
+  enableRealtime?: boolean;
 }
+
+let googleMapsLoading = false;
+let googleMapsLoaded = false;
 
 export function useGoogleMap(
   containerRef: React.RefObject<HTMLDivElement>,
   options: MapOptions
 ) {
+  const mapRef = useRef<any>(null);
+  const userMarkerRef = useRef<any>(null);
+  const watchIdRef = useRef<number | null>(null);
+  const markersRef = useRef<any[]>([]);
+
   useEffect(() => {
-    // Load Google Maps API
+    if (!containerRef.current) return;
+
+    // Load Google Maps API only once
     const loadGoogleMaps = () => {
-      if (window.google) {
+      if (googleMapsLoaded && window.google) {
         initializeMap();
+        return;
+      }
+
+      if (googleMapsLoading) {
+        // Wait for it to load
+        const checkInterval = setInterval(() => {
+          if (window.google) {
+            clearInterval(checkInterval);
+            initializeMap();
+          }
+        }, 100);
         return;
       }
 
@@ -35,17 +57,45 @@ export function useGoogleMap(
         return;
       }
 
+      // Check if script already exists
+      const existingScript = document.querySelector(
+        `script[src*="maps.googleapis.com"]`
+      );
+      if (existingScript) {
+        if (window.google) {
+          initializeMap();
+        } else {
+          // Script exists but not loaded yet, wait for it
+          const checkInterval = setInterval(() => {
+            if (window.google) {
+              clearInterval(checkInterval);
+              googleMapsLoaded = true;
+              initializeMap();
+            }
+          }, 100);
+        }
+        return;
+      }
+
+      googleMapsLoading = true;
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.defer = true;
-      script.onload = initializeMap;
-      script.onerror = () => console.error("Failed to load Google Maps");
+      script.onload = () => {
+        googleMapsLoading = false;
+        googleMapsLoaded = true;
+        initializeMap();
+      };
+      script.onerror = () => {
+        console.error("Failed to load Google Maps");
+        googleMapsLoading = false;
+      };
       document.head.appendChild(script);
     };
 
     const initializeMap = () => {
-      if (!containerRef.current || !window.google) return;
+      if (!containerRef.current || !window.google || mapRef.current) return;
 
       const map = new window.google.maps.Map(containerRef.current, {
         center: options.center,
@@ -55,6 +105,12 @@ export function useGoogleMap(
         zoomControl: true,
         streetViewControl: false,
       });
+
+      mapRef.current = map;
+
+      // Clear existing markers
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      markersRef.current = [];
 
       // Add markers
       if (options.markers) {
@@ -73,10 +129,52 @@ export function useGoogleMap(
           marker.addListener("click", () => {
             infoWindow.open(map, marker);
           });
+
+          markersRef.current.push(marker);
         });
+      }
+
+      // Enable real-time user location tracking
+      if (options.enableRealtime && navigator.geolocation) {
+        watchIdRef.current = navigator.geolocation.watchPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const userLocation = { lat: latitude, lng: longitude };
+
+            if (userMarkerRef.current) {
+              userMarkerRef.current.setPosition(userLocation);
+            } else {
+              userMarkerRef.current = new window.google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: "Your Location",
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              });
+            }
+
+            // Center map on user if needed
+            if (map) {
+              map.panTo(userLocation);
+            }
+          },
+          (error) => {
+            console.warn("Geolocation error:", error.message);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
       }
     };
 
     loadGoogleMaps();
-  }, [containerRef, options]);
+
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, [containerRef, options.center.lat, options.center.lng, options.zoom, options.enableRealtime, options.markers?.length]);
 }

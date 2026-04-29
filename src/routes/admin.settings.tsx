@@ -100,6 +100,9 @@ function AdminSettings() {
                   alt={`${op.label} logo`}
                   className="h-full w-full object-contain"
                   loading="lazy"
+                  decoding="async"
+                  width={48}
+                  height={48}
                 />
               </div>
               <div className="flex-1">
