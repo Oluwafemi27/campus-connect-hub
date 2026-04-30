@@ -1,10 +1,3 @@
-const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
-const GLAD_TIDINGS_BASE_URL = "https://api.gladtidings.app";
-
-if (!GLAD_TIDINGS_API_KEY) {
-  console.warn("Glad Tidings API key not configured");
-}
-
 export interface DataBundle {
   id: string;
   name: string;
@@ -29,20 +22,19 @@ export interface TVSubscription {
   provider: string;
 }
 
-async function makeRequest<T>(endpoint: string, method: string = "GET", body?: any): Promise<T> {
+async function makeServerRequest<T>(endpoint: string, method: string = "GET", body?: any): Promise<T> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
   };
 
-  const response = await fetch(`${GLAD_TIDINGS_BASE_URL}${endpoint}`, {
+  const response = await fetch(endpoint, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
 
   if (!response.ok) {
-    throw new Error(`Glad Tidings API error: ${response.statusText}`);
+    throw new Error(`API error: ${response.statusText}`);
   }
 
   return response.json();
@@ -50,7 +42,7 @@ async function makeRequest<T>(endpoint: string, method: string = "GET", body?: a
 
 export async function getDataBundles(): Promise<DataBundle[]> {
   try {
-    const response = await makeRequest<{ data: DataBundle[] }>("/data-bundles");
+    const response = await makeServerRequest<{ data: DataBundle[] }>("/api/glad-tidings/data-bundles");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
@@ -60,7 +52,7 @@ export async function getDataBundles(): Promise<DataBundle[]> {
 
 export async function getAirtimes(): Promise<Airtime[]> {
   try {
-    const response = await makeRequest<{ data: Airtime[] }>("/airtimes");
+    const response = await makeServerRequest<{ data: Airtime[] }>("/api/glad-tidings/airtimes");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch airtimes:", error);
@@ -70,7 +62,7 @@ export async function getAirtimes(): Promise<Airtime[]> {
 
 export async function getTVSubscriptions(): Promise<TVSubscription[]> {
   try {
-    const response = await makeRequest<{ data: TVSubscription[] }>("/tv-subscriptions");
+    const response = await makeServerRequest<{ data: TVSubscription[] }>("/api/glad-tidings/tv-subscriptions");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch TV subscriptions:", error);
@@ -80,7 +72,7 @@ export async function getTVSubscriptions(): Promise<TVSubscription[]> {
 
 export async function purchaseDataBundle(bundleId: string, phoneNumber: string): Promise<any> {
   try {
-    return await makeRequest("/purchase/data", "POST", {
+    return await makeServerRequest("/api/glad-tidings/purchase-data", "POST", {
       bundleId,
       phoneNumber,
     });
@@ -92,7 +84,7 @@ export async function purchaseDataBundle(bundleId: string, phoneNumber: string):
 
 export async function purchaseAirtime(airtimeId: string, phoneNumber: string): Promise<any> {
   try {
-    return await makeRequest("/purchase/airtime", "POST", {
+    return await makeServerRequest("/api/glad-tidings/purchase-airtime", "POST", {
       airtimeId,
       phoneNumber,
     });
@@ -104,7 +96,7 @@ export async function purchaseAirtime(airtimeId: string, phoneNumber: string): P
 
 export async function purchaseTVSubscription(subscriptionId: string, smartCardNumber: string): Promise<any> {
   try {
-    return await makeRequest("/purchase/tv", "POST", {
+    return await makeServerRequest("/api/glad-tidings/purchase-tv", "POST", {
       subscriptionId,
       smartCardNumber,
     });
