@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { toast } from "sonner";
-import { getTVSubscriptions, purchaseTVSubscription, type TVSubscription } from "@/lib/glad-tidings";
+import {
+  getTVSubscriptionsServer,
+  purchaseTVSubscriptionServer,
+  type TVSubscription,
+} from "@/server/glad-tidings";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/tv")({ component: TvPage });
@@ -20,7 +24,7 @@ function TvPage() {
     const fetchSubscriptions = async () => {
       try {
         setLoading(true);
-        const data = await getTVSubscriptions();
+        const data = await getTVSubscriptionsServer();
         setSubscriptions(data);
         if (data.length > 0) {
           setPicked(data[0].id);
@@ -43,7 +47,7 @@ function TvPage() {
 
     try {
       setPurchasing(true);
-      await purchaseTVSubscription(picked, card);
+      await purchaseTVSubscriptionServer(picked, card);
       toast.success("TV subscription purchase initiated");
       setPicked(null);
       setCard("");

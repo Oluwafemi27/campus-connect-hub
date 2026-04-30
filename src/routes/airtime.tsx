@@ -5,7 +5,11 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { Contact, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { getAirtimes, purchaseAirtime, type Airtime } from "@/lib/glad-tidings";
+import {
+  getAirtimesServer,
+  purchaseAirtimeServer,
+  type Airtime,
+} from "@/server/glad-tidings";
 
 export const Route = createFileRoute("/airtime")({ component: AirtimePage });
 
@@ -22,7 +26,7 @@ function AirtimePage() {
     const fetchAirtimes = async () => {
       try {
         setLoading(true);
-        const data = await getAirtimes();
+        const data = await getAirtimesServer();
         setAirtimes(data);
       } catch (error) {
         toast.error("Failed to load airtimes");
@@ -42,7 +46,7 @@ function AirtimePage() {
 
     try {
       setPurchasing(true);
-      await purchaseAirtime(picked, phone);
+      await purchaseAirtimeServer(picked, phone);
       toast.success("Airtime purchase initiated");
       setPicked(null);
       setPhone("");
