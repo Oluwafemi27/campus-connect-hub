@@ -5,11 +5,7 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { BarChart3, Calendar, Contact, Tag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  getDataBundlesServer,
-  purchaseDataBundleServer,
-  type DataBundle,
-} from "@/server/glad-tidings";
+import { getDataBundles, purchaseDataBundle, type DataBundle } from "@/lib/glad-tidings";
 
 export const Route = createFileRoute("/data")({ component: DataPage });
 
@@ -26,7 +22,7 @@ function DataPage() {
     const fetchBundles = async () => {
       try {
         setLoading(true);
-        const data = await getDataBundlesServer();
+        const data = await getDataBundles();
         setBundles(data);
       } catch (error) {
         toast.error("Failed to load data bundles");
@@ -52,7 +48,7 @@ function DataPage() {
 
     try {
       setPurchasing(true);
-      await purchaseDataBundleServer(picked, phone);
+      await purchaseDataBundle(picked, phone);
       toast.success("Data bundle purchase initiated");
       setPicked(null);
       setPhone("");
