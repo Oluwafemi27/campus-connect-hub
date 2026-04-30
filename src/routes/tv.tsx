@@ -1,44 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { toast } from "sonner";
+import { getTVSubscriptions, purchaseTVSubscription, type TVSubscription } from "@/lib/glad-tidings";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/tv")({ component: TvPage });
 
-const providers = [
-  {
-    id: "dstv",
-    label: "DStv",
-    logo: "https://cdn.brandfetch.io/dstv.com/w/512",
-    bg: "bg-white",
-  },
-  {
-    id: "gotv",
-    label: "GOtv",
-    logo: "https://cdn.brandfetch.io/gotvafrica.com/w/512",
-    bg: "bg-white",
-  },
-  {
-    id: "startimes",
-    label: "StarTimes",
-    logo: "https://cdn.brandfetch.io/startimestv.com/w/512",
-    bg: "bg-white",
-  },
-  {
-    id: "showmax",
-    label: "Showmax",
-    logo: "https://cdn.brandfetch.io/showmax.com/w/512",
-    bg: "bg-black",
-  },
-];
-const amounts = [5000, 10000, 15000];
-
 function TvPage() {
   useAuthGuard();
-  const [provider, setProvider] = useState("dstv");
   const [card, setCard] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [subscriptions, setSubscriptions] = useState<TVSubscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        setLoading(true);
+        const data = await getTVSubscriptions();
+        setSubscriptions(data);
+        if (data.length > 0) {
+          setPicked(data[0].id);
+        }
+      } catch (error) {
+        toast.error("Failed to load TV subscriptions");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubscriptions();
+  }, []);
+
+  const handlePurchase = async () => {
+    if (!card || !picked) {
+      toast.error("Enter card & pick subscription");
+      return;
+    }
+
+    try {
+      setPurchasing(true);
+      await purchaseTVSubscription(picked, card);
+      toast.success("TV subscription purchase initiated");
+      setPicked(null);
+      setCard("");
+    } catch (error) {
+      toast.error("Failed to purchase TV subscription");
+    } finally {
+      setPurchasing(false);
+    }
+  };
 
   return (
     <>
@@ -48,32 +62,33 @@ function TvPage() {
         Welcome back, <span className="gradient-text-gold">Student!</span>
       </h1>
       <p className="mb-3 text-xs tracking-widest text-muted-foreground">
-        SELECT TV PROVIDER TO SUBSCRIBE
+        SELECT TV SUBSCRIPTION
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
-        {providers.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setProvider(p.id)}
-            className={`tile-press glass flex h-24 flex-col items-center justify-center rounded-2xl ${provider === p.id ? "ring-2 ring-primary glow-primary" : ""}`}
-          >
-            <div
-              className={`flex h-12 w-20 items-center justify-center overflow-hidden rounded-lg p-1.5 ${p.bg}`}
+      <div className="space-y-2">
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          </div>
+        ) : subscriptions.length > 0 ? (
+          subscriptions.map((sub) => (
+            <button
+              key={sub.id}
+              onClick={() => setPicked(sub.id)}
+              className={`tile-press glass flex w-full items-center justify-between rounded-xl px-4 py-3 ${picked === sub.id ? "ring-2 ring-primary glow-primary" : ""}`}
             >
-              <img
-                src={p.logo}
-                alt={`${p.label} logo`}
-                className="h-full w-full object-contain"
-                loading="lazy"
-                decoding="async"
-                width={80}
-                height={48}
-              />
-            </div>
-            <span className="mt-2 text-xs font-semibold">{p.label}</span>
-          </button>
-        ))}
+              <div className="flex flex-col items-start">
+                <span className="text-xs font-semibold">{sub.name}</span>
+                <span className="text-xs text-muted-foreground">{sub.provider} • {sub.duration}</span>
+              </div>
+              <span className="rounded-lg bg-primary/20 px-3 py-1 text-xs font-bold text-primary">
+                ₦{sub.price.toLocaleString()}
+              </span>
+            </button>
+          ))
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">No TV subscriptions available</p>
+        )}
       </div>
 
       <p className="mt-5 mb-2 text-xs tracking-widest text-muted-foreground">
@@ -88,30 +103,13 @@ function TvPage() {
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
-        {amounts.map((a) => (
-          <button
-            key={a}
-            onClick={() => setAmount(a)}
-            className={`tile-press glass rounded-xl py-3 text-sm font-bold ${amount === a ? "ring-2 ring-primary glow-primary text-primary" : ""}`}
-          >
-            ₦{a.toLocaleString()}
-          </button>
-        ))}
-      </div>
-
       <button
-        onClick={() => {
-          if (!card || !amount) {
-            toast.error("Enter card & pick amount");
-            return;
-          }
-          toast.success(`${provider.toUpperCase()} subscription queued`);
-        }}
-        className="tile-press relative mt-6 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold to-amber-700 py-4 font-bold text-gold-foreground glow-primary"
+        onClick={handlePurchase}
+        disabled={purchasing}
+        className="tile-press relative mt-6 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold to-amber-700 py-4 font-bold text-gold-foreground glow-primary disabled:opacity-50"
       >
         <span className="absolute inset-0 animate-shimmer" />
-        PROCEED
+        {purchasing ? "Processing..." : "PROCEED"}
       </button>
     </>
   );
