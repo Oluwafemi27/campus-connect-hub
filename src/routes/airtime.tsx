@@ -1,27 +1,56 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
-import { Contact } from "lucide-react";
+import { Contact, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getAirtimes, purchaseAirtime, type Airtime } from "@/lib/glad-tidings";
 
 export const Route = createFileRoute("/airtime")({ component: AirtimePage });
-
-const amounts = [100, 200, 500, 1000, 2000, 5000];
 
 function AirtimePage() {
   useAuthGuard();
   const [op, setOp] = useState("mtn");
   const [phone, setPhone] = useState("");
-  const [amount, setAmount] = useState<number | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [airtimes, setAirtimes] = useState<Airtime[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
 
-  const proceed = () => {
-    if (!phone || !amount) {
+  useEffect(() => {
+    const fetchAirtimes = async () => {
+      try {
+        setLoading(true);
+        const data = await getAirtimes();
+        setAirtimes(data);
+      } catch (error) {
+        toast.error("Failed to load airtimes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAirtimes();
+  }, []);
+
+  const handlePurchase = async () => {
+    if (!phone || !picked) {
       toast.error("Enter phone & pick amount");
       return;
     }
-    toast.success(`₦${amount} airtime queued for ${phone}`);
+
+    try {
+      setPurchasing(true);
+      await purchaseAirtime(picked, phone);
+      toast.success("Airtime purchase initiated");
+      setPicked(null);
+      setPhone("");
+    } catch (error) {
+      toast.error("Failed to purchase airtime");
+    } finally {
+      setPurchasing(false);
+    }
   };
 
   return (
@@ -50,23 +79,32 @@ function AirtimePage() {
       </div>
 
       <div className="mt-5 grid grid-cols-3 gap-3">
-        {amounts.map((a) => (
-          <button
-            key={a}
-            onClick={() => setAmount(a)}
-            className={`tile-press glass rounded-xl py-3 text-sm font-bold ${amount === a ? "ring-2 ring-primary glow-primary text-primary" : ""}`}
-          >
-            ₦{a.toLocaleString()}
-          </button>
-        ))}
+        {loading ? (
+          <div className="col-span-3 flex items-center justify-center py-8">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+          </div>
+        ) : airtimes.length > 0 ? (
+          airtimes.map((airtime) => (
+            <button
+              key={airtime.id}
+              onClick={() => setPicked(airtime.id)}
+              className={`tile-press glass rounded-xl py-3 text-sm font-bold ${picked === airtime.id ? "ring-2 ring-primary glow-primary text-primary" : ""}`}
+            >
+              ₦{airtime.amount.toLocaleString()}
+            </button>
+          ))
+        ) : (
+          <p className="col-span-3 text-center text-sm text-muted-foreground">No airtimes available</p>
+        )}
       </div>
 
       <button
-        onClick={proceed}
-        className="tile-press relative mt-6 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold to-amber-700 py-4 font-bold text-gold-foreground glow-primary"
+        onClick={handlePurchase}
+        disabled={purchasing}
+        className="tile-press relative mt-6 w-full overflow-hidden rounded-2xl bg-gradient-to-r from-gold to-amber-700 py-4 font-bold text-gold-foreground glow-primary disabled:opacity-50"
       >
         <span className="absolute inset-0 animate-shimmer" />
-        Proceed
+        {purchasing ? "Processing..." : "Proceed"}
       </button>
     </>
   );
