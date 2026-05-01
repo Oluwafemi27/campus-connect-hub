@@ -30,7 +30,7 @@ export interface TVSubscription {
 async function makeGladTidingsRequest<T>(
   endpoint: string,
   method: string = "GET",
-  body?: any
+  body?: Record<string, unknown>,
 ): Promise<T> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
@@ -56,9 +56,7 @@ export const getDataBundlesServer = server$(async function getDataBundles(): Pro
       console.warn("Glad Tidings API key not configured");
       return [];
     }
-    const response = await makeGladTidingsRequest<{ data: DataBundle[] }>(
-      "/data-bundles"
-    );
+    const response = await makeGladTidingsRequest<{ data: DataBundle[] }>("/data-bundles");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
@@ -80,80 +78,79 @@ export const getAirtimesServer = server$(async function getAirtimes(): Promise<A
   }
 });
 
-export const getTVSubscriptionsServer = server$(
-  async function getTVSubscriptions(): Promise<TVSubscription[]> {
-    try {
-      if (!GLAD_TIDINGS_API_KEY) {
-        console.warn("Glad Tidings API key not configured");
-        return [];
-      }
-      const response = await makeGladTidingsRequest<{ data: TVSubscription[] }>(
-        "/tv-subscriptions"
-      );
-      return response.data || [];
-    } catch (error) {
-      console.error("Failed to fetch TV subscriptions:", error);
+export const getTVSubscriptionsServer = server$(async function getTVSubscriptions(): Promise<
+  TVSubscription[]
+> {
+  try {
+    if (!GLAD_TIDINGS_API_KEY) {
+      console.warn("Glad Tidings API key not configured");
       return [];
     }
+    const response = await makeGladTidingsRequest<{ data: TVSubscription[] }>("/tv-subscriptions");
+    return response.data || [];
+  } catch (error) {
+    console.error("Failed to fetch TV subscriptions:", error);
+    return [];
   }
-);
+});
 
-export const purchaseDataBundleServer = server$(
-  async function purchaseDataBundle(
-    bundleId: string,
-    phoneNumber: string
-  ): Promise<any> {
-    try {
-      if (!GLAD_TIDINGS_API_KEY) {
-        throw new Error("Glad Tidings API key not configured");
-      }
-      return await makeGladTidingsRequest("/purchase/data", "POST", {
-        bundleId,
-        phoneNumber,
-      });
-    } catch (error) {
-      console.error("Failed to purchase data bundle:", error);
-      throw error;
-    }
-  }
-);
+export interface PurchaseResult {
+  success: boolean;
+  message: string;
+  reference?: string;
+  details?: Record<string, unknown>;
+}
 
-export const purchaseAirtimeServer = server$(
-  async function purchaseAirtime(
-    airtimeId: string,
-    phoneNumber: string
-  ): Promise<any> {
-    try {
-      if (!GLAD_TIDINGS_API_KEY) {
-        throw new Error("Glad Tidings API key not configured");
-      }
-      return await makeGladTidingsRequest("/purchase/airtime", "POST", {
-        airtimeId,
-        phoneNumber,
-      });
-    } catch (error) {
-      console.error("Failed to purchase airtime:", error);
-      throw error;
+export const purchaseDataBundleServer = server$(async function purchaseDataBundle(
+  bundleId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    if (!GLAD_TIDINGS_API_KEY) {
+      throw new Error("Glad Tidings API key not configured");
     }
+    return await makeGladTidingsRequest<PurchaseResult>("/purchase/data", "POST", {
+      bundleId,
+      phoneNumber,
+    });
+  } catch (error) {
+    console.error("Failed to purchase data bundle:", error);
+    throw error;
   }
-);
+});
 
-export const purchaseTVSubscriptionServer = server$(
-  async function purchaseTVSubscription(
-    subscriptionId: string,
-    smartCardNumber: string
-  ): Promise<any> {
-    try {
-      if (!GLAD_TIDINGS_API_KEY) {
-        throw new Error("Glad Tidings API key not configured");
-      }
-      return await makeGladTidingsRequest("/purchase/tv", "POST", {
-        subscriptionId,
-        smartCardNumber,
-      });
-    } catch (error) {
-      console.error("Failed to purchase TV subscription:", error);
-      throw error;
+export const purchaseAirtimeServer = server$(async function purchaseAirtime(
+  airtimeId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    if (!GLAD_TIDINGS_API_KEY) {
+      throw new Error("Glad Tidings API key not configured");
     }
+    return await makeGladTidingsRequest<PurchaseResult>("/purchase/airtime", "POST", {
+      airtimeId,
+      phoneNumber,
+    });
+  } catch (error) {
+    console.error("Failed to purchase airtime:", error);
+    throw error;
   }
-);
+});
+
+export const purchaseTVSubscriptionServer = server$(async function purchaseTVSubscription(
+  subscriptionId: string,
+  smartCardNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    if (!GLAD_TIDINGS_API_KEY) {
+      throw new Error("Glad Tidings API key not configured");
+    }
+    return await makeGladTidingsRequest<PurchaseResult>("/purchase/tv", "POST", {
+      subscriptionId,
+      smartCardNumber,
+    });
+  } catch (error) {
+    console.error("Failed to purchase TV subscription:", error);
+    throw error;
+  }
+});

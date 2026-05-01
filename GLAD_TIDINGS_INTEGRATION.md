@@ -296,10 +296,10 @@ BEGIN
     new.email,
     new.raw_user_meta_data->>'name'
   );
-  
+
   INSERT INTO public.wallets (user_id)
   VALUES (new.id);
-  
+
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -332,11 +332,13 @@ To access the admin panel, you need an admin user. Run this in Supabase Auth:
 3. Create a user with email and password
 4. After creation, click the user and go to **User metadata**
 5. Add this JSON metadata:
+
 ```json
 {
   "admin": true
 }
 ```
+
 6. Save and refresh
 
 ---
@@ -368,6 +370,7 @@ To access the admin panel, you need an admin user. Run this in Supabase Auth:
 ### Verifying Transactions:
 
 In the **Transactions** admin panel:
+
 - View all user deposits
 - Check Glad Tidings reference ID
 - Mark as verified once money received
@@ -380,6 +383,7 @@ In the **Transactions** admin panel:
 Copy and paste each section in order into your Supabase SQL Editor:
 
 **Order to run:**
+
 1. Create users table (1.1)
 2. Create wallets table (1.2)
 3. Create transactions table (1.3)
@@ -393,12 +397,12 @@ Copy and paste each section in order into your Supabase SQL Editor:
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| "Permission denied" errors | Check RLS policies are enabled correctly |
-| Admin panel not accessible | Verify user has `admin: true` in metadata |
-| No data showing in transactions | Create test transactions via the app |
-| Wallets not created for new users | Check trigger is active on auth.users |
+| Issue                             | Solution                                  |
+| --------------------------------- | ----------------------------------------- |
+| "Permission denied" errors        | Check RLS policies are enabled correctly  |
+| Admin panel not accessible        | Verify user has `admin: true` in metadata |
+| No data showing in transactions   | Create test transactions via the app      |
+| Wallets not created for new users | Check trigger is active on auth.users     |
 
 ---
 

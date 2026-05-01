@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { toast } from "sonner";
-import { getTVSubscriptions, purchaseTVSubscription, type TVSubscription } from "@/lib/glad-tidings";
+import {
+  getTVSubscriptions,
+  purchaseTVSubscription,
+  type TVSubscription,
+} from "@/lib/glad-tidings";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/tv")({ component: TvPage });
@@ -61,9 +65,7 @@ function TvPage() {
       <h1 className="mb-3 text-xl font-bold">
         Welcome back, <span className="gradient-text-gold">Student!</span>
       </h1>
-      <p className="mb-3 text-xs tracking-widest text-muted-foreground">
-        SELECT TV SUBSCRIPTION
-      </p>
+      <p className="mb-3 text-xs tracking-widest text-muted-foreground">SELECT TV SUBSCRIPTION</p>
 
       <div className="space-y-2">
         {loading ? (
@@ -79,7 +81,9 @@ function TvPage() {
             >
               <div className="flex flex-col items-start">
                 <span className="text-xs font-semibold">{sub.name}</span>
-                <span className="text-xs text-muted-foreground">{sub.provider} • {sub.duration}</span>
+                <span className="text-xs text-muted-foreground">
+                  {sub.provider} • {sub.duration}
+                </span>
               </div>
               <span className="rounded-lg bg-primary/20 px-3 py-1 text-xs font-bold text-primary">
                 ₦{sub.price.toLocaleString()}

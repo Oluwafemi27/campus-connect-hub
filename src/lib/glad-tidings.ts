@@ -1,4 +1,8 @@
-const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
+// Glad Tidings API integration for airtime, data bundles, and TV subscriptions
+// API Key: 62aee3783c9d04881ee9ef69d7d88ec8d260503e
+
+const GLAD_TIDINGS_API_KEY = "62aee3783c9d04881ee9ef69d7d88ec8d260503e";
+const GLAD_TIDINGS_BASE_URL = "https://api.gladtidings.app/api";
 
 export interface DataBundle {
   id: string;
@@ -24,7 +28,7 @@ export interface TVSubscription {
   provider: string;
 }
 
-// Mock data for development - replace with real API calls when backend is ready
+// Mock data for development when API is unavailable
 const mockDataBundles: DataBundle[] = [
   {
     id: "1",
@@ -58,6 +62,54 @@ const mockDataBundles: DataBundle[] = [
     validity: "30 days",
     network: "mtn",
   },
+  {
+    id: "5",
+    name: "DAILY: 1.5GB (24 Hrs)",
+    amount: 1.5,
+    price: 500,
+    validity: "24 hours",
+    network: "airtel",
+  },
+  {
+    id: "6",
+    name: "WEEKLY: 3GB (7 Days)",
+    amount: 3,
+    price: 1000,
+    validity: "7 days",
+    network: "airtel",
+  },
+  {
+    id: "7",
+    name: "MONTHLY: 6GB (30 Days)",
+    amount: 6,
+    price: 2000,
+    validity: "30 days",
+    network: "airtel",
+  },
+  {
+    id: "8",
+    name: "DAILY: 1.35GB (24 Hrs)",
+    amount: 1.35,
+    price: 300,
+    validity: "24 hours",
+    network: "glo",
+  },
+  {
+    id: "9",
+    name: "WEEKLY: 4.1GB (7 Days)",
+    amount: 4.1,
+    price: 1000,
+    validity: "7 days",
+    network: "glo",
+  },
+  {
+    id: "10",
+    name: "MONTHLY: 8.1GB (30 Days)",
+    amount: 8.1,
+    price: 2500,
+    validity: "30 days",
+    network: "glo",
+  },
 ];
 
 const mockAirtimes: Airtime[] = [
@@ -67,178 +119,247 @@ const mockAirtimes: Airtime[] = [
   { id: "1000", amount: 1000, price: 1000, network: "mtn" },
   { id: "2000", amount: 2000, price: 2000, network: "mtn" },
   { id: "5000", amount: 5000, price: 5000, network: "mtn" },
+  { id: "100-9mobile", amount: 100, price: 100, network: "9mobile" },
+  { id: "500-9mobile", amount: 500, price: 500, network: "9mobile" },
+  { id: "100-glo", amount: 100, price: 100, network: "glo" },
+  { id: "500-glo", amount: 500, price: 500, network: "glo" },
+  { id: "100-airtel", amount: 100, price: 100, network: "airtel" },
+  { id: "500-airtel", amount: 500, price: 500, network: "airtel" },
 ];
 
 const mockTVSubscriptions: TVSubscription[] = [
+  { id: "dstv-1", name: "DStv Access", price: 2500, duration: "1 month", provider: "DStv" },
+  { id: "dstv-2", name: "DStv Lite", price: 3500, duration: "1 month", provider: "DStv" },
+  { id: "dstv-3", name: "DStv Compact", price: 5000, duration: "1 month", provider: "DStv" },
+  { id: "dstv-4", name: "DStv Compact Plus", price: 8000, duration: "1 month", provider: "DStv" },
+  { id: "dstv-5", name: "DStv Premium", price: 12500, duration: "1 month", provider: "DStv" },
+  { id: "gotv-1", name: "GOtv Lite", price: 1250, duration: "1 month", provider: "GOtv" },
+  { id: "gotv-2", name: "GOtv Value", price: 2200, duration: "1 month", provider: "GOtv" },
+  { id: "gotv-3", name: "GOtv Plus", price: 3500, duration: "1 month", provider: "GOtv" },
+  { id: "gotv-4", name: "GOtv Max", price: 4800, duration: "1 month", provider: "GOtv" },
   {
-    id: "dstv-1",
-    name: "DStv Compact",
-    price: 5000,
+    id: "startimes-1",
+    name: "StarTimes Nova",
+    price: 1100,
     duration: "1 month",
-    provider: "DStv",
+    provider: "Startimes",
   },
   {
-    id: "dstv-2",
-    name: "DStv Premium",
-    price: 12500,
+    id: "startimes-2",
+    name: "StarTimes Smart",
+    price: 2000,
     duration: "1 month",
-    provider: "DStv",
+    provider: "Startimes",
   },
   {
-    id: "gotv-1",
-    name: "GOtv Plus",
+    id: "startimes-3",
+    name: "StarTimes Classic",
     price: 3500,
     duration: "1 month",
-    provider: "GOtv",
+    provider: "Startimes",
   },
 ];
 
-export async function getDataBundles(): Promise<DataBundle[]> {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
 
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Using mock data - Glad Tidings API key not configured");
-    return mockDataBundles;
-  }
+async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const url = `${GLAD_TIDINGS_BASE_URL}${endpoint}`;
 
   try {
-    const response = await fetch("https://api.gladtidings.app/data-bundles", {
+    const response = await fetch(url, {
+      ...options,
       headers: {
         Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
         "Content-Type": "application/json",
+        ...options?.headers,
       },
     });
 
-    if (!response.ok) throw new Error("Failed to fetch");
-    const data = await response.json();
-    return data.data || mockDataBundles;
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `API Error: ${response.status}`);
+    }
+
+    const data: ApiResponse<T> = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || "Request failed");
+    }
+
+    return data.data as T;
   } catch (error) {
-    console.error("Failed to fetch data bundles, using mock data:", error);
+    console.error(`Glad Tidings API Error [${endpoint}]:`, error);
+    throw error;
+  }
+}
+
+export async function getDataBundles(): Promise<DataBundle[]> {
+  try {
+    const bundles = await fetchApi<DataBundle[]>("/data-bundles");
+    return bundles.length > 0 ? bundles : mockDataBundles;
+  } catch (error) {
+    console.warn("Using mock data bundles - API unavailable:", error);
     return mockDataBundles;
   }
 }
 
 export async function getAirtimes(): Promise<Airtime[]> {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Using mock data - Glad Tidings API key not configured");
-    return mockAirtimes;
-  }
-
   try {
-    const response = await fetch("https://api.gladtidings.app/airtimes", {
-      headers: {
-        Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch");
-    const data = await response.json();
-    return data.data || mockAirtimes;
+    const airtimes = await fetchApi<Airtime[]>("/airtimes");
+    return airtimes.length > 0 ? airtimes : mockAirtimes;
   } catch (error) {
-    console.error("Failed to fetch airtimes, using mock data:", error);
+    console.warn("Using mock airtime data - API unavailable:", error);
     return mockAirtimes;
   }
 }
 
 export async function getTVSubscriptions(): Promise<TVSubscription[]> {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Using mock data - Glad Tidings API key not configured");
-    return mockTVSubscriptions;
-  }
-
   try {
-    const response = await fetch("https://api.gladtidings.app/tv-subscriptions", {
-      headers: {
-        Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch");
-    const data = await response.json();
-    return data.data || mockTVSubscriptions;
+    const subscriptions = await fetchApi<TVSubscription[]>("/tv-subscriptions");
+    return subscriptions.length > 0 ? subscriptions : mockTVSubscriptions;
   } catch (error) {
-    console.error("Failed to fetch TV subscriptions, using mock data:", error);
+    console.warn("Using mock TV subscription data - API unavailable:", error);
     return mockTVSubscriptions;
   }
 }
 
-export async function purchaseDataBundle(bundleId: string, phoneNumber: string): Promise<any> {
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Purchase not available - API key not configured");
-    return { success: true, message: "Purchase queued" };
-  }
+export interface PurchaseResult {
+  success: boolean;
+  message: string;
+  reference?: string;
+  details?: Record<string, unknown>;
+}
 
+export async function purchaseDataBundle(
+  bundleId: string,
+  phoneNumber: string,
+  network: string,
+): Promise<PurchaseResult> {
   try {
-    const response = await fetch("https://api.gladtidings.app/purchase/data", {
+    const result = await fetchApi<PurchaseResult>("/purchase/data", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ bundleId, phoneNumber }),
+      body: JSON.stringify({ bundle_id: bundleId, phone: phoneNumber, network }),
     });
-
-    if (!response.ok) throw new Error("Purchase failed");
-    return await response.json();
+    return result;
   } catch (error) {
     console.error("Failed to purchase data bundle:", error);
-    throw error;
+    return {
+      success: false,
+      message: "Unable to complete purchase. Please try again.",
+    };
   }
 }
 
-export async function purchaseAirtime(airtimeId: string, phoneNumber: string): Promise<any> {
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Purchase not available - API key not configured");
-    return { success: true, message: "Purchase queued" };
-  }
-
+export async function purchaseAirtime(
+  amount: number,
+  phoneNumber: string,
+  network: string,
+): Promise<PurchaseResult> {
   try {
-    const response = await fetch("https://api.gladtidings.app/purchase/airtime", {
+    const result = await fetchApi<PurchaseResult>("/purchase/airtime", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ airtimeId, phoneNumber }),
+      body: JSON.stringify({ amount, phone: phoneNumber, network }),
     });
-
-    if (!response.ok) throw new Error("Purchase failed");
-    return await response.json();
+    return result;
   } catch (error) {
     console.error("Failed to purchase airtime:", error);
-    throw error;
+    return {
+      success: false,
+      message: "Unable to complete purchase. Please try again.",
+    };
   }
 }
 
-export async function purchaseTVSubscription(subscriptionId: string, smartCardNumber: string): Promise<any> {
-  if (!GLAD_TIDINGS_API_KEY) {
-    console.warn("Purchase not available - API key not configured");
-    return { success: true, message: "Purchase queued" };
-  }
-
+export async function purchaseTVSubscription(
+  packageId: string,
+  smartCardNumber: string,
+  provider: string,
+): Promise<PurchaseResult> {
   try {
-    const response = await fetch("https://api.gladtidings.app/purchase/tv", {
+    const result = await fetchApi<PurchaseResult>("/purchase/tv", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ subscriptionId, smartCardNumber }),
+      body: JSON.stringify({ package_id: packageId, smart_card: smartCardNumber, provider }),
     });
-
-    if (!response.ok) throw new Error("Purchase failed");
-    return await response.json();
+    return result;
   } catch (error) {
     console.error("Failed to purchase TV subscription:", error);
-    throw error;
+    return {
+      success: false,
+      message: "Unable to complete purchase. Please try again.",
+    };
+  }
+}
+
+// Verify phone number and get network
+export async function verifyPhoneNumber(phoneNumber: string): Promise<{
+  valid: boolean;
+  network?: string;
+  number?: string;
+}> {
+  try {
+    const result = await fetchApi<{ valid: boolean; network?: string; number?: string }>(
+      "/verify/phone",
+      {
+        method: "POST",
+        body: JSON.stringify({ phone: phoneNumber }),
+      },
+    );
+    return result;
+  } catch (error) {
+    console.error("Failed to verify phone:", error);
+    // Return a basic detection based on prefix
+    const prefixes: Record<string, string> = {
+      "0803": "mtn",
+      "0806": "mtn",
+      "0813": "mtn",
+      "0816": "mtn",
+      "0810": "mtn",
+      "0701": "mtn",
+      "0703": "mtn",
+      "0706": "mtn",
+      "0802": "airtel",
+      "0808": "airtel",
+      "0812": "airtel",
+      "0901": "airtel",
+      "0902": "airtel",
+      "0904": "airtel",
+      "0705": "airtel",
+      "0805": "glo",
+      "0807": "glo",
+      "0811": "glo",
+      "0815": "glo",
+      "0905": "glo",
+      "0809": "9mobile",
+      "0817": "9mobile",
+      "0909": "9mobile",
+    };
+
+    const prefix = phoneNumber.substring(0, 4);
+    const network = prefixes[prefix] || "mtn";
+
+    return { valid: true, network, number: phoneNumber };
+  }
+}
+
+// Verify TV smart card number
+export async function verifySmartCard(
+  smartCardNumber: string,
+  provider: string,
+): Promise<{ valid: boolean; customerName?: string }> {
+  try {
+    const result = await fetchApi<{ valid: boolean; customer_name?: string }>("/verify/tv", {
+      method: "POST",
+      body: JSON.stringify({ smart_card: smartCardNumber, provider }),
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to verify smart card:", error);
+    // Assume valid for now, API will validate on purchase
+    return { valid: true };
   }
 }

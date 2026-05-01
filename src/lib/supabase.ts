@@ -9,4 +9,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type Database = Record<string, any>;
+export type Database = Record<string, unknown>;

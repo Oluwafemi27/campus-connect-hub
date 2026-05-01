@@ -32,11 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session?.user) {
-          const adminRole = data.session.user.user_metadata?.admin === true ||
-                           data.session.user.user_metadata?.role === 'admin';
+          const adminRole =
+            data.session.user.user_metadata?.admin === true ||
+            data.session.user.user_metadata?.role === "admin";
           setUser({
             id: data.session.user.id,
-            name: data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
+            name:
+              data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
             email: data.session.user.email || "",
             phone: data.session.user.user_metadata?.phone,
           });
@@ -52,24 +54,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth();
 
     // Listen to auth changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const adminRole = session.user.user_metadata?.admin === true ||
-                           session.user.user_metadata?.role === 'admin';
-          setUser({
-            id: session.user.id,
-            name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
-            email: session.user.email || "",
-            phone: session.user.user_metadata?.phone,
-          });
-          setIsAdmin(adminRole);
-        } else {
-          setUser(null);
-          setIsAdmin(false);
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const adminRole =
+          session.user.user_metadata?.admin === true ||
+          session.user.user_metadata?.role === "admin";
+        setUser({
+          id: session.user.id,
+          name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
+          email: session.user.email || "",
+          phone: session.user.user_metadata?.phone,
+        });
+        setIsAdmin(adminRole);
+      } else {
+        setUser(null);
+        setIsAdmin(false);
       }
-    );
+    });
 
     return () => {
       authListener?.subscription.unsubscribe();
@@ -123,16 +124,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (data.user) {
           // Create user profile in the users table
-          const { error: profileError } = await supabase
-            .from("users")
-            .insert({
-              id: data.user.id,
-              email,
-              name,
-              phone: phone || null,
-              created_at: new Date().toISOString(),
-              status: "active",
-            });
+          const { error: profileError } = await supabase.from("users").insert({
+            id: data.user.id,
+            email,
+            name,
+            phone: phone || null,
+            created_at: new Date().toISOString(),
+            status: "active",
+          });
 
           if (profileError) {
             console.error("Error creating user profile:", profileError);
