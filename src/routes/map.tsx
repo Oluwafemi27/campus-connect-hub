@@ -44,7 +44,10 @@ function MapPage() {
       <p className="mt-5 mb-2 text-xs tracking-widest text-muted-foreground">NEARBY ZONES</p>
       <div className="space-y-2">
         {ROUTER_LOCATIONS.map((location) => (
-          <div key={location.title} className="glass flex items-center justify-between rounded-xl px-4 py-3">
+          <div
+            key={location.title}
+            className="glass flex items-center justify-between rounded-xl px-4 py-3"
+          >
             <div className="flex items-center gap-3">
               <MapPin className="h-4 w-4 text-primary" />
               <span className="text-sm font-semibold">{location.title}</span>

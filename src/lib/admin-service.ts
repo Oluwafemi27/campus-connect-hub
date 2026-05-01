@@ -66,6 +66,43 @@ export interface SupportReply {
   created_at: string;
 }
 
+export type RealtimeCallback<T> = (payload: T) => void;
+
+export function subscribeToUsers(callback: RealtimeCallback<unknown>) {
+  return supabase
+    .channel("users_changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "users" }, callback)
+    .subscribe();
+}
+
+export function subscribeToTransactions(callback: RealtimeCallback<unknown>) {
+  return supabase
+    .channel("transactions_changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "transactions" }, callback)
+    .subscribe();
+}
+
+export function subscribeToBroadcasts(callback: RealtimeCallback<unknown>) {
+  return supabase
+    .channel("broadcasts_changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "broadcasts" }, callback)
+    .subscribe();
+}
+
+export function subscribeToFeatures(callback: RealtimeCallback<unknown>) {
+  return supabase
+    .channel("features_changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "features" }, callback)
+    .subscribe();
+}
+
+export function subscribeToSupportMessages(callback: RealtimeCallback<unknown>) {
+  return supabase
+    .channel("support_messages_changes")
+    .on("postgres_changes", { event: "*", schema: "public", table: "support_messages" }, callback)
+    .subscribe();
+}
+
 export async function getAdminStats(): Promise<AdminStats> {
   try {
     // Get total users count from users table
@@ -73,7 +110,6 @@ export async function getAdminStats(): Promise<AdminStats> {
       .from("users")
       .select("*", { count: "exact", head: true });
 
-    // For now, we'll set defaults. These can be updated once you have transaction data
     // Get transactions from last 24 hours
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { count: last24hTransactions, error: txError } = await supabase
@@ -88,7 +124,9 @@ export async function getAdminStats(): Promise<AdminStats> {
     // Get monthly revenue
     const monthStart = new Date();
     monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
     const monthStartStr = monthStart.toISOString();
+
     const { data: monthlyTransactions, error: monthError } = await supabase
       .from("transactions")
       .select("amount")
@@ -100,14 +138,14 @@ export async function getAdminStats(): Promise<AdminStats> {
     }
 
     const monthlyRevenue = (monthlyTransactions || []).reduce(
-      (sum: number, t: any) => sum + (t.amount || 0),
-      0
+      (sum: number, t: { amount: number }) => sum + (t.amount || 0),
+      0,
     );
 
     return {
       totalUsers: totalUsers || 0,
       monthlyRevenue,
-      onlineRouters: 0, // Will need router tracking table
+      onlineRouters: 0,
       last24hTransactions: last24hTransactions || 0,
     };
   } catch (error) {
@@ -126,6 +164,7 @@ export async function getUsers(limit = 50, offset = 0): Promise<User[]> {
     const { data, error } = await supabase
       .from("users")
       .select("*")
+      .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) throw error;
@@ -141,13 +180,29 @@ export async function searchUsers(query: string): Promise<User[]> {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .or(`name.ilike.%${query}%,email.ilike.%${query}%`);
+      .or(`name.ilike.%${query}%,email.ilike.%${query}%`)
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
     return data || [];
   } catch (error) {
     console.error("Error searching users:", error);
     return [];
+  }
+}
+
+export async function updateUserStatus(
+  userId: string,
+  status: "active" | "suspended" | "pending",
+): Promise<boolean> {
+  try {
+    const { error } = await supabase.from("users").update({ status }).eq("id", userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    return false;
   }
 }
 
@@ -198,7 +253,9 @@ export async function getBroadcasts(limit = 50, offset = 0): Promise<Broadcast[]
   }
 }
 
-export async function createBroadcast(broadcast: Omit<Broadcast, "id" | "created_at" | "created_by">): Promise<Broadcast | null> {
+export async function createBroadcast(
+  broadcast: Omit<Broadcast, "id" | "created_at" | "created_by" | "recipient_count">,
+): Promise<Broadcast | null> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user?.id) throw new Error("Not authenticated");
@@ -206,9 +263,7 @@ export async function createBroadcast(broadcast: Omit<Broadcast, "id" | "created
     // Count recipients based on audience
     let recipientCount = 0;
     if (broadcast.audience === "all") {
-      const { count } = await supabase
-        .from("users")
-        .select("*", { count: "exact", head: true });
+      const { count } = await supabase.from("users").select("*", { count: "exact", head: true });
       recipientCount = count || 0;
     } else {
       const { count } = await supabase
@@ -221,10 +276,14 @@ export async function createBroadcast(broadcast: Omit<Broadcast, "id" | "created
     const { data, error } = await supabase
       .from("broadcasts")
       .insert({
-        ...broadcast,
+        title: broadcast.title,
+        body: broadcast.body,
+        audience: broadcast.audience,
+        status: broadcast.status,
         recipient_count: recipientCount,
         created_by: userData.user.id,
         sent_at: broadcast.status === "sent" ? new Date().toISOString() : null,
+        scheduled_at: broadcast.scheduled_at || null,
       })
       .select()
       .single();
@@ -237,7 +296,10 @@ export async function createBroadcast(broadcast: Omit<Broadcast, "id" | "created
   }
 }
 
-export async function updateBroadcast(id: string, updates: Partial<Broadcast>): Promise<Broadcast | null> {
+export async function updateBroadcast(
+  id: string,
+  updates: Partial<Broadcast>,
+): Promise<Broadcast | null> {
   try {
     const { data, error } = await supabase
       .from("broadcasts")
@@ -265,7 +327,6 @@ export async function sendBroadcast(id: string): Promise<boolean> {
       .eq("id", id);
 
     if (error) throw error;
-    // In a real app, this would trigger notification service
     console.log("Broadcast sent:", id);
     return true;
   } catch (error) {
@@ -276,10 +337,7 @@ export async function sendBroadcast(id: string): Promise<boolean> {
 
 export async function deleteBroadcast(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("broadcasts")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("broadcasts").delete().eq("id", id);
 
     if (error) throw error;
     return true;
@@ -305,7 +363,9 @@ export async function getFeatures(): Promise<Feature[]> {
   }
 }
 
-export async function createFeature(feature: Omit<Feature, "id" | "created_at">): Promise<Feature | null> {
+export async function createFeature(
+  feature: Omit<Feature, "id" | "created_at">,
+): Promise<Feature | null> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user?.id) throw new Error("Not authenticated");
@@ -313,7 +373,12 @@ export async function createFeature(feature: Omit<Feature, "id" | "created_at">)
     const { data, error } = await supabase
       .from("features")
       .insert({
-        ...feature,
+        title: feature.title,
+        description: feature.description || null,
+        icon: feature.icon || null,
+        image_url: feature.image_url || null,
+        is_active: feature.is_active ?? true,
+        display_order: feature.display_order ?? 0,
         created_by: userData.user.id,
       })
       .select()
@@ -327,7 +392,10 @@ export async function createFeature(feature: Omit<Feature, "id" | "created_at">)
   }
 }
 
-export async function updateFeature(id: string, updates: Partial<Feature>): Promise<Feature | null> {
+export async function updateFeature(
+  id: string,
+  updates: Partial<Feature>,
+): Promise<Feature | null> {
   try {
     const { data, error } = await supabase
       .from("features")
@@ -346,10 +414,7 @@ export async function updateFeature(id: string, updates: Partial<Feature>): Prom
 
 export async function deleteFeature(id: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("features")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("features").delete().eq("id", id);
 
     if (error) throw error;
     return true;
@@ -391,7 +456,10 @@ export async function getSupportReplies(messageId: string): Promise<SupportReply
   }
 }
 
-export async function createSupportReply(messageId: string, replyText: string): Promise<SupportReply | null> {
+export async function createSupportReply(
+  messageId: string,
+  replyText: string,
+): Promise<SupportReply | null> {
   try {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user?.id) throw new Error("Not authenticated");
@@ -418,7 +486,10 @@ export async function createSupportReply(messageId: string, replyText: string): 
   }
 }
 
-export async function updateMessageStatus(messageId: string, status: "open" | "in_progress" | "resolved"): Promise<boolean> {
+export async function updateMessageStatus(
+  messageId: string,
+  status: "open" | "in_progress" | "resolved",
+): Promise<boolean> {
   try {
     const { error } = await supabase
       .from("support_messages")
@@ -455,19 +526,78 @@ export async function updateAdminSetting(key: string, value: string): Promise<bo
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user?.id) throw new Error("Not authenticated");
 
-    const { error } = await supabase
-      .from("admin_settings")
-      .upsert({
-        setting_key: key,
-        setting_value: value,
-        updated_by: userData.user.id,
-        updated_at: new Date().toISOString(),
-      });
+    const { error } = await supabase.from("admin_settings").upsert({
+      setting_key: key,
+      setting_value: value,
+      updated_by: userData.user.id,
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) throw error;
     return true;
   } catch (error) {
     console.error("Error updating admin setting:", error);
+    return false;
+  }
+}
+
+// Get all settings
+export async function getAllAdminSettings(): Promise<Record<string, string>> {
+  try {
+    const { data, error } = await supabase
+      .from("admin_settings")
+      .select("setting_key, setting_value");
+
+    if (error) throw error;
+
+    const settings: Record<string, string> = {};
+    (data || []).forEach((row) => {
+      settings[row.setting_key] = row.setting_value;
+    });
+
+    return settings;
+  } catch (error) {
+    console.error("Error fetching all admin settings:", error);
+    return {};
+  }
+}
+
+// Operator settings
+export interface OperatorSettings {
+  mtn: boolean;
+  airtel: boolean;
+  glo: boolean;
+  "9mobile": boolean;
+}
+
+export async function getOperatorSettings(): Promise<OperatorSettings> {
+  try {
+    const settings = await getAllAdminSettings();
+    return {
+      mtn: settings["operator_mtn"] !== "false",
+      airtel: settings["operator_airtel"] !== "false",
+      glo: settings["operator_glo"] !== "false",
+      "9mobile": settings["operator_9mobile"] !== "false",
+    };
+  } catch (error) {
+    console.error("Error getting operator settings:", error);
+    return { mtn: true, airtel: true, glo: true, "9mobile": true };
+  }
+}
+
+export async function updateOperatorSettings(operators: OperatorSettings): Promise<boolean> {
+  try {
+    const updates = [
+      updateAdminSetting("operator_mtn", String(operators.mtn)),
+      updateAdminSetting("operator_airtel", String(operators.airtel)),
+      updateAdminSetting("operator_glo", String(operators.glo)),
+      updateAdminSetting("operator_9mobile", String(operators["9mobile"])),
+    ];
+
+    await Promise.all(updates);
+    return true;
+  } catch (error) {
+    console.error("Error updating operator settings:", error);
     return false;
   }
 }

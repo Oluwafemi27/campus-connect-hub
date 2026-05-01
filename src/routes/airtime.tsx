@@ -94,7 +94,9 @@ function AirtimePage() {
             </button>
           ))
         ) : (
-          <p className="col-span-3 text-center text-sm text-muted-foreground">No airtimes available</p>
+          <p className="col-span-3 text-center text-sm text-muted-foreground">
+            No airtimes available
+          </p>
         )}
       </div>
 

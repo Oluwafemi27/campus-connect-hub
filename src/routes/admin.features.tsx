@@ -1,16 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Trash2, Edit2, Plus, X, Check, Sparkles } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Trash2, Edit2, Plus, X, Check, Sparkles, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { useAdminGuard } from "@/hooks/useAdminGuard";
+import { supabase } from "@/lib/supabase";
+import {
+  getFeatures,
+  createFeature,
+  updateFeature,
+  deleteFeature as deleteFeatureApi,
+  subscribeToFeatures,
+  type Feature,
+} from "@/lib/admin-service";
 
 export const Route = createFileRoute("/admin/features")({ component: AdminFeatures });
-
-interface Feature {
-  id: string;
-  title: string;
-  subtitle: string;
-  gradient: string;
-}
 
 const gradientOptions = [
   { label: "Blue-Purple", value: "from-primary/40 to-accent/30" },
@@ -22,64 +25,129 @@ const gradientOptions = [
 ];
 
 function AdminFeatures() {
+  useAdminGuard();
   const [features, setFeatures] = useState<Feature[]>([]);
-
+  const [loading, setLoading] = useState(true);
   const [isAddingFeature, setIsAddingFeature] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
-    subtitle: "",
+    description: "",
     gradient: "from-primary/40 to-accent/30",
   });
+
+  const fetchFeatures = useCallback(async () => {
+    try {
+      const data = await getFeatures();
+      setFeatures(data);
+    } catch (error) {
+      console.error("Failed to fetch features:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFeatures();
+
+    // Subscribe to realtime updates
+    const subscription = subscribeToFeatures(() => {
+      fetchFeatures();
+    });
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [fetchFeatures]);
 
   const handleAddClick = () => {
     setIsAddingFeature(true);
     setEditingId(null);
-    setFormData({ title: "", subtitle: "", gradient: "from-primary/40 to-accent/30" });
+    setFormData({ title: "", description: "", gradient: "from-primary/40 to-accent/30" });
   };
 
   const handleEditClick = (feature: Feature) => {
     setIsAddingFeature(true);
     setEditingId(feature.id);
-    setFormData({ title: feature.title, subtitle: feature.subtitle, gradient: feature.gradient });
+    setFormData({
+      title: feature.title,
+      description: feature.description || "",
+      gradient: "from-primary/40 to-accent/30", // Default, as Feature type doesn't have gradient
+    });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title.trim()) {
       toast.error("Feature title is required");
       return;
     }
-    if (!formData.subtitle.trim()) {
-      toast.error("Feature subtitle is required");
-      return;
-    }
 
-    if (editingId) {
-      setFeatures(features.map((f) => (f.id === editingId ? { ...f, ...formData } : f)));
-      toast.success("Feature updated successfully");
-    } else {
-      const newFeature: Feature = {
-        id: Date.now().toString(),
-        ...formData,
-      };
-      setFeatures([...features, newFeature]);
-      toast.success("Feature added successfully");
-    }
+    setSaving(true);
+    try {
+      if (editingId) {
+        const updated = await updateFeature(editingId, {
+          title: formData.title.trim(),
+          description: formData.description.trim() || undefined,
+        });
 
-    setIsAddingFeature(false);
-    setEditingId(null);
-    setFormData({ title: "", subtitle: "", gradient: "from-primary/40 to-accent/30" });
+        if (updated) {
+          setFeatures(features.map((f) => (f.id === editingId ? { ...f, ...updated } : f)));
+          toast.success("Feature updated successfully");
+        } else {
+          toast.error("Failed to update feature");
+        }
+      } else {
+        const newFeature = await createFeature({
+          title: formData.title.trim(),
+          description: formData.description.trim() || undefined,
+          is_active: true,
+          display_order: features.length,
+        });
+
+        if (newFeature) {
+          setFeatures([...features, newFeature]);
+          toast.success("Feature added successfully");
+        } else {
+          toast.error("Failed to create feature");
+        }
+      }
+
+      setIsAddingFeature(false);
+      setEditingId(null);
+      setFormData({ title: "", description: "", gradient: "from-primary/40 to-accent/30" });
+    } catch (error) {
+      console.error("Failed to save feature:", error);
+      toast.error("Failed to save feature");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setFeatures(features.filter((f) => f.id !== id));
-    toast.success("Feature deleted");
+  const handleDelete = async (id: string) => {
+    const success = await deleteFeatureApi(id);
+    if (success) {
+      setFeatures(features.filter((f) => f.id !== id));
+      toast.success("Feature deleted");
+    } else {
+      toast.error("Failed to delete feature");
+    }
   };
 
   const handleCancel = () => {
     setIsAddingFeature(false);
     setEditingId(null);
-    setFormData({ title: "", subtitle: "", gradient: "from-primary/40 to-accent/30" });
+    setFormData({ title: "", description: "", gradient: "from-primary/40 to-accent/30" });
+  };
+
+  const toggleFeatureActive = async (feature: Feature) => {
+    const success = await updateFeature(feature.id, { is_active: !feature.is_active });
+    if (success) {
+      setFeatures(
+        features.map((f) => (f.id === feature.id ? { ...f, is_active: !feature.is_active } : f)),
+      );
+      toast.success(`Feature ${!feature.is_active ? "activated" : "deactivated"}`);
+    }
   };
 
   return (
@@ -121,13 +189,13 @@ function AdminFeatures() {
             <label className="text-sm font-semibold block mb-2">Subtitle/Description</label>
             <input
               type="text"
-              value={formData.subtitle}
-              onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="e.g., Oct 15-17"
               className="w-full rounded-xl bg-muted/30 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
               maxLength={60}
             />
-            <p className="text-xs text-muted-foreground mt-1">{formData.subtitle.length}/60</p>
+            <p className="text-xs text-muted-foreground mt-1">{formData.description.length}/60</p>
           </div>
 
           <div>
@@ -158,7 +226,7 @@ function AdminFeatures() {
               <p className="text-[10px] tracking-widest text-muted-foreground">CAMPUS</p>
               <p className="text-sm font-bold line-clamp-2">{formData.title || "Feature Title"}</p>
               <p className="text-xs text-muted-foreground line-clamp-1">
-                {formData.subtitle || "Subtitle"}
+                {formData.description || "Subtitle"}
               </p>
             </div>
           </div>
@@ -166,14 +234,20 @@ function AdminFeatures() {
           <div className="flex gap-2">
             <button
               onClick={handleSave}
-              className="tile-press flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent py-3 font-bold text-primary-foreground glow-primary hover:shadow-lg"
+              disabled={saving || !formData.title.trim()}
+              className="tile-press flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent py-3 font-bold text-primary-foreground glow-primary hover:shadow-lg disabled:opacity-50"
             >
-              <Check className="h-4 w-4" />
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4" />
+              )}
               Save Feature
             </button>
             <button
               onClick={handleCancel}
-              className="tile-press flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/30 py-3 font-bold hover:bg-muted/40"
+              disabled={saving}
+              className="tile-press flex-1 flex items-center justify-center gap-2 rounded-xl bg-muted/30 py-3 font-bold hover:bg-muted/40 disabled:opacity-50"
             >
               <X className="h-4 w-4" />
               Cancel
@@ -188,20 +262,49 @@ function AdminFeatures() {
           {features.length} FEATURE{features.length !== 1 ? "S" : ""} ACTIVE
         </p>
 
-        {features.length > 0 ? (
+        {loading ? (
+          <div className="glass flex h-32 flex-col items-center justify-center gap-2 rounded-2xl">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Loading features...</p>
+          </div>
+        ) : features.length > 0 ? (
           <div className="space-y-2">
             {features.map((feature) => (
               <div key={feature.id} className="glass rounded-xl p-4">
                 <div className="flex items-start gap-4">
-                  <div
-                    className={`h-16 w-20 shrink-0 rounded-lg bg-gradient-to-br ${feature.gradient}`}
-                  />
+                  <div className="h-16 w-20 shrink-0 rounded-lg bg-gradient-to-br from-primary/40 to-accent/30" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs tracking-widest text-muted-foreground">CAMPUS</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs tracking-widest text-muted-foreground">CAMPUS</p>
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded-full ${
+                          feature.is_active
+                            ? "bg-neon/20 text-neon"
+                            : "bg-muted/20 text-muted-foreground"
+                        }`}
+                      >
+                        {feature.is_active ? "Active" : "Inactive"}
+                      </span>
+                    </div>
                     <p className="font-semibold text-sm line-clamp-1">{feature.title}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{feature.subtitle}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">
+                      {feature.description || "—"}
+                    </p>
                   </div>
                   <div className="flex gap-1 shrink-0">
+                    <button
+                      onClick={() => toggleFeatureActive(feature)}
+                      className={`tile-press p-2 rounded-lg transition-colors ${
+                        feature.is_active ? "hover:bg-orange-500/20" : "hover:bg-emerald-500/20"
+                      }`}
+                      title={feature.is_active ? "Deactivate" : "Activate"}
+                    >
+                      {feature.is_active ? (
+                        <span className="text-xs">⏸️</span>
+                      ) : (
+                        <span className="text-xs">▶️</span>
+                      )}
+                    </button>
                     <button
                       onClick={() => handleEditClick(feature)}
                       className="tile-press p-2 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"

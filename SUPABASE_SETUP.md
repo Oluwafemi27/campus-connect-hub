@@ -139,10 +139,10 @@ BEGIN
     new.email,
     new.raw_user_meta_data->>'name'
   );
-  
+
   INSERT INTO public.wallets (user_id)
   VALUES (new.id);
-  
+
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
