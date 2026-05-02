@@ -8,32 +8,6 @@ export default defineConfig({
   plugins: [TanStackRouterVite(), react(), tailwindcss(), tsconfigPaths()],
   build: {
     assetsInlineLimit: 4096,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes("node_modules")) {
-            if (
-              id.includes("react") ||
-              id.includes("react-dom") ||
-              id.includes("@tanstack/react-router")
-            ) {
-              return "vendor-react";
-            }
-            if (id.includes("@radix-ui") || id.includes("lucide-react")) {
-              return "vendor-ui";
-            }
-            if (id.includes("@supabase")) {
-              return "vendor-supabase";
-            }
-            if (id.includes("sonner") || id.includes("recharts")) {
-              return "vendor-misc";
-            }
-            return "vendor-other";
-          }
-        },
-      },
-    },
     cssCodeSplit: true,
     minify: "terser",
     terserOptions: {
