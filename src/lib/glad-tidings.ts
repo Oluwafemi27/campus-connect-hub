@@ -1,8 +1,7 @@
-// Glad Tidings API integration for airtime, data bundles, and TV subscriptions
-// API Key: 62aee3783c9d04881ee9ef69d7d88ec8d260503e
+import { GLAD_TIDINGS_CONFIG } from "./glad-tidings-config";
 
-const GLAD_TIDINGS_API_KEY = "62aee3783c9d04881ee9ef69d7d88ec8d260503e";
-const GLAD_TIDINGS_BASE_URL = "https://api.gladtidings.app/api";
+const GLAD_TIDINGS_API_KEY = GLAD_TIDINGS_CONFIG.apiKey;
+const GLAD_TIDINGS_BASE_URL = GLAD_TIDINGS_CONFIG.baseUrl + "/api";
 
 export interface DataBundle {
   id: string;

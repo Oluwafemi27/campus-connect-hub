@@ -29,6 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize auth state on mount
   useEffect(() => {
     const initializeAuth = async () => {
+      if (
+        !import.meta.env.VITE_SUPABASE_URL ||
+        import.meta.env.VITE_SUPABASE_URL.includes("placeholder")
+      ) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session?.user) {
