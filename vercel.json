@@ -3,9 +3,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
-  "env": {
-    "VITE_GOOGLE_MAPS_API_KEY": "@vite_google_maps_api_key"
-  },
   "headers": [
     {
       "source": "/(.*)",
