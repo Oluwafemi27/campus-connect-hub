@@ -1,5 +1,3 @@
-import { server$ } from "@tanstack/react-start/server";
-
 const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
 const GLAD_TIDINGS_BASE_URL = "https://api.gladtidings.app";
 
@@ -50,7 +48,7 @@ async function makeGladTidingsRequest<T>(
   return response.json();
 }
 
-export const getDataBundlesServer = server$(async function getDataBundles(): Promise<DataBundle[]> {
+export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
     if (!GLAD_TIDINGS_API_KEY) {
       console.warn("Glad Tidings API key not configured");
@@ -62,9 +60,9 @@ export const getDataBundlesServer = server$(async function getDataBundles(): Pro
     console.error("Failed to fetch data bundles:", error);
     return [];
   }
-});
+}
 
-export const getAirtimesServer = server$(async function getAirtimes(): Promise<Airtime[]> {
+export async function getAirtimesServer(): Promise<Airtime[]> {
   try {
     if (!GLAD_TIDINGS_API_KEY) {
       console.warn("Glad Tidings API key not configured");
@@ -76,11 +74,9 @@ export const getAirtimesServer = server$(async function getAirtimes(): Promise<A
     console.error("Failed to fetch airtimes:", error);
     return [];
   }
-});
+}
 
-export const getTVSubscriptionsServer = server$(async function getTVSubscriptions(): Promise<
-  TVSubscription[]
-> {
+export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
   try {
     if (!GLAD_TIDINGS_API_KEY) {
       console.warn("Glad Tidings API key not configured");
@@ -92,7 +88,7 @@ export const getTVSubscriptionsServer = server$(async function getTVSubscription
     console.error("Failed to fetch TV subscriptions:", error);
     return [];
   }
-});
+}
 
 export interface PurchaseResult {
   success: boolean;
@@ -101,7 +97,7 @@ export interface PurchaseResult {
   details?: Record<string, unknown>;
 }
 
-export const purchaseDataBundleServer = server$(async function purchaseDataBundle(
+export async function purchaseDataBundleServer(
   bundleId: string,
   phoneNumber: string,
 ): Promise<PurchaseResult> {
@@ -117,9 +113,9 @@ export const purchaseDataBundleServer = server$(async function purchaseDataBundl
     console.error("Failed to purchase data bundle:", error);
     throw error;
   }
-});
+}
 
-export const purchaseAirtimeServer = server$(async function purchaseAirtime(
+export async function purchaseAirtimeServer(
   airtimeId: string,
   phoneNumber: string,
 ): Promise<PurchaseResult> {
@@ -135,9 +131,9 @@ export const purchaseAirtimeServer = server$(async function purchaseAirtime(
     console.error("Failed to purchase airtime:", error);
     throw error;
   }
-});
+}
 
-export const purchaseTVSubscriptionServer = server$(async function purchaseTVSubscription(
+export async function purchaseTVSubscriptionServer(
   subscriptionId: string,
   smartCardNumber: string,
 ): Promise<PurchaseResult> {
@@ -153,4 +149,4 @@ export const purchaseTVSubscriptionServer = server$(async function purchaseTVSub
     console.error("Failed to purchase TV subscription:", error);
     throw error;
   }
-});
+}
