@@ -19,7 +19,7 @@ interface GladTidingsWebhookPayload {
   metadata?: {
     user_id?: string;
     transaction_id?: string;
-    virtual_account?: string;
+    user_email?: string;
   };
   created_at: string;
 }
@@ -65,7 +65,7 @@ serve(async (req) => {
 
     // Handle payment received event
     if (payload.event === "payment.received" && payload.status === "success") {
-      const { reference, amount, metadata } = payload;
+      const { reference, amount, metadata, narration } = payload;
 
       // Idempotency check: Check if this reference was already processed
       const { data: existingTx } = await supabase
@@ -91,31 +91,33 @@ serve(async (req) => {
       // Find the user associated with this payment
       let userId = metadata?.user_id;
 
-      // If no user_id in metadata, try to find by virtual account or transaction_id
-      if (!userId) {
-        if (metadata?.transaction_id) {
-          // Find the pending transaction and get the user_id
-          const { data: pendingTx } = await supabase
-            .from("transactions")
-            .select("user_id")
-            .eq("id", metadata.transaction_id)
-            .eq("status", "pending")
+      // If no user_id in metadata, try to find by transaction_id
+      if (!userId && metadata?.transaction_id) {
+        const { data: pendingTx } = await supabase
+          .from("transactions")
+          .select("user_id")
+          .eq("id", metadata.transaction_id)
+          .eq("status", "pending")
+          .single();
+
+        if (pendingTx) {
+          userId = pendingTx.user_id;
+        }
+      }
+
+      // If still no user found, try to identify by narration (format: "CC-UserID-Amount")
+      if (!userId && narration) {
+        // Expected narration format: "CC-{userId}-{amount}"
+        // Or try to find by customer email
+        if (payload.customer_email) {
+          const { data: userByEmail } = await supabase
+            .from("users")
+            .select("id")
+            .eq("email", payload.customer_email.toLowerCase())
             .single();
 
-          if (pendingTx) {
-            userId = pendingTx.user_id;
-          }
-        } else if (metadata?.virtual_account) {
-          // Try to find user by virtual account reference stored in metadata
-          // This would require a user_wallets table or similar
-          const { data: walletData } = await supabase
-            .from("wallets")
-            .select("user_id")
-            .eq("virtual_account", metadata.virtual_account)
-            .single();
-
-          if (walletData) {
-            userId = walletData.user_id;
+          if (userByEmail) {
+            userId = userByEmail.id;
           }
         }
       }
@@ -124,9 +126,31 @@ serve(async (req) => {
       if (!userId) {
         console.log(`Unrecognized deposit: ${reference}, amount: ${amount}`);
 
-        // Option 1: Create an unassigned transaction for admin review
-        // For now, we'll log it and return success to acknowledge receipt
-        // In production, you might want to create a record for admin review
+        // Create a pending transaction record for manual review
+        // Find any admin user to associate with
+        const { data: adminUser } = await supabase
+          .from("users")
+          .select("id")
+          .eq("status", "active")
+          .limit(1)
+          .single();
+
+        if (adminUser) {
+          const { error: insertError } = await supabase.from("transactions").insert({
+            user_id: adminUser.id,
+            type: "topup",
+            amount: amount,
+            status: "pending",
+            glad_tidings_ref: reference,
+            verified: false,
+            description: `Unrecognized deposit - ${narration || "no narration"} - customer: ${payload.customer_email || "unknown"}`,
+          });
+
+          if (insertError) {
+            console.error("Error creating unrecognized transaction:", insertError);
+          }
+        }
+
         return new Response(
           JSON.stringify({
             success: true,
@@ -179,7 +203,7 @@ serve(async (req) => {
             status: "completed",
             glad_tidings_ref: reference,
             verified: true,
-            description: `Wallet top-up via Glad Tidings (${payload.narration || "bank transfer"})`,
+            description: `Wallet top-up via Glad Tidings (${narration || "bank transfer"})`,
           })
           .select()
           .single();
@@ -283,9 +307,6 @@ async function broadcastTransactionNotification(
   userId: string,
   transaction: Record<string, unknown>,
 ): Promise<void> {
-  // Broadcast to the user's channel for real-time UI update
-  const channelName = `user_${userId}`;
-
   // Also broadcast to admin channel for dashboard update
   const adminChannel = supabase.channel("admin_notifications");
 

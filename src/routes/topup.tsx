@@ -9,78 +9,44 @@ import {
   Copy,
   Check,
   Building2,
+  Info,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/topup")({ component: TopUpPage });
 
+// Glad Tidings static account details
+const GLAD_TIDINGS_ACCOUNT = {
+  accountName: "GLADTIDINGS - Belshazzar",
+  bankName: "Palmpay",
+};
+
 const topupMethods = [
   { id: "card", label: "Debit/Credit Card", icon: CreditCard, desc: "Instant funding" },
   { id: "ussd", label: "Bank Transfer (USSD)", icon: Smartphone, desc: "Via your bank" },
-  { id: "bank", label: "Virtual Account", icon: Building2, desc: "Dedicated account" },
+  { id: "bank", label: "Bank Transfer", icon: Building2, desc: "Direct transfer" },
 ];
 
 const quickAmounts = [500, 1000, 2000, 5000, 10000, 20000];
 
-interface WalletInfo {
-  balance: number;
-  virtualAccount: string | null;
-}
-
 function TopUpPage() {
   useAuthGuard();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-  const [walletInfo, setWalletInfo] = useState<WalletInfo>({ balance: 0, virtualAccount: null });
-  const [loadingWallet, setLoadingWallet] = useState(true);
-
-  useEffect(() => {
-    const fetchWalletInfo = async () => {
-      if (!user?.id) return;
-
-      try {
-        const { data, error } = await supabase
-          .from("wallets")
-          .select("balance, virtual_account")
-          .eq("user_id", user.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching wallet:", error);
-        } else if (data) {
-          setWalletInfo({
-            balance: data.balance || 0,
-            virtualAccount: data.virtual_account,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching wallet info:", error);
-      } finally {
-        setLoadingWallet(false);
-      }
-    };
-
-    fetchWalletInfo();
-  }, [user?.id]);
 
   const handleCopyAccount = async () => {
-    if (walletInfo.virtualAccount) {
-      try {
-        await navigator.clipboard.writeText(walletInfo.virtualAccount);
-        setCopied(true);
-        toast.success("Account number copied!");
-        setTimeout(() => setCopied(false), 2000);
-      } catch (error) {
-        toast.error("Failed to copy");
-      }
+    try {
+      await navigator.clipboard.writeText("Transfer to the Glad Tidings account below");
+      setCopied(true);
+      toast.success("Account details copied!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      toast.error("Failed to copy");
     }
   };
 
@@ -100,22 +66,13 @@ function TopUpPage() {
       return;
     }
 
-    if (selectedMethod === "bank") {
-      toast.success(
-        `Transfer ₦${amount.toLocaleString()} to your virtual account to credit your wallet`,
-        { duration: 4000 },
-      );
-      setTimeout(() => {
-        navigate({ to: "/payments" });
-      }, 2000);
-    } else {
-      toast.success(
-        `Processing ₦${amount.toLocaleString()} via ${topupMethods.find((m) => m.id === selectedMethod)?.label}`,
-      );
-      setTimeout(() => {
-        navigate({ to: "/payments" });
-      }, 1500);
-    }
+    toast.success(
+      `Transfer ₦${amount.toLocaleString()} to the Glad Tidings account below. Your wallet will be credited automatically once the transfer is confirmed.`,
+      { duration: 5000 },
+    );
+    setTimeout(() => {
+      navigate({ to: "/payments" });
+    }, 2000);
   };
 
   return (
@@ -131,33 +88,45 @@ function TopUpPage() {
       </button>
 
       <div className="space-y-6">
-        {/* Virtual Account Display (for automated top-up) */}
-        {walletInfo.virtualAccount && (
-          <div className="glass-strong rounded-2xl p-4 space-y-3 border border-neon/30">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-neon" />
-              <span className="text-sm font-bold text-neon">YOUR VIRTUAL ACCOUNT</span>
+        {/* Glad Tidings Static Account Display */}
+        <div className="glass-strong rounded-2xl p-5 space-y-4 border-2 border-neon/30">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neon/20 to-primary/20">
+              <Zap className="h-6 w-6 text-neon" />
             </div>
-            <p className="text-xs text-muted-foreground">
-              Transfer any amount to this account for instant wallet top-up
-            </p>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-xl bg-muted/30 px-4 py-3 font-mono text-lg font-bold tracking-wider">
-                {walletInfo.virtualAccount}
-              </div>
-              <button
-                onClick={handleCopyAccount}
-                className="tile-press rounded-xl bg-neon/20 p-3 text-neon hover:bg-neon/30 transition-colors"
-              >
-                {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
-              </button>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Zap className="h-3 w-3 text-neon" />
-              <span>Automatic credit within 5 minutes of transfer</span>
+            <div>
+              <span className="text-sm font-bold text-neon tracking-wider">
+                GLAD TIDINGS ACCOUNT
+              </span>
+              <p className="text-xs text-muted-foreground">Transfer any amount to top up</p>
             </div>
           </div>
-        )}
+
+          <div className="space-y-3">
+            <div className="rounded-xl bg-muted/30 p-4 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">Account Name</span>
+                <span className="text-sm font-bold text-foreground">
+                  {GLAD_TIDINGS_ACCOUNT.accountName}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">Bank</span>
+                <span className="text-sm font-bold text-foreground">
+                  {GLAD_TIDINGS_ACCOUNT.bankName}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 p-3 rounded-xl">
+              <Info className="h-4 w-4 text-primary shrink-0" />
+              <span>
+                Transfer to this account and your wallet will be credited automatically once
+                confirmed.
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Payment Method Selection */}
         <div className="space-y-3">
@@ -267,16 +236,16 @@ function TopUpPage() {
           className="tile-press w-full rounded-xl bg-gradient-to-r from-primary to-accent py-3 font-bold text-primary-foreground glow-primary transition-all hover:shadow-lg disabled:opacity-50"
           disabled={!selectedMethod || (!selectedAmount && !customAmount)}
         >
-          {selectedMethod === "bank" ? "View Payment Details" : "Proceed to Payment"}
+          Show Payment Details
         </button>
 
         {/* Info Box */}
         <div className="rounded-xl bg-muted/20 p-3 space-y-1.5 text-xs">
           <p className="font-semibold text-muted-foreground">⚡ Top-Up Information</p>
           <ul className="space-y-1 text-muted-foreground list-disc list-inside">
-            <li>Instant processing for virtual account transfers</li>
-            <li>Bank transfers processed within 5-10 minutes</li>
-            <li>Funds go directly to your Campus Connect Wallet</li>
+            <li>Transfer to the Glad Tidings account shown above</li>
+            <li>Wallet credited automatically after confirmation</li>
+            <li>Funds available within minutes of transfer</li>
             <li>All transactions are secure and encrypted</li>
           </ul>
         </div>
@@ -286,7 +255,7 @@ function TopUpPage() {
           <p className="font-semibold text-gold">💳 Powered by Glad Tidings</p>
           <p className="text-muted-foreground">
             Your payment is securely processed through Glad Tidings. Funds are automatically
-            credited to your wallet once verified.
+            credited to your wallet once the transfer is confirmed.
           </p>
         </div>
       </div>
