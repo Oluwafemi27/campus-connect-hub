@@ -1,5 +1,5 @@
+const SUPABASE_EDGE_FUNCTION_URL = "https://jhtuvygyzvuyfybuyflu.supabase.co/functions/v1/glad-tidings-webhook";
 const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
-const GLAD_TIDINGS_BASE_URL = "https://api.gladtidings.app";
 
 export interface DataBundle {
   id: string;
@@ -25,24 +25,30 @@ export interface TVSubscription {
   provider: string;
 }
 
-async function makeGladTidingsRequest<T>(
-  endpoint: string,
-  method: string = "GET",
+async function callEdgeFunction<T>(
+  action: string,
   body?: Record<string, unknown>,
 ): Promise<T> {
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${GLAD_TIDINGS_API_KEY}`,
   };
 
-  const response = await fetch(`${GLAD_TIDINGS_BASE_URL}${endpoint}`, {
-    method,
+  // Add Authorization header if API key is available
+  if (GLAD_TIDINGS_API_KEY) {
+    headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
+  }
+
+  const response = await fetch(SUPABASE_EDGE_FUNCTION_URL, {
+    method: "POST",
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: JSON.stringify({
+      action,
+      ...body,
+    }),
   });
 
   if (!response.ok) {
-    throw new Error(`Glad Tidings API error: ${response.statusText}`);
+    throw new Error(`Edge function error: ${response.statusText}`);
   }
 
   return response.json();
@@ -50,11 +56,7 @@ async function makeGladTidingsRequest<T>(
 
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      console.warn("Glad Tidings API key not configured");
-      return [];
-    }
-    const response = await makeGladTidingsRequest<{ data: DataBundle[] }>("/data-bundles");
+    const response = await callEdgeFunction<{ data: DataBundle[] }>("get_data_bundles");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
@@ -64,11 +66,7 @@ export async function getDataBundlesServer(): Promise<DataBundle[]> {
 
 export async function getAirtimesServer(): Promise<Airtime[]> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      console.warn("Glad Tidings API key not configured");
-      return [];
-    }
-    const response = await makeGladTidingsRequest<{ data: Airtime[] }>("/airtimes");
+    const response = await callEdgeFunction<{ data: Airtime[] }>("get_airtimes");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch airtimes:", error);
@@ -78,11 +76,7 @@ export async function getAirtimesServer(): Promise<Airtime[]> {
 
 export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      console.warn("Glad Tidings API key not configured");
-      return [];
-    }
-    const response = await makeGladTidingsRequest<{ data: TVSubscription[] }>("/tv-subscriptions");
+    const response = await callEdgeFunction<{ data: TVSubscription[] }>("get_tv_subscriptions");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch TV subscriptions:", error);
@@ -102,10 +96,7 @@ export async function purchaseDataBundleServer(
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      throw new Error("Glad Tidings API key not configured");
-    }
-    return await makeGladTidingsRequest<PurchaseResult>("/purchase/data", "POST", {
+    return await callEdgeFunction<PurchaseResult>("purchase_data", {
       bundleId,
       phoneNumber,
     });
@@ -120,10 +111,7 @@ export async function purchaseAirtimeServer(
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      throw new Error("Glad Tidings API key not configured");
-    }
-    return await makeGladTidingsRequest<PurchaseResult>("/purchase/airtime", "POST", {
+    return await callEdgeFunction<PurchaseResult>("purchase_airtime", {
       airtimeId,
       phoneNumber,
     });
@@ -138,10 +126,7 @@ export async function purchaseTVSubscriptionServer(
   smartCardNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    if (!GLAD_TIDINGS_API_KEY) {
-      throw new Error("Glad Tidings API key not configured");
-    }
-    return await makeGladTidingsRequest<PurchaseResult>("/purchase/tv", "POST", {
+    return await callEdgeFunction<PurchaseResult>("purchase_tv", {
       subscriptionId,
       smartCardNumber,
     });
