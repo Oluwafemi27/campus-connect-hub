@@ -1,13 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
-import { Download, Filter, Receipt, Loader2 } from "lucide-react";
+import {
+  Download,
+  Filter,
+  Receipt,
+  Loader2,
+  Zap,
+  Smartphone,
+  Wifi,
+  Tv,
+  RefreshCw,
+} from "lucide-react";
 import { toast } from "sonner";
 import { getTransactions, subscribeToTransactions, type Transaction } from "@/lib/admin-service";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/admin/transactions")({ component: AdminTx });
 
-const tabs = ["All", "Airtime", "Data", "TV", "Router"] as const;
+const tabs = ["All", "Topup", "Airtime", "Data", "TV", "Router"] as const;
 
 function AdminTx() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -16,6 +26,7 @@ function AdminTx() {
   const [stats, setStats] = useState({
     volume: 0,
     success: "0%",
+    pending: 0,
     failed: 0,
   });
 
@@ -26,12 +37,14 @@ function AdminTx() {
       // Calculate stats
       const totalVolume = data.reduce((sum, t) => sum + t.amount, 0);
       const completed = data.filter((t) => t.status === "completed").length;
+      const pending = data.filter((t) => t.status === "pending").length;
       const failed = data.filter((t) => t.status === "failed").length;
       const successRate = data.length > 0 ? Math.round((completed / data.length) * 100) : 0;
 
       setStats({
         volume: totalVolume,
         success: `${successRate}%`,
+        pending,
         failed,
       });
 
@@ -74,7 +87,9 @@ function AdminTx() {
 
   const exportTransactions = () => {
     const csv = [
-      ["ID", "User ID", "Type", "Amount", "Status", "Date"].join(","),
+      ["ID", "User ID", "Type", "Amount", "Status", "Verified", "Glad Tidings Ref", "Date"].join(
+        ",",
+      ),
       ...transactions.map((t) =>
         [
           t.id,
@@ -82,6 +97,8 @@ function AdminTx() {
           t.type,
           `₦${t.amount}`,
           t.status,
+          t.verified ? "Yes" : "No",
+          t.glad_tidings_ref || "",
           new Date(t.created_at).toLocaleDateString(),
         ].join(","),
       ),
@@ -115,6 +132,38 @@ function AdminTx() {
     return date.toLocaleDateString();
   };
 
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "topup":
+        return <Zap className="h-4 w-4" />;
+      case "airtime":
+        return <Smartphone className="h-4 w-4" />;
+      case "data":
+        return <Wifi className="h-4 w-4" />;
+      case "tv":
+        return <Tv className="h-4 w-4" />;
+      default:
+        return <RefreshCw className="h-4 w-4" />;
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "topup":
+        return "bg-neon/20 text-neon";
+      case "airtime":
+        return "bg-yellow-500/20 text-yellow-500";
+      case "data":
+        return "bg-blue-500/20 text-blue-500";
+      case "tv":
+        return "bg-purple-500/20 text-purple-500";
+      case "router":
+        return "bg-green-500/20 text-green-500";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
   return (
     <div className="space-y-4 animate-fade-up">
       <div className="flex items-center justify-between">
@@ -128,10 +177,11 @@ function AdminTx() {
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {[
           { l: "Volume", v: `₦${stats.volume.toLocaleString()}` },
           { l: "Success", v: stats.success },
+          { l: "Pending", v: stats.pending },
           { l: "Failed", v: stats.failed },
         ].map((s) => (
           <div key={s.l} className="glass rounded-xl p-3">
@@ -177,23 +227,27 @@ function AdminTx() {
             <div key={tx.id} className="flex items-center justify-between p-4 hover:bg-primary/5">
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                    tx.type === "airtime"
-                      ? "bg-yellow-500/20 text-yellow-500"
-                      : tx.type === "data"
-                        ? "bg-blue-500/20 text-blue-500"
-                        : tx.type === "tv"
-                          ? "bg-purple-500/20 text-purple-500"
-                          : tx.type === "router"
-                            ? "bg-green-500/20 text-green-500"
-                            : "bg-muted text-muted-foreground"
-                  }`}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${getTypeColor(tx.type)}`}
                 >
-                  {tx.type.charAt(0).toUpperCase()}
+                  {getTypeIcon(tx.type)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold capitalize">{tx.type}</p>
-                  <p className="text-xs text-muted-foreground">{formatTime(tx.created_at)}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold capitalize">{tx.type}</p>
+                    {tx.verified && (
+                      <span className="text-[8px] font-bold text-neon bg-neon/20 px-1.5 py-0.5 rounded">
+                        VERIFIED
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-xs text-muted-foreground">{formatTime(tx.created_at)}</p>
+                    {tx.glad_tidings_ref && (
+                      <p className="text-[10px] text-muted-foreground/70 font-mono truncate max-w-[100px]">
+                        #{tx.glad_tidings_ref.slice(-8)}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="text-right">
