@@ -167,6 +167,11 @@ interface ApiResponse<T> {
 }
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  // If API key is not configured, throw immediately
+  if (!GLAD_TIDINGS_API_KEY) {
+    throw new Error("Glad Tidings API key not configured");
+  }
+
   const url = `${GLAD_TIDINGS_BASE_URL}${endpoint}`;
 
   try {
@@ -192,7 +197,7 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
     return data.data as T;
   } catch (error) {
-    console.error(`Glad Tidings API Error [${endpoint}]:`, error);
+    console.debug(`Glad Tidings API Error [${endpoint}]:`, error instanceof Error ? error.message : error);
     throw error;
   }
 }
@@ -201,8 +206,8 @@ export async function getDataBundles(): Promise<DataBundle[]> {
   try {
     const bundles = await fetchApi<DataBundle[]>("/data-bundles");
     return bundles.length > 0 ? bundles : mockDataBundles;
-  } catch (error) {
-    console.warn("Using mock data bundles - API unavailable:", error);
+  } catch {
+    // API unavailable or not configured - use mock data
     return mockDataBundles;
   }
 }
@@ -211,8 +216,8 @@ export async function getAirtimes(): Promise<Airtime[]> {
   try {
     const airtimes = await fetchApi<Airtime[]>("/airtimes");
     return airtimes.length > 0 ? airtimes : mockAirtimes;
-  } catch (error) {
-    console.warn("Using mock airtime data - API unavailable:", error);
+  } catch {
+    // API unavailable or not configured - use mock data
     return mockAirtimes;
   }
 }
@@ -221,8 +226,8 @@ export async function getTVSubscriptions(): Promise<TVSubscription[]> {
   try {
     const subscriptions = await fetchApi<TVSubscription[]>("/tv-subscriptions");
     return subscriptions.length > 0 ? subscriptions : mockTVSubscriptions;
-  } catch (error) {
-    console.warn("Using mock TV subscription data - API unavailable:", error);
+  } catch {
+    // API unavailable or not configured - use mock data
     return mockTVSubscriptions;
   }
 }
