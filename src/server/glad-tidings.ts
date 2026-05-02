@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabase";
+
 const SUPABASE_EDGE_FUNCTION_URL = "https://jhtuvygyzvuyfybuyflu.supabase.co/functions/v1/glad-tidings-webhook";
 const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
 
@@ -33,9 +35,20 @@ async function callEdgeFunction<T>(
     "Content-Type": "application/json",
   };
 
-  // Add Authorization header if API key is available
-  if (GLAD_TIDINGS_API_KEY) {
-    headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
+  // Try to get Supabase session token for authentication
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.access_token) {
+      headers["Authorization"] = `Bearer ${data.session.access_token}`;
+    } else if (GLAD_TIDINGS_API_KEY) {
+      // Fallback to Glad Tidings API key if available
+      headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
+    }
+  } catch (error) {
+    // If getting session fails, try with Glad Tidings API key
+    if (GLAD_TIDINGS_API_KEY) {
+      headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
+    }
   }
 
   const response = await fetch(SUPABASE_EDGE_FUNCTION_URL, {
@@ -48,6 +61,8 @@ async function callEdgeFunction<T>(
   });
 
   if (!response.ok) {
+    const errorBody = await response.text();
+    console.error(`Edge function error: ${response.statusText}`, errorBody);
     throw new Error(`Edge function error: ${response.statusText}`);
   }
 
