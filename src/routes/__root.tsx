@@ -54,6 +54,27 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const isMissingVars =
+    !import.meta.env.VITE_SUPABASE_URL ||
+    import.meta.env.VITE_SUPABASE_URL.includes("placeholder") ||
+    !import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY.includes("placeholder");
+
+  if (isMissingVars && !import.meta.env.DEV) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-center">
+        <h1 className="text-2xl font-bold text-destructive">Configuration Error</h1>
+        <p className="mt-2 text-muted-foreground">
+          The application is missing required Supabase environment variables.
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Please ensure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set in your deployment
+          environment.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <div className="dark min-h-screen">
