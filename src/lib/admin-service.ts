@@ -356,7 +356,8 @@ export async function createBroadcast(
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error("Error creating broadcast:", error);
+    const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+    console.error("Error creating broadcast:", errorMessage);
     return null;
   }
 }
