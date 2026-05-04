@@ -45,33 +45,45 @@ interface GsubzResponse<T> {
 }
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<GsubzResponse<T>> {
-  // If API key is not configured, throw immediately
-  if (!GSUBZ_API_KEY) {
-    throw new Error("Gsubz API key not configured");
-  }
-
   const url = `${GSUBZ_BASE_URL}${endpoint}`;
+  const method = options?.method || "GET";
+
+  console.log(`[Gsubz] ${method} ${url}`);
+  console.log(`[Gsubz] API Key configured: ${GSUBZ_API_KEY ? "✓" : "✗"}`);
 
   try {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...options?.headers,
+    };
+
+    // Only add Authorization header for POST requests (purchase/payment)
+    // GET requests don't require authentication per Gsubz API docs
+    if (method === "POST" && GSUBZ_API_KEY) {
+      headers["Authorization"] = `Bearer ${GSUBZ_API_KEY}`;
+    }
+
     const response = await fetch(url, {
       ...options,
-      headers: {
-        "api_key": GSUBZ_API_KEY,
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
+      method,
+      headers,
     });
+
+    console.log(`[Gsubz] Response status: ${response.status}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error(`[Gsubz] API Error response:`, errorData);
       throw new Error(errorData.description || `API Error: ${response.status}`);
     }
 
     const data: GsubzResponse<T> = await response.json();
+    console.log(`[Gsubz] Response code: ${data.code}, Description: ${data.description}`);
+    console.log(`[Gsubz] Response data:`, JSON.stringify(data).substring(0, 500));
     return data;
   } catch (error) {
-    console.debug(
-      `Gsubz API Error [${endpoint}]:`,
+    console.error(
+      `Gsubz API Error [${method} ${endpoint}]:`,
       error instanceof Error ? error.message : error,
     );
     throw error;
