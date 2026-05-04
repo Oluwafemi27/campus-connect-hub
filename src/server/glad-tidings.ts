@@ -81,15 +81,23 @@ async function callEdgeFunction<T>(
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
     const response = await callEdgeFunction<any>("data");
-    console.log("Data bundles response:", response);
+    console.log("Data bundles raw response:", JSON.stringify(response, null, 2));
+    console.log("Data bundles response keys:", Object.keys(response || {}));
 
     // Handle different response formats
     if (Array.isArray(response)) {
+      console.log("Response is array with", response.length, "items");
       return response;
     }
     if (response?.data && Array.isArray(response.data)) {
+      console.log("Response has .data with", response.data.length, "items");
       return response.data;
     }
+    if (response?.bundles && Array.isArray(response.bundles)) {
+      console.log("Response has .bundles with", response.bundles.length, "items");
+      return response.bundles;
+    }
+    console.log("No data found in response structure");
     return [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
