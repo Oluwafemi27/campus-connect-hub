@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-const SUPABASE_EDGE_FUNCTION_URL = "https://jhtuvygyzvuyfybuyflu.supabase.co/functions/v1/glad-tidings-webhook";
+const SUPABASE_EDGE_FUNCTION_URL = "https://jhtuvygyzvuyfybuyflu.supabase.co/functions/v1/Glad-tidings";
 const GLAD_TIDINGS_API_KEY = import.meta.env.VITE_GLAD_TIDINGS_API_KEY || "";
 
 export interface DataBundle {
