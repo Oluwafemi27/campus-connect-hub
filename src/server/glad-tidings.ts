@@ -81,23 +81,28 @@ async function callEdgeFunction<T>(
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
     const response = await callEdgeFunction<any>("data");
-    console.log("Data bundles raw response:", JSON.stringify(response, null, 2));
-    console.log("Data bundles response keys:", Object.keys(response || {}));
+    console.log("Data bundles full response:", response);
+    console.log("Response type:", typeof response);
+    console.log("Response keys:", Object.keys(response || {}));
+    console.log("Response entries:", Object.entries(response || {}));
 
     // Handle different response formats
     if (Array.isArray(response)) {
-      console.log("Response is array with", response.length, "items");
+      console.log("✓ Response is array with", response.length, "items");
       return response;
     }
-    if (response?.data && Array.isArray(response.data)) {
-      console.log("Response has .data with", response.data.length, "items");
-      return response.data;
+
+    // Check for common data property names
+    const dataKey = Object.keys(response || {}).find(key =>
+      ['data', 'bundles', 'plans', 'result', 'payload', 'items'].includes(key)
+    );
+
+    if (dataKey && Array.isArray(response[dataKey])) {
+      console.log(`✓ Found data in .${dataKey} with`, response[dataKey].length, "items");
+      return response[dataKey];
     }
-    if (response?.bundles && Array.isArray(response.bundles)) {
-      console.log("Response has .bundles with", response.bundles.length, "items");
-      return response.bundles;
-    }
-    console.log("No data found in response structure");
+
+    console.warn("⚠ No data array found. Available keys:", Object.keys(response || {}));
     return [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
