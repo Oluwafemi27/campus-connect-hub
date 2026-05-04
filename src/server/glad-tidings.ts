@@ -80,8 +80,17 @@ async function callEdgeFunction<T>(
 
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
-    const response = await callEdgeFunction<{ data: DataBundle[] }>("data");
-    return response.data || [];
+    const response = await callEdgeFunction<any>("data");
+    console.log("Data bundles response:", response);
+
+    // Handle different response formats
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (response?.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+    return [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
     return [];
@@ -90,8 +99,17 @@ export async function getDataBundlesServer(): Promise<DataBundle[]> {
 
 export async function getAirtimesServer(): Promise<Airtime[]> {
   try {
-    const response = await callEdgeFunction<{ data: Airtime[] }>("airtime");
-    return response.data || [];
+    const response = await callEdgeFunction<any>("airtime");
+    console.log("Airtimes response:", response);
+
+    // Handle different response formats
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (response?.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+    return [];
   } catch (error) {
     console.error("Failed to fetch airtimes:", error);
     return [];
@@ -100,8 +118,17 @@ export async function getAirtimesServer(): Promise<Airtime[]> {
 
 export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
   try {
-    const response = await callEdgeFunction<{ data: TVSubscription[] }>("tv");
-    return response.data || [];
+    const response = await callEdgeFunction<any>("tv");
+    console.log("TV subscriptions response:", response);
+
+    // Handle different response formats
+    if (Array.isArray(response)) {
+      return response;
+    }
+    if (response?.data && Array.isArray(response.data)) {
+      return response.data;
+    }
+    return [];
   } catch (error) {
     console.error("Failed to fetch TV subscriptions:", error);
     return [];
