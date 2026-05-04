@@ -1,3 +1,5 @@
+"use server";
+
 import { supabase } from "@/lib/supabase";
 import {
   getDataBundles,
@@ -9,7 +11,7 @@ import {
   type DataBundle,
   type Airtime,
   type TVSubscription,
-} from "@/lib/gsubz";
+} from "@/lib/gsubz-server";
 
 export type { DataBundle, Airtime, TVSubscription };
 
