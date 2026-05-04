@@ -35,138 +35,6 @@ interface GsubzResponse<T> {
   gateway?: Record<string, unknown>;
 }
 
-// Mock data for development when API is unavailable
-const mockDataBundles: DataBundle[] = [
-  {
-    id: "1",
-    name: "DAILY: 1GB (24 Hrs)",
-    amount: 1,
-    price: 350,
-    validity: "24 hours",
-    network: "mtn",
-  },
-  {
-    id: "2",
-    name: "WEEKLY: 2GB (7 Days)",
-    amount: 2,
-    price: 500,
-    validity: "7 days",
-    network: "mtn",
-  },
-  {
-    id: "3",
-    name: "MONTHLY: 5GB (30 Days)",
-    amount: 5,
-    price: 1500,
-    validity: "30 days",
-    network: "mtn",
-  },
-  {
-    id: "4",
-    name: "MEGA: 10GB (30 Days)",
-    amount: 10,
-    price: 3000,
-    validity: "30 days",
-    network: "mtn",
-  },
-  {
-    id: "5",
-    name: "DAILY: 1.5GB (24 Hrs)",
-    amount: 1.5,
-    price: 500,
-    validity: "24 hours",
-    network: "airtel",
-  },
-  {
-    id: "6",
-    name: "WEEKLY: 3GB (7 Days)",
-    amount: 3,
-    price: 1000,
-    validity: "7 days",
-    network: "airtel",
-  },
-  {
-    id: "7",
-    name: "MONTHLY: 6GB (30 Days)",
-    amount: 6,
-    price: 2000,
-    validity: "30 days",
-    network: "airtel",
-  },
-  {
-    id: "8",
-    name: "DAILY: 1.35GB (24 Hrs)",
-    amount: 1.35,
-    price: 300,
-    validity: "24 hours",
-    network: "glo",
-  },
-  {
-    id: "9",
-    name: "WEEKLY: 4.1GB (7 Days)",
-    amount: 4.1,
-    price: 1000,
-    validity: "7 days",
-    network: "glo",
-  },
-  {
-    id: "10",
-    name: "MONTHLY: 8.1GB (30 Days)",
-    amount: 8.1,
-    price: 2500,
-    validity: "30 days",
-    network: "glo",
-  },
-];
-
-const mockAirtimes: Airtime[] = [
-  { id: "100", amount: 100, price: 100, network: "mtn" },
-  { id: "200", amount: 200, price: 200, network: "mtn" },
-  { id: "500", amount: 500, price: 500, network: "mtn" },
-  { id: "1000", amount: 1000, price: 1000, network: "mtn" },
-  { id: "2000", amount: 2000, price: 2000, network: "mtn" },
-  { id: "5000", amount: 5000, price: 5000, network: "mtn" },
-  { id: "100-9mobile", amount: 100, price: 100, network: "9mobile" },
-  { id: "500-9mobile", amount: 500, price: 500, network: "9mobile" },
-  { id: "100-glo", amount: 100, price: 100, network: "glo" },
-  { id: "500-glo", amount: 500, price: 500, network: "glo" },
-  { id: "100-airtel", amount: 100, price: 100, network: "airtel" },
-  { id: "500-airtel", amount: 500, price: 500, network: "airtel" },
-];
-
-const mockTVSubscriptions: TVSubscription[] = [
-  { id: "dstv-1", name: "DStv Access", price: 2500, duration: "1 month", provider: "dstv" },
-  { id: "dstv-2", name: "DStv Lite", price: 3500, duration: "1 month", provider: "dstv" },
-  { id: "dstv-3", name: "DStv Compact", price: 5000, duration: "1 month", provider: "dstv" },
-  { id: "dstv-4", name: "DStv Compact Plus", price: 8000, duration: "1 month", provider: "dstv" },
-  { id: "dstv-5", name: "DStv Premium", price: 12500, duration: "1 month", provider: "dstv" },
-  { id: "gotv-1", name: "GOtv Lite", price: 1250, duration: "1 month", provider: "gotv" },
-  { id: "gotv-2", name: "GOtv Value", price: 2200, duration: "1 month", provider: "gotv" },
-  { id: "gotv-3", name: "GOtv Plus", price: 3500, duration: "1 month", provider: "gotv" },
-  { id: "gotv-4", name: "GOtv Max", price: 4800, duration: "1 month", provider: "gotv" },
-  {
-    id: "startimes-1",
-    name: "StarTimes Nova",
-    price: 1100,
-    duration: "1 month",
-    provider: "startimes",
-  },
-  {
-    id: "startimes-2",
-    name: "StarTimes Smart",
-    price: 2000,
-    duration: "1 month",
-    provider: "startimes",
-  },
-  {
-    id: "startimes-3",
-    name: "StarTimes Classic",
-    price: 3500,
-    duration: "1 month",
-    provider: "startimes",
-  },
-];
-
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<GsubzResponse<T>> {
   // If API key is not configured, throw immediately
   if (!GSUBZ_API_KEY) {
@@ -230,12 +98,11 @@ export async function getDataBundles(): Promise<DataBundle[]> {
       }));
     }
 
-    console.warn("⚠️ Invalid Gsubz response, using mock data");
-    return mockDataBundles;
+    console.error("❌ No data bundles in Gsubz response. No mock data available.");
+    return [];
   } catch (error) {
-    // API unavailable or not configured - use mock data
-    console.warn("📋 Using mock data bundles (API unavailable):", error);
-    return mockDataBundles;
+    console.error("❌ Failed to fetch data bundles from Gsubz:", error);
+    return [];
   }
 }
 
@@ -271,12 +138,11 @@ export async function getAirtimes(): Promise<Airtime[]> {
       }));
     }
 
-    console.warn("⚠️ Invalid Gsubz response, using mock data");
-    return mockAirtimes;
+    console.error("❌ No airtimes in Gsubz response. No mock data available.");
+    return [];
   } catch (error) {
-    // API unavailable or not configured - use mock data
-    console.warn("📋 Using mock airtimes (API unavailable):", error);
-    return mockAirtimes;
+    console.error("❌ Failed to fetch airtimes from Gsubz:", error);
+    return [];
   }
 }
 
@@ -307,12 +173,11 @@ export async function getTVSubscriptions(): Promise<TVSubscription[]> {
       }));
     }
 
-    console.warn("⚠️ Invalid Gsubz response, using mock data");
-    return mockTVSubscriptions;
+    console.error("❌ No TV subscriptions in Gsubz response. No mock data available.");
+    return [];
   } catch (error) {
-    // API unavailable or not configured - use mock data
-    console.warn("📋 Using mock TV subscriptions (API unavailable):", error);
-    return mockTVSubscriptions;
+    console.error("❌ Failed to fetch TV subscriptions from Gsubz:", error);
+    return [];
   }
 }
 
