@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-gsubz-signature",
 };
 
+const GSUBZ_WIDGET_KEY = Deno.env.get("GSUBZ_WIDGET_KEY");
+
 interface GsubzWebhookPayload {
   code: number;
   status: string;
@@ -45,8 +47,43 @@ serve(async (req) => {
     // Create Supabase client with service role key for admin access
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Parse webhook payload
-    const payload: GsubzWebhookPayload = await req.json();
+    // Parse request body
+    const body = await req.json();
+    const action = body?.action;
+
+    // Handle plan fetching requests
+    if (action === "data") {
+      const bundles = await fetchDataBundles();
+      return new Response(
+        JSON.stringify({ success: true, data: bundles }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    if (action === "airtime") {
+      const airtimes = await fetchAirtimes();
+      return new Response(
+        JSON.stringify({ success: true, data: airtimes }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    if (action === "tv") {
+      const subscriptions = await fetchTVSubscriptions();
+      return new Response(
+        JSON.stringify({ success: true, data: subscriptions }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    // Parse webhook payload for payment processing
+    const payload: GsubzWebhookPayload = body;
 
     console.log("Received Gsubz webhook:", JSON.stringify(payload));
 
