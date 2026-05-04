@@ -47,7 +47,7 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<Gsu
     const response = await fetch(url, {
       ...options,
       headers: {
-        Authorization: `Bearer ${GSUBZ_API_KEY}`,
+        "api_key": GSUBZ_API_KEY,
         "Content-Type": "application/json",
         ...options?.headers,
       },
@@ -75,25 +75,25 @@ export async function getDataBundles(): Promise<DataBundle[]> {
     // Gsubz returns plans for data services
     const response = await fetchApi<{
       plans?: Array<{
-        id?: string | number;
-        name?: string;
-        amount?: number;
-        price?: number;
-        validity?: string;
+        displayName?: string;
+        value?: string;
+        price?: string;
       }>;
       [key: string]: unknown;
     }>("/plans?service=mtn_cg");
 
-    if (response.code === 200 && response.content?.plans) {
-      const plans = response.content.plans;
+    // The API returns plans directly in the response, not nested under content
+    const plans = response.content?.plans || (response as any).plans || [];
+
+    if (response.code === 200 && plans.length > 0) {
       console.log("✅ Real-time data bundles loaded from Gsubz:", plans.length);
 
       return plans.map((plan, index) => ({
-        id: plan.id?.toString() || `bundle-${index}`,
-        name: plan.name || `Data Bundle ${index + 1}`,
-        amount: plan.amount || 0,
-        price: plan.price || 0,
-        validity: plan.validity || "30 days",
+        id: plan.value?.toString() || `bundle-${index}`,
+        name: plan.displayName || `Data Bundle ${index + 1}`,
+        amount: 0,
+        price: parseInt(plan.price || "0"),
+        validity: "30 days",
         network: "mtn",
       }));
     }
@@ -111,29 +111,23 @@ export async function getAirtimes(): Promise<Airtime[]> {
     console.log("📡 Fetching airtimes from Gsubz API...");
     // Gsubz API for airtimes
     const response = await fetchApi<{
-      airtimes?: Array<{
-        id?: string | number;
-        amount?: number;
-        price?: number;
-      }>;
       fields?: Array<{
-        id?: string | number;
+        value?: string;
         amount?: number;
-        price?: number;
+        price?: string;
       }>;
       [key: string]: unknown;
     }>("/fields?service=mtn");
 
-    const airtimesList =
-      response.content?.airtimes || response.content?.fields || [];
+    const airtimesList = response.content?.fields || (response as any).fields || [];
 
     if (response.code === 200 && airtimesList.length > 0) {
       console.log("✅ Real-time airtimes loaded from Gsubz:", airtimesList.length);
 
       return airtimesList.map((airtime, index) => ({
-        id: airtime.id?.toString() || `airtime-${index}`,
-        amount: airtime.amount || 0,
-        price: airtime.price || 0,
+        id: airtime.value?.toString() || `airtime-${index}`,
+        amount: airtime.amount || parseInt(airtime.price || "0") || 0,
+        price: parseInt(airtime.price || "0"),
         network: "mtn",
       }));
     }
@@ -152,23 +146,24 @@ export async function getTVSubscriptions(): Promise<TVSubscription[]> {
     // Gsubz API for TV subscriptions
     const response = await fetchApi<{
       plans?: Array<{
-        id?: string | number;
-        name?: string;
-        price?: number;
-        duration?: string;
+        displayName?: string;
+        value?: string;
+        price?: string;
       }>;
       [key: string]: unknown;
     }>("/plans?service=gotv");
 
-    if (response.code === 200 && response.content?.plans) {
-      const plans = response.content.plans;
+    // The API returns plans directly in the response, not nested under content
+    const plans = response.content?.plans || (response as any).plans || [];
+
+    if (response.code === 200 && plans.length > 0) {
       console.log("✅ Real-time TV subscriptions loaded from Gsubz:", plans.length);
 
       return plans.map((plan, index) => ({
-        id: plan.id?.toString() || `tv-${index}`,
-        name: plan.name || `TV Plan ${index + 1}`,
-        price: plan.price || 0,
-        duration: plan.duration || "1 month",
+        id: plan.value?.toString() || `tv-${index}`,
+        name: plan.displayName || `TV Plan ${index + 1}`,
+        price: parseInt(plan.price || "0"),
+        duration: "1 month",
         provider: "gotv",
       }));
     }
@@ -192,6 +187,7 @@ export async function purchaseDataBundle(
   bundleId: string,
   phoneNumber: string,
   network: string,
+  price?: number,
 ): Promise<PurchaseResult> {
   try {
     const requestID = Date.now() + Math.random();
@@ -207,7 +203,8 @@ export async function purchaseDataBundle(
       body: JSON.stringify({
         serviceID,
         phone: phoneNumber,
-        amount: 0, // Will be determined by plan
+        plan: bundleId,
+        amount: price || 0,
         requestID,
         productType: "fix",
       }),

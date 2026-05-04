@@ -70,7 +70,7 @@ export async function purchaseDataBundleServer(
       };
     }
 
-    const result = await purchaseDataBundle(bundleId, phoneNumber, bundle.network);
+    const result = await purchaseDataBundle(bundleId, phoneNumber, bundle.network, bundle.price);
     return result;
   } catch (error) {
     console.error("Failed to purchase data bundle:", error);
