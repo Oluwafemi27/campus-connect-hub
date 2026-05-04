@@ -80,29 +80,15 @@ async function callEdgeFunction<T>(
 
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
-    const response = await callEdgeFunction<any>("data");
-    console.log("Data bundles full response:", response);
-    console.log("Response type:", typeof response);
-    console.log("Response keys:", Object.keys(response || {}));
-    console.log("Response entries:", Object.entries(response || {}));
+    const response = await callEdgeFunction<{ success: boolean; data: DataBundle[] }>("data");
+    console.log("Data bundles response:", response);
 
-    // Handle different response formats
-    if (Array.isArray(response)) {
-      console.log("✓ Response is array with", response.length, "items");
-      return response;
+    if (response?.data && Array.isArray(response.data)) {
+      console.log("✓ Loaded", response.data.length, "data bundles");
+      return response.data;
     }
 
-    // Check for common data property names
-    const dataKey = Object.keys(response || {}).find(key =>
-      ['data', 'bundles', 'plans', 'result', 'payload', 'items'].includes(key)
-    );
-
-    if (dataKey && Array.isArray(response[dataKey])) {
-      console.log(`✓ Found data in .${dataKey} with`, response[dataKey].length, "items");
-      return response[dataKey];
-    }
-
-    console.warn("⚠ No data array found. Available keys:", Object.keys(response || {}));
+    console.warn("No data found in response");
     return [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
@@ -112,16 +98,15 @@ export async function getDataBundlesServer(): Promise<DataBundle[]> {
 
 export async function getAirtimesServer(): Promise<Airtime[]> {
   try {
-    const response = await callEdgeFunction<any>("airtime");
+    const response = await callEdgeFunction<{ success: boolean; data: Airtime[] }>("airtime");
     console.log("Airtimes response:", response);
 
-    // Handle different response formats
-    if (Array.isArray(response)) {
-      return response;
-    }
     if (response?.data && Array.isArray(response.data)) {
+      console.log("✓ Loaded", response.data.length, "airtime options");
       return response.data;
     }
+
+    console.warn("No data found in response");
     return [];
   } catch (error) {
     console.error("Failed to fetch airtimes:", error);
@@ -131,16 +116,15 @@ export async function getAirtimesServer(): Promise<Airtime[]> {
 
 export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
   try {
-    const response = await callEdgeFunction<any>("tv");
+    const response = await callEdgeFunction<{ success: boolean; data: TVSubscription[] }>("tv");
     console.log("TV subscriptions response:", response);
 
-    // Handle different response formats
-    if (Array.isArray(response)) {
-      return response;
-    }
     if (response?.data && Array.isArray(response.data)) {
+      console.log("✓ Loaded", response.data.length, "TV subscriptions");
       return response.data;
     }
+
+    console.warn("No data found in response");
     return [];
   } catch (error) {
     console.error("Failed to fetch TV subscriptions:", error);
