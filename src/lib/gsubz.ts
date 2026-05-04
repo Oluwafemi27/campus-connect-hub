@@ -203,36 +203,115 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<Gsu
 
 export async function getDataBundles(): Promise<DataBundle[]> {
   try {
+    console.log("📡 Fetching data bundles from Gsubz API...");
     // Gsubz returns plans for data services
-    const response = await fetchApi<unknown>("/plans?service=mtn_cg");
-    // For now, return mock data as the actual API structure requires more mapping
+    const response = await fetchApi<{
+      plans?: Array<{
+        id?: string | number;
+        name?: string;
+        amount?: number;
+        price?: number;
+        validity?: string;
+      }>;
+      [key: string]: unknown;
+    }>("/plans?service=mtn_cg");
+
+    if (response.code === 200 && response.content?.plans) {
+      const plans = response.content.plans;
+      console.log("✅ Real-time data bundles loaded from Gsubz:", plans.length);
+
+      return plans.map((plan, index) => ({
+        id: plan.id?.toString() || `bundle-${index}`,
+        name: plan.name || `Data Bundle ${index + 1}`,
+        amount: plan.amount || 0,
+        price: plan.price || 0,
+        validity: plan.validity || "30 days",
+        network: "mtn",
+      }));
+    }
+
+    console.warn("⚠️ Invalid Gsubz response, using mock data");
     return mockDataBundles;
-  } catch {
+  } catch (error) {
     // API unavailable or not configured - use mock data
+    console.warn("📋 Using mock data bundles (API unavailable):", error);
     return mockDataBundles;
   }
 }
 
 export async function getAirtimes(): Promise<Airtime[]> {
   try {
+    console.log("📡 Fetching airtimes from Gsubz API...");
     // Gsubz API for airtimes
-    const response = await fetchApi<unknown>("/fields?service=mtn");
-    // For now, return mock data as the actual API structure requires more mapping
+    const response = await fetchApi<{
+      airtimes?: Array<{
+        id?: string | number;
+        amount?: number;
+        price?: number;
+      }>;
+      fields?: Array<{
+        id?: string | number;
+        amount?: number;
+        price?: number;
+      }>;
+      [key: string]: unknown;
+    }>("/fields?service=mtn");
+
+    const airtimesList =
+      response.content?.airtimes || response.content?.fields || [];
+
+    if (response.code === 200 && airtimesList.length > 0) {
+      console.log("✅ Real-time airtimes loaded from Gsubz:", airtimesList.length);
+
+      return airtimesList.map((airtime, index) => ({
+        id: airtime.id?.toString() || `airtime-${index}`,
+        amount: airtime.amount || 0,
+        price: airtime.price || 0,
+        network: "mtn",
+      }));
+    }
+
+    console.warn("⚠️ Invalid Gsubz response, using mock data");
     return mockAirtimes;
-  } catch {
+  } catch (error) {
     // API unavailable or not configured - use mock data
+    console.warn("📋 Using mock airtimes (API unavailable):", error);
     return mockAirtimes;
   }
 }
 
 export async function getTVSubscriptions(): Promise<TVSubscription[]> {
   try {
+    console.log("📡 Fetching TV subscriptions from Gsubz API...");
     // Gsubz API for TV subscriptions
-    const response = await fetchApi<unknown>("/plans?service=gotv");
-    // For now, return mock data as the actual API structure requires more mapping
+    const response = await fetchApi<{
+      plans?: Array<{
+        id?: string | number;
+        name?: string;
+        price?: number;
+        duration?: string;
+      }>;
+      [key: string]: unknown;
+    }>("/plans?service=gotv");
+
+    if (response.code === 200 && response.content?.plans) {
+      const plans = response.content.plans;
+      console.log("✅ Real-time TV subscriptions loaded from Gsubz:", plans.length);
+
+      return plans.map((plan, index) => ({
+        id: plan.id?.toString() || `tv-${index}`,
+        name: plan.name || `TV Plan ${index + 1}`,
+        price: plan.price || 0,
+        duration: plan.duration || "1 month",
+        provider: "gotv",
+      }));
+    }
+
+    console.warn("⚠️ Invalid Gsubz response, using mock data");
     return mockTVSubscriptions;
-  } catch {
+  } catch (error) {
     // API unavailable or not configured - use mock data
+    console.warn("📋 Using mock TV subscriptions (API unavailable):", error);
     return mockTVSubscriptions;
   }
 }
