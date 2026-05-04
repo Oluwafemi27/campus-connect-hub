@@ -45,6 +45,7 @@ async function callEdgeFunction<T>(
       headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
     }
   } catch (error) {
+    console.warn("Failed to get Supabase session:", error);
     // If getting session fails, try with Glad Tidings API key
     if (GLAD_TIDINGS_API_KEY) {
       headers["Authorization"] = `Bearer ${GLAD_TIDINGS_API_KEY}`;
@@ -55,19 +56,26 @@ async function callEdgeFunction<T>(
   const url = new URL(SUPABASE_EDGE_FUNCTION_URL);
   url.searchParams.append("action", action);
 
-  const response = await fetch(url.toString(), {
-    method: "POST",
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const fetchBody = body ? JSON.stringify(body) : null;
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error(`Edge function error: ${response.statusText}`, errorBody);
-    throw new Error(`Edge function error: ${response.statusText}`);
+  try {
+    const response = await fetch(url.toString(), {
+      method: "POST",
+      headers,
+      body: fetchBody,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error(`Edge function error: ${response.statusText}`, errorBody);
+      throw new Error(`Edge function error: ${response.statusText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(`Failed to call edge function at ${url.toString()}:`, error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
