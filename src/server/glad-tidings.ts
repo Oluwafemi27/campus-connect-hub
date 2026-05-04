@@ -52,17 +52,17 @@ async function callEdgeFunction<T>(
     }
   }
 
-  // Build the URL with query parameters for the action
-  const url = new URL(SUPABASE_EDGE_FUNCTION_URL);
-  url.searchParams.append("action", action);
-
-  const fetchBody = body ? JSON.stringify(body) : null;
+  // Build request body with action and any additional data
+  const requestBody = {
+    action,
+    ...body,
+  };
 
   try {
-    const response = await fetch(url.toString(), {
+    const response = await fetch(SUPABASE_EDGE_FUNCTION_URL, {
       method: "POST",
       headers,
-      body: fetchBody,
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -73,7 +73,7 @@ async function callEdgeFunction<T>(
 
     return response.json();
   } catch (error) {
-    console.error(`Failed to call edge function at ${url.toString()}:`, error);
+    console.error(`Failed to call edge function:`, error);
     throw error;
   }
 }
