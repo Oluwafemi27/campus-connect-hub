@@ -1,3 +1,5 @@
+"use server";
+
 import { GSUBZ_CONFIG } from "./gsubz-config";
 
 const GSUBZ_API_KEY = GSUBZ_CONFIG.apiKey;
