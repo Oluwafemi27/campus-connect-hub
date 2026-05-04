@@ -5,7 +5,7 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { Contact, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { getAirtimesServer, purchaseAirtimeServer, type Airtime } from "@/server/glad-tidings";
+import { getAirtimesServer, purchaseAirtimeServer, type Airtime } from "@/server/gsubz";
 
 export const Route = createFileRoute("/airtime")({ component: AirtimePage });
 

@@ -17,10 +17,10 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/topup")({ component: TopUpPage });
 
-// Glad Tidings static account details
-const GLAD_TIDINGS_ACCOUNT = {
-  accountName: "GLADTIDINGS - Belshazzar",
-  bankName: "Palmpay",
+// Gsubz account details for transfers
+const PAYMENT_ACCOUNT = {
+  accountName: "Campus Connect Hub",
+  bankName: "Account details will be provided during checkout",
 };
 
 const topupMethods = [
@@ -41,9 +41,9 @@ function TopUpPage() {
 
   const handleCopyAccount = async () => {
     try {
-      await navigator.clipboard.writeText("Transfer to the Glad Tidings account below");
+      await navigator.clipboard.writeText("Complete your top-up through Gsubz");
       setCopied(true);
-      toast.success("Account details copied!");
+      toast.success("Payment information copied!");
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       toast.error("Failed to copy");
@@ -67,7 +67,7 @@ function TopUpPage() {
     }
 
     toast.success(
-      `Transfer ₦${amount.toLocaleString()} to the Glad Tidings account below. Your wallet will be credited automatically once the transfer is confirmed.`,
+      `Proceed to payment. Your wallet will be credited automatically once the transaction is confirmed.`,
       { duration: 5000 },
     );
     setTimeout(() => {
@@ -88,7 +88,7 @@ function TopUpPage() {
       </button>
 
       <div className="space-y-6">
-        {/* Glad Tidings Static Account Display */}
+        {/* Payment Account Display */}
         <div className="glass-strong rounded-2xl p-5 space-y-4 border-2 border-neon/30">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-neon/20 to-primary/20">
@@ -96,7 +96,7 @@ function TopUpPage() {
             </div>
             <div>
               <span className="text-sm font-bold text-neon tracking-wider">
-                GLAD TIDINGS ACCOUNT
+                PAYMENT ACCOUNT
               </span>
               <p className="text-xs text-muted-foreground">Transfer any amount to top up</p>
             </div>
@@ -107,13 +107,13 @@ function TopUpPage() {
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Account Name</span>
                 <span className="text-sm font-bold text-foreground">
-                  {GLAD_TIDINGS_ACCOUNT.accountName}
+                  {PAYMENT_ACCOUNT.accountName}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Bank</span>
+                <span className="text-xs text-muted-foreground">Payment Method</span>
                 <span className="text-sm font-bold text-foreground">
-                  {GLAD_TIDINGS_ACCOUNT.bankName}
+                  {PAYMENT_ACCOUNT.bankName}
                 </span>
               </div>
             </div>
@@ -121,8 +121,7 @@ function TopUpPage() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 p-3 rounded-xl">
               <Info className="h-4 w-4 text-primary shrink-0" />
               <span>
-                Transfer to this account and your wallet will be credited automatically once
-                confirmed.
+                Complete your payment through Gsubz and your wallet will be credited automatically.
               </span>
             </div>
           </div>
@@ -243,19 +242,19 @@ function TopUpPage() {
         <div className="rounded-xl bg-muted/20 p-3 space-y-1.5 text-xs">
           <p className="font-semibold text-muted-foreground">⚡ Top-Up Information</p>
           <ul className="space-y-1 text-muted-foreground list-disc list-inside">
-            <li>Transfer to the Glad Tidings account shown above</li>
+            <li>Select your payment amount above</li>
             <li>Wallet credited automatically after confirmation</li>
-            <li>Funds available within minutes of transfer</li>
+            <li>Funds available within minutes of payment</li>
             <li>All transactions are secure and encrypted</li>
           </ul>
         </div>
 
-        {/* Glad Tidings Integration Note */}
+        {/* Gsubz Integration Note */}
         <div className="rounded-xl border border-gold/30 bg-gold/10 p-3 space-y-1.5 text-xs">
-          <p className="font-semibold text-gold">💳 Powered by Glad Tidings</p>
+          <p className="font-semibold text-gold">💳 Powered by Gsubz</p>
           <p className="text-muted-foreground">
-            Your payment is securely processed through Glad Tidings. Funds are automatically
-            credited to your wallet once the transfer is confirmed.
+            Your payment is securely processed through Gsubz. Funds are automatically
+            credited to your wallet once the transaction is confirmed.
           </p>
         </div>
       </div>

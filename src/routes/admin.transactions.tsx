@@ -98,7 +98,7 @@ function AdminTx() {
           `₦${t.amount}`,
           t.status,
           t.verified ? "Yes" : "No",
-          t.glad_tidings_ref || "",
+          t.gsubz_ref || "",
           new Date(t.created_at).toLocaleDateString(),
         ].join(","),
       ),
@@ -242,9 +242,9 @@ function AdminTx() {
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <p className="text-xs text-muted-foreground">{formatTime(tx.created_at)}</p>
-                    {tx.glad_tidings_ref && (
+                    {tx.gsubz_ref && (
                       <p className="text-[10px] text-muted-foreground/70 font-mono truncate max-w-[100px]">
-                        #{tx.glad_tidings_ref.slice(-8)}
+                        #{tx.gsubz_ref.slice(-8)}
                       </p>
                     )}
                   </div>
