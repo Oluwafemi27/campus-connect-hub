@@ -7,7 +7,7 @@ import {
   getTVSubscriptionsServer,
   purchaseTVSubscriptionServer,
   type TVSubscription,
-} from "@/server/glad-tidings";
+} from "@/server/gsubz";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/tv")({ component: TvPage });

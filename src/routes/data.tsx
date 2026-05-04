@@ -5,7 +5,7 @@ import { TopBar, WalletCard } from "@/components/app/TopBar";
 import { OperatorPicker } from "@/components/app/OperatorPicker";
 import { BarChart3, Calendar, Contact, Tag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { getDataBundlesServer, purchaseDataBundleServer, type DataBundle } from "@/server/glad-tidings";
+import { getDataBundlesServer, purchaseDataBundleServer, type DataBundle } from "@/server/gsubz";
 
 export const Route = createFileRoute("/data")({ component: DataPage });
 

@@ -39,7 +39,7 @@ export interface Transaction {
   phone_number?: string;
   operator?: string;
   description?: string;
-  glad_tidings_ref?: string;
+  gsubz_ref?: string;
   verified: boolean;
   created_at: string;
   updated_at: string;
