@@ -51,13 +51,14 @@ async function callEdgeFunction<T>(
     }
   }
 
-  const response = await fetch(SUPABASE_EDGE_FUNCTION_URL, {
+  // Build the URL with query parameters for the action
+  const url = new URL(SUPABASE_EDGE_FUNCTION_URL);
+  url.searchParams.append("action", action);
+
+  const response = await fetch(url.toString(), {
     method: "POST",
     headers,
-    body: JSON.stringify({
-      action,
-      ...body,
-    }),
+    body: body ? JSON.stringify(body) : undefined,
   });
 
   if (!response.ok) {
@@ -71,7 +72,7 @@ async function callEdgeFunction<T>(
 
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
   try {
-    const response = await callEdgeFunction<{ data: DataBundle[] }>("get_data_bundles");
+    const response = await callEdgeFunction<{ data: DataBundle[] }>("data");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch data bundles:", error);
@@ -81,7 +82,7 @@ export async function getDataBundlesServer(): Promise<DataBundle[]> {
 
 export async function getAirtimesServer(): Promise<Airtime[]> {
   try {
-    const response = await callEdgeFunction<{ data: Airtime[] }>("get_airtimes");
+    const response = await callEdgeFunction<{ data: Airtime[] }>("airtime");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch airtimes:", error);
@@ -91,7 +92,7 @@ export async function getAirtimesServer(): Promise<Airtime[]> {
 
 export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
   try {
-    const response = await callEdgeFunction<{ data: TVSubscription[] }>("get_tv_subscriptions");
+    const response = await callEdgeFunction<{ data: TVSubscription[] }>("tv");
     return response.data || [];
   } catch (error) {
     console.error("Failed to fetch TV subscriptions:", error);
@@ -111,7 +112,7 @@ export async function purchaseDataBundleServer(
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase_data", {
+    return await callEdgeFunction<PurchaseResult>("purchase-data", {
       bundleId,
       phoneNumber,
     });
@@ -126,7 +127,7 @@ export async function purchaseAirtimeServer(
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase_airtime", {
+    return await callEdgeFunction<PurchaseResult>("purchase-airtime", {
       airtimeId,
       phoneNumber,
     });
@@ -141,7 +142,7 @@ export async function purchaseTVSubscriptionServer(
   smartCardNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase_tv", {
+    return await callEdgeFunction<PurchaseResult>("purchase-tv", {
       subscriptionId,
       smartCardNumber,
     });
