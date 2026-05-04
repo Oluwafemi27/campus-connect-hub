@@ -1,136 +1,17 @@
 import { supabase } from "@/lib/supabase";
+import {
+  getDataBundles,
+  getAirtimes,
+  getTVSubscriptions,
+  purchaseDataBundle,
+  purchaseAirtime,
+  purchaseTVSubscription,
+  type DataBundle,
+  type Airtime,
+  type TVSubscription,
+} from "@/lib/gsubz";
 
-const SUPABASE_EDGE_FUNCTION_URL = "https://jhtuvygyzvuyfybuyflu.supabase.co/functions/v1/gsubz-webhook";
-const GSUBZ_API_KEY = import.meta.env.VITE_GSUBZ_API_KEY || "";
-
-export interface DataBundle {
-  id: string;
-  name: string;
-  amount: number;
-  price: number;
-  validity: string;
-  network: string;
-}
-
-export interface Airtime {
-  id: string;
-  amount: number;
-  price: number;
-  network: string;
-}
-
-export interface TVSubscription {
-  id: string;
-  name: string;
-  price: number;
-  duration: string;
-  provider: string;
-}
-
-async function callEdgeFunction<T>(
-  action: string,
-  body?: Record<string, unknown>,
-): Promise<T> {
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
-
-  // Try to get Supabase session token for authentication
-  try {
-    const { data } = await supabase.auth.getSession();
-    if (data.session?.access_token) {
-      headers["Authorization"] = `Bearer ${data.session.access_token}`;
-    } else if (GSUBZ_API_KEY) {
-      // Fallback to Gsubz API key if available
-      headers["Authorization"] = `Bearer ${GSUBZ_API_KEY}`;
-    }
-  } catch (error) {
-    console.warn("Failed to get Supabase session:", error);
-    // If getting session fails, try with Gsubz API key
-    if (GSUBZ_API_KEY) {
-      headers["Authorization"] = `Bearer ${GSUBZ_API_KEY}`;
-    }
-  }
-
-  // Build request body with action and any additional data
-  const requestBody = {
-    action,
-    ...body,
-  };
-
-  try {
-    const response = await fetch(SUPABASE_EDGE_FUNCTION_URL, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error(`Edge function error: ${response.statusText}`, errorBody);
-      throw new Error(`Edge function error: ${response.statusText}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error(`Failed to call edge function:`, error);
-    throw error;
-  }
-}
-
-export async function getDataBundlesServer(): Promise<DataBundle[]> {
-  try {
-    const response = await callEdgeFunction<{ success: boolean; data: DataBundle[] }>("data");
-    console.log("Data bundles response:", response);
-
-    if (response?.data && Array.isArray(response.data)) {
-      console.log("✓ Loaded", response.data.length, "data bundles");
-      return response.data;
-    }
-
-    console.warn("No data found in response");
-    return [];
-  } catch (error) {
-    console.error("Failed to fetch data bundles:", error);
-    return [];
-  }
-}
-
-export async function getAirtimesServer(): Promise<Airtime[]> {
-  try {
-    const response = await callEdgeFunction<{ success: boolean; data: Airtime[] }>("airtime");
-    console.log("Airtimes response:", response);
-
-    if (response?.data && Array.isArray(response.data)) {
-      console.log("✓ Loaded", response.data.length, "airtime options");
-      return response.data;
-    }
-
-    console.warn("No data found in response");
-    return [];
-  } catch (error) {
-    console.error("Failed to fetch airtimes:", error);
-    return [];
-  }
-}
-
-export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
-  try {
-    const response = await callEdgeFunction<{ success: boolean; data: TVSubscription[] }>("tv");
-    console.log("TV subscriptions response:", response);
-
-    if (response?.data && Array.isArray(response.data)) {
-      console.log("✓ Loaded", response.data.length, "TV subscriptions");
-      return response.data;
-    }
-
-    console.warn("No data found in response");
-    return [];
-  } catch (error) {
-    console.error("Failed to fetch TV subscriptions:", error);
-    return [];
-  }
-}
+export type { DataBundle, Airtime, TVSubscription };
 
 export interface PurchaseResult {
   success: boolean;
@@ -139,15 +20,58 @@ export interface PurchaseResult {
   details?: Record<string, unknown>;
 }
 
+// Server functions that directly fetch from Gsubz API
+export async function getDataBundlesServer(): Promise<DataBundle[]> {
+  try {
+    const bundles = await getDataBundles();
+    console.log("✓ Loaded", bundles.length, "data bundles from Gsubz");
+    return bundles;
+  } catch (error) {
+    console.error("Failed to fetch data bundles:", error);
+    return [];
+  }
+}
+
+export async function getAirtimesServer(): Promise<Airtime[]> {
+  try {
+    const airtimes = await getAirtimes();
+    console.log("✓ Loaded", airtimes.length, "airtime options from Gsubz");
+    return airtimes;
+  } catch (error) {
+    console.error("Failed to fetch airtimes:", error);
+    return [];
+  }
+}
+
+export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
+  try {
+    const subscriptions = await getTVSubscriptions();
+    console.log("✓ Loaded", subscriptions.length, "TV subscriptions from Gsubz");
+    return subscriptions;
+  } catch (error) {
+    console.error("Failed to fetch TV subscriptions:", error);
+    return [];
+  }
+}
+
 export async function purchaseDataBundleServer(
   bundleId: string,
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase-data", {
-      bundleId,
-      phoneNumber,
-    });
+    // Get the network from the bundle
+    const bundles = await getDataBundles();
+    const bundle = bundles.find((b) => b.id === bundleId);
+
+    if (!bundle) {
+      return {
+        success: false,
+        message: "Bundle not found",
+      };
+    }
+
+    const result = await purchaseDataBundle(bundleId, phoneNumber, bundle.network);
+    return result;
   } catch (error) {
     console.error("Failed to purchase data bundle:", error);
     throw error;
@@ -159,10 +83,19 @@ export async function purchaseAirtimeServer(
   phoneNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase-airtime", {
-      airtimeId,
-      phoneNumber,
-    });
+    // Get the network from the airtime
+    const airtimes = await getAirtimes();
+    const airtime = airtimes.find((a) => a.id === airtimeId);
+
+    if (!airtime) {
+      return {
+        success: false,
+        message: "Airtime option not found",
+      };
+    }
+
+    const result = await purchaseAirtime(airtime.amount, phoneNumber, airtime.network);
+    return result;
   } catch (error) {
     console.error("Failed to purchase airtime:", error);
     throw error;
@@ -174,10 +107,23 @@ export async function purchaseTVSubscriptionServer(
   smartCardNumber: string,
 ): Promise<PurchaseResult> {
   try {
-    return await callEdgeFunction<PurchaseResult>("purchase-tv", {
+    // Get the provider from the subscription
+    const subscriptions = await getTVSubscriptions();
+    const subscription = subscriptions.find((s) => s.id === subscriptionId);
+
+    if (!subscription) {
+      return {
+        success: false,
+        message: "Subscription not found",
+      };
+    }
+
+    const result = await purchaseTVSubscription(
       subscriptionId,
       smartCardNumber,
-    });
+      subscription.provider,
+    );
+    return result;
   } catch (error) {
     console.error("Failed to purchase TV subscription:", error);
     throw error;
