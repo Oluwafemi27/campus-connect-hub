@@ -31,6 +31,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AddPaymentMethodRouteImport } from './routes/add-payment-method'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as DebugGsubzRouteImport } from './routes/debug.gsubz'
+import { Route as DebugEnvRouteImport } from './routes/debug.env'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -149,6 +151,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const DebugGsubzRoute = DebugGsubzRouteImport.update({
+  id: '/debug/gsubz',
+  path: '/debug/gsubz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebugEnvRoute = DebugEnvRouteImport.update({
+  id: '/debug/env',
+  path: '/debug/env',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -214,6 +226,8 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/debug/env': typeof DebugEnvRoute
+  '/debug/gsubz': typeof DebugGsubzRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -244,6 +258,8 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/debug/env': typeof DebugEnvRoute
+  '/debug/gsubz': typeof DebugGsubzRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -276,6 +292,8 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/debug/env': typeof DebugEnvRoute
+  '/debug/gsubz': typeof DebugGsubzRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -309,6 +327,8 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
+    | '/debug/env'
+    | '/debug/gsubz'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -339,6 +359,8 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
+    | '/debug/env'
+    | '/debug/gsubz'
     | '/admin'
   id:
     | '__root__'
@@ -370,6 +392,8 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/transactions'
     | '/admin/users'
+    | '/debug/env'
+    | '/debug/gsubz'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -395,6 +419,8 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   TopupRoute: typeof TopupRoute
   TvRoute: typeof TvRoute
+  DebugEnvRoute: typeof DebugEnvRoute
+  DebugGsubzRoute: typeof DebugGsubzRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -553,6 +579,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/debug/gsubz': {
+      id: '/debug/gsubz'
+      path: '/debug/gsubz'
+      fullPath: '/debug/gsubz'
+      preLoaderRoute: typeof DebugGsubzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debug/env': {
+      id: '/debug/env'
+      path: '/debug/env'
+      fullPath: '/debug/env'
+      preLoaderRoute: typeof DebugEnvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -651,6 +691,8 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   TopupRoute: TopupRoute,
   TvRoute: TvRoute,
+  DebugEnvRoute: DebugEnvRoute,
+  DebugGsubzRoute: DebugGsubzRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
