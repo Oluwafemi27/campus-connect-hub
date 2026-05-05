@@ -90,136 +90,96 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<Gsu
   }
 }
 
-// Mock data for fallback when API is unavailable
-const MOCK_DATA_BUNDLES: DataBundle[] = [
-  { id: "1", name: "500MB - Daily", amount: 500, price: 500, validity: "1 day", network: "mtn" },
-  { id: "2", name: "1GB - Weekly", amount: 1000, price: 1200, validity: "7 days", network: "mtn" },
-  { id: "3", name: "5GB - Monthly", amount: 5000, price: 5000, validity: "30 days", network: "mtn" },
-  { id: "4", name: "10GB - Monthly", amount: 10000, price: 9500, validity: "30 days", network: "mtn" },
-];
-
 async function getDataBundles(): Promise<DataBundle[]> {
-  try {
-    console.log("📡 Fetching data bundles from Gsubz API...");
-    // Gsubz returns plans for data services
-    const response = await fetchApi<{
-      plans?: Array<{
-        displayName?: string;
-        value?: string;
-        price?: string;
-      }>;
-      [key: string]: unknown;
-    }>("/plans?service=mtn_cg");
+  console.log("📡 Fetching data bundles from Gsubz API...");
+  // Gsubz returns plans for data services
+  const response = await fetchApi<{
+    plans?: Array<{
+      displayName?: string;
+      value?: string;
+      price?: string;
+    }>;
+    [key: string]: unknown;
+  }>("/plans?service=mtn_cg");
 
-    // The API returns plans directly in the response, not nested under content
-    const plans = response.content?.plans || (response as any).plans || [];
+  // The API returns plans directly in the response, not nested under content
+  const plans = response.content?.plans || (response as any).plans || [];
 
-    if (response.code === 200 && plans.length > 0) {
-      console.log("✅ Real-time data bundles loaded from Gsubz:", plans.length);
+  if (response.code === 200 && plans.length > 0) {
+    console.log("✅ Data bundles loaded from Gsubz:", plans.length);
 
-      return plans.map((plan, index) => ({
-        id: plan.value?.toString() || `bundle-${index}`,
-        name: plan.displayName || `Data Bundle ${index + 1}`,
-        amount: 0,
-        price: parseInt(plan.price || "0"),
-        validity: "30 days",
-        network: "mtn",
-      }));
-    }
-
-    console.warn("⚠️ No data bundles in Gsubz response. Using mock data.");
-    return MOCK_DATA_BUNDLES;
-  } catch (error) {
-    console.error("❌ Failed to fetch data bundles from Gsubz:", error);
-    console.log("📦 Using mock data as fallback...");
-    return MOCK_DATA_BUNDLES;
+    return plans.map((plan, index) => ({
+      id: plan.value?.toString() || `bundle-${index}`,
+      name: plan.displayName || `Data Bundle ${index + 1}`,
+      amount: 0,
+      price: parseInt(plan.price || "0"),
+      validity: "30 days",
+      network: "mtn",
+    }));
   }
-}
 
-const MOCK_AIRTIMES: Airtime[] = [
-  { id: "1", amount: 100, price: 100, network: "mtn" },
-  { id: "2", amount: 200, price: 200, network: "mtn" },
-  { id: "3", amount: 500, price: 500, network: "mtn" },
-  { id: "4", amount: 1000, price: 1000, network: "mtn" },
-];
+  console.error("❌ No data bundles in Gsubz response.");
+  throw new Error("Failed to fetch data bundles from Gsubz");
+}
 
 async function getAirtimes(): Promise<Airtime[]> {
-  try {
-    console.log("📡 Fetching airtimes from Gsubz API...");
-    // Gsubz API for airtimes
-    const response = await fetchApi<{
-      fields?: Array<{
-        value?: string;
-        amount?: number;
-        price?: string;
-      }>;
-      [key: string]: unknown;
-    }>("/fields?service=mtn");
+  console.log("📡 Fetching airtimes from Gsubz API...");
+  // Gsubz API for airtimes
+  const response = await fetchApi<{
+    fields?: Array<{
+      value?: string;
+      amount?: number;
+      price?: string;
+    }>;
+    [key: string]: unknown;
+  }>("/fields?service=mtn");
 
-    const airtimesList = response.content?.fields || (response as any).fields || [];
+  const airtimesList = response.content?.fields || (response as any).fields || [];
 
-    if (response.code === 200 && airtimesList.length > 0) {
-      console.log("✅ Real-time airtimes loaded from Gsubz:", airtimesList.length);
+  if (response.code === 200 && airtimesList.length > 0) {
+    console.log("✅ Airtimes loaded from Gsubz:", airtimesList.length);
 
-      return airtimesList.map((airtime, index) => ({
-        id: airtime.value?.toString() || `airtime-${index}`,
-        amount: airtime.amount || parseInt(airtime.price || "0") || 0,
-        price: parseInt(airtime.price || "0"),
-        network: "mtn",
-      }));
-    }
-
-    console.warn("⚠️ No airtimes in Gsubz response. Using mock data.");
-    return MOCK_AIRTIMES;
-  } catch (error) {
-    console.error("❌ Failed to fetch airtimes from Gsubz:", error);
-    console.log("📦 Using mock data as fallback...");
-    return MOCK_AIRTIMES;
+    return airtimesList.map((airtime, index) => ({
+      id: airtime.value?.toString() || `airtime-${index}`,
+      amount: airtime.amount || parseInt(airtime.price || "0") || 0,
+      price: parseInt(airtime.price || "0"),
+      network: "mtn",
+    }));
   }
+
+  console.error("❌ No airtimes in Gsubz response.");
+  throw new Error("Failed to fetch airtimes from Gsubz");
 }
 
-const MOCK_TV_SUBSCRIPTIONS: TVSubscription[] = [
-  { id: "1", name: "DStv Starter", price: 3500, duration: "1 month", provider: "dstv" },
-  { id: "2", name: "DStv Compact", price: 7500, duration: "1 month", provider: "dstv" },
-  { id: "3", name: "GOtv Max", price: 4900, duration: "1 month", provider: "gotv" },
-  { id: "4", name: "GOtv Plus", price: 2800, duration: "1 month", provider: "gotv" },
-];
-
 async function getTVSubscriptions(): Promise<TVSubscription[]> {
-  try {
-    console.log("📡 Fetching TV subscriptions from Gsubz API...");
-    // Gsubz API for TV subscriptions
-    const response = await fetchApi<{
-      plans?: Array<{
-        displayName?: string;
-        value?: string;
-        price?: string;
-      }>;
-      [key: string]: unknown;
-    }>("/plans?service=gotv");
+  console.log("📡 Fetching TV subscriptions from Gsubz API...");
+  // Gsubz API for TV subscriptions
+  const response = await fetchApi<{
+    plans?: Array<{
+      displayName?: string;
+      value?: string;
+      price?: string;
+    }>;
+    [key: string]: unknown;
+  }>("/plans?service=gotv");
 
-    // The API returns plans directly in the response, not nested under content
-    const plans = response.content?.plans || (response as any).plans || [];
+  // The API returns plans directly in the response, not nested under content
+  const plans = response.content?.plans || (response as any).plans || [];
 
-    if (response.code === 200 && plans.length > 0) {
-      console.log("✅ Real-time TV subscriptions loaded from Gsubz:", plans.length);
+  if (response.code === 200 && plans.length > 0) {
+    console.log("✅ TV subscriptions loaded from Gsubz:", plans.length);
 
-      return plans.map((plan, index) => ({
-        id: plan.value?.toString() || `tv-${index}`,
-        name: plan.displayName || `TV Plan ${index + 1}`,
-        price: parseInt(plan.price || "0"),
-        duration: "1 month",
-        provider: "gotv",
-      }));
-    }
-
-    console.warn("⚠️ No TV subscriptions in Gsubz response. Using mock data.");
-    return MOCK_TV_SUBSCRIPTIONS;
-  } catch (error) {
-    console.error("❌ Failed to fetch TV subscriptions from Gsubz:", error);
-    console.log("📦 Using mock data as fallback...");
-    return MOCK_TV_SUBSCRIPTIONS;
+    return plans.map((plan, index) => ({
+      id: plan.value?.toString() || `tv-${index}`,
+      name: plan.displayName || `TV Plan ${index + 1}`,
+      price: parseInt(plan.price || "0"),
+      duration: "1 month",
+      provider: "gotv",
+    }));
   }
+
+  console.error("❌ No TV subscriptions in Gsubz response.");
+  throw new Error("Failed to fetch TV subscriptions from Gsubz");
 }
 
 async function purchaseDataBundle(
@@ -425,36 +385,21 @@ async function verifySmartCard(
 
 // Server functions that directly fetch from Gsubz API
 export async function getDataBundlesServer(): Promise<DataBundle[]> {
-  try {
-    const bundles = await getDataBundles();
-    console.log("✓ Loaded", bundles.length, "data bundles from Gsubz");
-    return bundles;
-  } catch (error) {
-    console.error("Failed to fetch data bundles:", error);
-    return [];
-  }
+  const bundles = await getDataBundles();
+  console.log("✓ Loaded", bundles.length, "data bundles from Gsubz");
+  return bundles;
 }
 
 export async function getAirtimesServer(): Promise<Airtime[]> {
-  try {
-    const airtimes = await getAirtimes();
-    console.log("✓ Loaded", airtimes.length, "airtime options from Gsubz");
-    return airtimes;
-  } catch (error) {
-    console.error("Failed to fetch airtimes:", error);
-    return [];
-  }
+  const airtimes = await getAirtimes();
+  console.log("✓ Loaded", airtimes.length, "airtime options from Gsubz");
+  return airtimes;
 }
 
 export async function getTVSubscriptionsServer(): Promise<TVSubscription[]> {
-  try {
-    const subscriptions = await getTVSubscriptions();
-    console.log("✓ Loaded", subscriptions.length, "TV subscriptions from Gsubz");
-    return subscriptions;
-  } catch (error) {
-    console.error("Failed to fetch TV subscriptions:", error);
-    return [];
-  }
+  const subscriptions = await getTVSubscriptions();
+  console.log("✓ Loaded", subscriptions.length, "TV subscriptions from Gsubz");
+  return subscriptions;
 }
 
 export async function purchaseDataBundleServer(
