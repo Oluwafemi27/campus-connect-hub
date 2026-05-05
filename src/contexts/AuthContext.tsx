@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { loginUser, signupUser, logoutUser, getSession } from "@/server/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface User {
@@ -38,17 +39,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const { data } = await supabase.auth.getSession();
-        if (data.session?.user) {
+        const result = await getSession();
+        if (result.success && result.session?.user) {
           const adminRole =
-            data.session.user.user_metadata?.admin === true ||
-            data.session.user.user_metadata?.role === "admin";
+            result.session.user.user_metadata?.admin === true ||
+            result.session.user.user_metadata?.role === "admin";
           setUser({
-            id: data.session.user.id,
+            id: result.session.user.id,
             name:
-              data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
-            email: data.session.user.email || "",
-            phone: data.session.user.user_metadata?.phone,
+              result.session.user.user_metadata?.name || result.session.user.email?.split("@")[0] || "",
+            email: result.session.user.email || "",
+            phone: result.session.user.user_metadata?.phone,
           });
           setIsAdmin(adminRole);
         }
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    // Listen to auth changes
+    // Listen to auth changes (for client-side auth state changes)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const adminRole =
@@ -88,21 +89,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const result = await loginUser(email, password);
 
-      if (error) {
-        throw new Error(error.message);
+      if (!result.success) {
+        throw new Error(result.error || "Login failed");
       }
 
-      if (data.user) {
+      if (result.user) {
         setUser({
-          id: data.user.id,
-          name: data.user.user_metadata?.name || email.split("@")[0],
-          email: data.user.email || email,
-          phone: data.user.user_metadata?.phone,
+          id: result.user.id,
+          name: result.user.user_metadata?.name || email.split("@")[0],
+          email: result.user.email || email,
+          phone: result.user.user_metadata?.phone,
         });
       }
     } finally {
@@ -114,39 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string, phone?: string) => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name,
-              phone,
-            },
-            emailRedirectTo: `${window.location.origin}/`,
-          },
-        });
+        const result = await signupUser(email, password, name, phone);
 
-        if (error) {
-          throw new Error(error.message);
+        if (!result.success) {
+          throw new Error(result.error || "Signup failed");
         }
 
-        if (data.user) {
-          // Create user profile in the users table
-          const { error: profileError } = await supabase.from("users").insert({
-            id: data.user.id,
-            email,
-            name,
-            phone: phone || null,
-            created_at: new Date().toISOString(),
-            status: "active",
-          });
-
-          if (profileError) {
-            console.error("Error creating user profile:", profileError);
-          }
-
+        if (result.user) {
           setUser({
-            id: data.user.id,
+            id: result.user.id,
             name,
             email,
             phone,
@@ -162,10 +136,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw new Error(error.message);
+      const result = await logoutUser();
+
+      if (!result.success) {
+        throw new Error(result.error || "Logout failed");
       }
+
       setUser(null);
     } finally {
       setIsLoading(false);

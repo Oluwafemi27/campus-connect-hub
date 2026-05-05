@@ -383,3 +383,116 @@ export async function verifySmartCard(
     return { valid: false };
   }
 }
+
+/**
+ * Client-side helpers that call server functions
+ * These bridge the frontend and server to avoid CORS issues
+ */
+
+import {
+  fetchDataBundles,
+  fetchAirtimes,
+  fetchTVSubscriptions,
+  purchaseData,
+  purchaseAirtime,
+  purchaseTV,
+} from "@/server/gsubz-api";
+
+export interface GSubzApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export async function getDataBundlesClient(): Promise<DataBundle[]> {
+  try {
+    const result = await fetchDataBundles();
+
+    if (!result.success || !result.data) {
+      throw new Error(result.error || "Failed to fetch data bundles");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch data bundles:", error);
+    return [];
+  }
+}
+
+export async function getAirtimesClient(): Promise<Airtime[]> {
+  try {
+    const result = await fetchAirtimes();
+
+    if (!result.success || !result.data) {
+      throw new Error(result.error || "Failed to fetch airtimes");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch airtimes:", error);
+    return [];
+  }
+}
+
+export async function getTVSubscriptionsClient(): Promise<TVSubscription[]> {
+  try {
+    const result = await fetchTVSubscriptions();
+
+    if (!result.success || !result.data) {
+      throw new Error(result.error || "Failed to fetch TV subscriptions");
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Failed to fetch TV subscriptions:", error);
+    return [];
+  }
+}
+
+export async function purchaseDataBundleClient(
+  bundleId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const result = await purchaseData(bundleId, phoneNumber);
+    return result;
+  } catch (error) {
+    console.error("Failed to purchase data bundle:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
+
+export async function purchaseAirtimeClient(
+  airtimeId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const result = await purchaseAirtime(airtimeId, phoneNumber);
+    return result;
+  } catch (error) {
+    console.error("Failed to purchase airtime:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
+
+export async function purchaseTVSubscriptionClient(
+  subscriptionId: string,
+  smartCardNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const result = await purchaseTV(subscriptionId, smartCardNumber);
+    return result;
+  } catch (error) {
+    console.error("Failed to purchase TV subscription:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
