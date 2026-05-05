@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { loginUser, signupUser, logoutUser, getSession } from "@/server/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface User {
@@ -38,31 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const response = await fetch("/api/auth", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "get-session",
-          }),
-        });
-
-        if (response.ok) {
-          const { session } = await response.json();
-          if (session?.user) {
-            const adminRole =
-              session.user.user_metadata?.admin === true ||
-              session.user.user_metadata?.role === "admin";
-            setUser({
-              id: session.user.id,
-              name:
-                session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
-              email: session.user.email || "",
-              phone: session.user.user_metadata?.phone,
-            });
-            setIsAdmin(adminRole);
-          }
+        const result = await getSession();
+        if (result.success && result.session?.user) {
+          const adminRole =
+            result.session.user.user_metadata?.admin === true ||
+            result.session.user.user_metadata?.role === "admin";
+          setUser({
+            id: result.session.user.id,
+            name:
+              result.session.user.user_metadata?.name || result.session.user.email?.split("@")[0] || "",
+            email: result.session.user.email || "",
+            phone: result.session.user.user_metadata?.phone,
+          });
+          setIsAdmin(adminRole);
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
@@ -100,31 +89,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "login",
-          email,
-          password,
-        }),
-      });
+      const result = await loginUser(email, password);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed");
+      if (!result.success) {
+        throw new Error(result.error || "Login failed");
       }
 
-      const { user, session } = await response.json();
-
-      if (user) {
+      if (result.user) {
         setUser({
-          id: user.id,
-          name: user.user_metadata?.name || email.split("@")[0],
-          email: user.email || email,
-          phone: user.user_metadata?.phone,
+          id: result.user.id,
+          name: result.user.user_metadata?.name || email.split("@")[0],
+          email: result.user.email || email,
+          phone: result.user.user_metadata?.phone,
         });
       }
     } finally {
@@ -136,30 +112,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string, phone?: string) => {
       setIsLoading(true);
       try {
-        const response = await fetch("/api/auth", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action: "signup",
-            email,
-            password,
-            name,
-            phone,
-          }),
-        });
+        const result = await signupUser(email, password, name, phone);
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Signup failed");
+        if (!result.success) {
+          throw new Error(result.error || "Signup failed");
         }
 
-        const { user } = await response.json();
-
-        if (user) {
+        if (result.user) {
           setUser({
-            id: user.id,
+            id: result.user.id,
             name,
             email,
             phone,
@@ -175,19 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "logout",
-        }),
-      });
+      const result = await logoutUser();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Logout failed");
+      if (!result.success) {
+        throw new Error(result.error || "Logout failed");
       }
 
       setUser(null);
