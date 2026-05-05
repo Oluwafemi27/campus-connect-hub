@@ -38,19 +38,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const { data } = await supabase.auth.getSession();
-        if (data.session?.user) {
-          const adminRole =
-            data.session.user.user_metadata?.admin === true ||
-            data.session.user.user_metadata?.role === "admin";
-          setUser({
-            id: data.session.user.id,
-            name:
-              data.session.user.user_metadata?.name || data.session.user.email?.split("@")[0] || "",
-            email: data.session.user.email || "",
-            phone: data.session.user.user_metadata?.phone,
-          });
-          setIsAdmin(adminRole);
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "get-session",
+          }),
+        });
+
+        if (response.ok) {
+          const { session } = await response.json();
+          if (session?.user) {
+            const adminRole =
+              session.user.user_metadata?.admin === true ||
+              session.user.user_metadata?.role === "admin";
+            setUser({
+              id: session.user.id,
+              name:
+                session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
+              email: session.user.email || "",
+              phone: session.user.user_metadata?.phone,
+            });
+            setIsAdmin(adminRole);
+          }
         }
       } catch (error) {
         console.error("Failed to initialize auth:", error);
@@ -61,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    // Listen to auth changes
+    // Listen to auth changes (for client-side auth state changes)
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         const adminRole =
@@ -88,21 +100,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "login",
+          email,
+          password,
+        }),
       });
 
-      if (error) {
-        throw new Error(error.message);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Login failed");
       }
 
-      if (data.user) {
+      const { user, session } = await response.json();
+
+      if (user) {
         setUser({
-          id: data.user.id,
-          name: data.user.user_metadata?.name || email.split("@")[0],
-          email: data.user.email || email,
-          phone: data.user.user_metadata?.phone,
+          id: user.id,
+          name: user.user_metadata?.name || email.split("@")[0],
+          email: user.email || email,
+          phone: user.user_metadata?.phone,
         });
       }
     } finally {
@@ -114,39 +136,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string, phone?: string) => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name,
-              phone,
-            },
-            emailRedirectTo: `${window.location.origin}/`,
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            action: "signup",
+            email,
+            password,
+            name,
+            phone,
+          }),
         });
 
-        if (error) {
-          throw new Error(error.message);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Signup failed");
         }
 
-        if (data.user) {
-          // Create user profile in the users table
-          const { error: profileError } = await supabase.from("users").insert({
-            id: data.user.id,
-            email,
-            name,
-            phone: phone || null,
-            created_at: new Date().toISOString(),
-            status: "active",
-          });
+        const { user } = await response.json();
 
-          if (profileError) {
-            console.error("Error creating user profile:", profileError);
-          }
-
+        if (user) {
           setUser({
-            id: data.user.id,
+            id: user.id,
             name,
             email,
             phone,
@@ -162,10 +175,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "logout",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Logout failed");
       }
+
       setUser(null);
     } finally {
       setIsLoading(false);
