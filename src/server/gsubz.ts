@@ -90,6 +90,14 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<Gsu
   }
 }
 
+// Mock data for fallback when API is unavailable
+const MOCK_DATA_BUNDLES: DataBundle[] = [
+  { id: "1", name: "500MB - Daily", amount: 500, price: 500, validity: "1 day", network: "mtn" },
+  { id: "2", name: "1GB - Weekly", amount: 1000, price: 1200, validity: "7 days", network: "mtn" },
+  { id: "3", name: "5GB - Monthly", amount: 5000, price: 5000, validity: "30 days", network: "mtn" },
+  { id: "4", name: "10GB - Monthly", amount: 10000, price: 9500, validity: "30 days", network: "mtn" },
+];
+
 async function getDataBundles(): Promise<DataBundle[]> {
   try {
     console.log("📡 Fetching data bundles from Gsubz API...");
@@ -119,13 +127,21 @@ async function getDataBundles(): Promise<DataBundle[]> {
       }));
     }
 
-    console.error("❌ No data bundles in Gsubz response. No mock data available.");
-    return [];
+    console.warn("⚠️ No data bundles in Gsubz response. Using mock data.");
+    return MOCK_DATA_BUNDLES;
   } catch (error) {
     console.error("❌ Failed to fetch data bundles from Gsubz:", error);
-    return [];
+    console.log("📦 Using mock data as fallback...");
+    return MOCK_DATA_BUNDLES;
   }
 }
+
+const MOCK_AIRTIMES: Airtime[] = [
+  { id: "1", amount: 100, price: 100, network: "mtn" },
+  { id: "2", amount: 200, price: 200, network: "mtn" },
+  { id: "3", amount: 500, price: 500, network: "mtn" },
+  { id: "4", amount: 1000, price: 1000, network: "mtn" },
+];
 
 async function getAirtimes(): Promise<Airtime[]> {
   try {
@@ -153,13 +169,21 @@ async function getAirtimes(): Promise<Airtime[]> {
       }));
     }
 
-    console.error("❌ No airtimes in Gsubz response. No mock data available.");
-    return [];
+    console.warn("⚠️ No airtimes in Gsubz response. Using mock data.");
+    return MOCK_AIRTIMES;
   } catch (error) {
     console.error("❌ Failed to fetch airtimes from Gsubz:", error);
-    return [];
+    console.log("📦 Using mock data as fallback...");
+    return MOCK_AIRTIMES;
   }
 }
+
+const MOCK_TV_SUBSCRIPTIONS: TVSubscription[] = [
+  { id: "1", name: "DStv Starter", price: 3500, duration: "1 month", provider: "dstv" },
+  { id: "2", name: "DStv Compact", price: 7500, duration: "1 month", provider: "dstv" },
+  { id: "3", name: "GOtv Max", price: 4900, duration: "1 month", provider: "gotv" },
+  { id: "4", name: "GOtv Plus", price: 2800, duration: "1 month", provider: "gotv" },
+];
 
 async function getTVSubscriptions(): Promise<TVSubscription[]> {
   try {
@@ -189,11 +213,12 @@ async function getTVSubscriptions(): Promise<TVSubscription[]> {
       }));
     }
 
-    console.error("❌ No TV subscriptions in Gsubz response. No mock data available.");
-    return [];
+    console.warn("⚠️ No TV subscriptions in Gsubz response. Using mock data.");
+    return MOCK_TV_SUBSCRIPTIONS;
   } catch (error) {
     console.error("❌ Failed to fetch TV subscriptions from Gsubz:", error);
-    return [];
+    console.log("📦 Using mock data as fallback...");
+    return MOCK_TV_SUBSCRIPTIONS;
   }
 }
 

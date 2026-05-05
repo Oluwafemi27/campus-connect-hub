@@ -5,6 +5,8 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 console.log("[Supabase] URL configured:", !!supabaseUrl);
 console.log("[Supabase] Key configured:", !!supabaseAnonKey);
+console.log("[Supabase] URL value:", supabaseUrl ? "Set" : "NOT SET");
+console.log("[Supabase] Key value:", supabaseAnonKey ? "Set" : "NOT SET");
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error(
@@ -19,7 +21,7 @@ export const supabase = createClient(
   supabaseAnonKey || "placeholder-key",
 );
 
-console.log("[Supabase] Client initialized with URL:", supabaseUrl);
+console.log("[Supabase] Client initialized successfully");
 
 // Test connection on initialization
 if (supabaseUrl && supabaseAnonKey && !supabaseUrl.includes("placeholder")) {
