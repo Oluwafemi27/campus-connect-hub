@@ -383,3 +383,173 @@ export async function verifySmartCard(
     return { valid: false };
   }
 }
+
+/**
+ * Client-side API helpers that call the server proxy route
+ * These functions bridge the frontend and the server API route to avoid CORS issues
+ */
+
+export interface GSubzApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+export async function getDataBundlesClient(): Promise<DataBundle[]> {
+  try {
+    const response = await fetch("/api/gsubz?type=data-bundles");
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: GSubzApiResponse<DataBundle[]> = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error(data.error || "Failed to fetch data bundles");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Failed to fetch data bundles from API:", error);
+    return [];
+  }
+}
+
+export async function getAirtimesClient(): Promise<Airtime[]> {
+  try {
+    const response = await fetch("/api/gsubz?type=airtimes");
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: GSubzApiResponse<Airtime[]> = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error(data.error || "Failed to fetch airtimes");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Failed to fetch airtimes from API:", error);
+    return [];
+  }
+}
+
+export async function getTVSubscriptionsClient(): Promise<TVSubscription[]> {
+  try {
+    const response = await fetch("/api/gsubz?type=tv-subscriptions");
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: GSubzApiResponse<TVSubscription[]> = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error(data.error || "Failed to fetch TV subscriptions");
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Failed to fetch TV subscriptions from API:", error);
+    return [];
+  }
+}
+
+export async function purchaseDataBundleClient(
+  bundleId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const response = await fetch("/api/gsubz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "purchase-data",
+        bundleId,
+        phoneNumber,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: PurchaseResult = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to purchase data bundle via API:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
+
+export async function purchaseAirtimeClient(
+  airtimeId: string,
+  phoneNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const response = await fetch("/api/gsubz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "purchase-airtime",
+        airtimeId,
+        phoneNumber,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: PurchaseResult = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to purchase airtime via API:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
+
+export async function purchaseTVSubscriptionClient(
+  subscriptionId: string,
+  smartCardNumber: string,
+): Promise<PurchaseResult> {
+  try {
+    const response = await fetch("/api/gsubz", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "purchase-tv",
+        subscriptionId,
+        smartCardNumber,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: PurchaseResult = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to purchase TV subscription via API:", error);
+    return {
+      success: false,
+      message: "Failed to complete purchase. Please try again.",
+    };
+  }
+}
